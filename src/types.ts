@@ -1,5 +1,27 @@
 export type RiskLevel = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
 
+export interface AIAnalysis {
+  confidence: number;
+  scamProbability: number;
+  threatCategory: string;
+  deepReasoning: string;
+  psychologicalTricks: string[];
+  safeActions: string[];
+  victimBehavior: string;
+  preventionAdvice: string;
+  insights: AIInsight[];
+  recommendations: string[];
+}
+
+export interface AIInsight {
+  id: string;
+  label: string;
+  value: string;
+  score: number;
+  icon: string;
+  color: string;
+}
+
 export interface TranscriptScenario {
   id: string;
   label: string;
@@ -10,6 +32,7 @@ export interface TranscriptScenario {
   redFlags: { phrase: string; category: string; severity: RiskLevel }[];
   agentFires: { agent: string; action: string; timestamp: string; triggeredBy: string }[];
   evidencePackage: EvidenceItem[];
+  aiAnalysis: AIAnalysis;
 }
 
 export interface EvidenceItem {
@@ -25,6 +48,15 @@ export interface ActivityEntry {
   timestamp: string;
   triggeredBy: string;
   color: string;
+}
+
+export interface AnalysisRecord {
+  id: string;
+  scenarioId: string;
+  scenarioLabel: string;
+  riskLevel: RiskLevel;
+  score: number;
+  timestamp: number;
 }
 
 export interface FraudNode {
