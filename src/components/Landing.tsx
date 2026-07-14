@@ -140,15 +140,15 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
 
       {/* ── Orbital rings ── */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-        <div className="w-[280px] h-[280px] sm:w-[340px] sm:h-[340px] md:w-[400px] md:h-[400px] rounded-full border animate-breathe"
+        <div className="w-[280px] h-[280px] sm:w-[340px] sm:h-[340px] md:w-[400px] md:h-[400px] lg:w-[500px] lg:h-[500px] xl:w-[600px] xl:h-[600px] rounded-full border animate-breathe"
           style={{ borderColor: 'rgba(59,130,246,0.04)' }} />
       </div>
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-        <div className="w-[420px] h-[420px] sm:w-[500px] sm:h-[500px] md:w-[580px] md:h-[580px] rounded-full"
+        <div className="w-[420px] h-[420px] sm:w-[500px] sm:h-[500px] md:w-[580px] md:h-[580px] lg:w-[700px] lg:h-[700px] xl:w-[820px] xl:h-[820px] rounded-full"
           style={{ border: '1px solid rgba(139,92,246,0.03)' }} />
       </div>
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-        <div className="w-[560px] h-[560px] sm:w-[660px] sm:h-[660px] md:w-[760px] md:h-[760px] rounded-full"
+        <div className="w-[560px] h-[560px] sm:w-[660px] sm:h-[660px] md:w-[760px] md:h-[760px] lg:w-[900px] lg:h-[900px] xl:w-[1040px] xl:h-[1040px] rounded-full"
           style={{ border: '1px solid rgba(255,255,255,0.015)' }} />
       </div>
 
@@ -167,8 +167,8 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
       </div>
 
       {/* ── Main content ── */}
-      <div className="flex-1 flex flex-col items-center justify-center relative z-10 px-5 sm:px-8">
-        <div className={`max-w-4xl w-full space-y-8 sm:space-y-10 transition-all duration-1000 ease-out ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+      <div className="flex-1 flex flex-col items-center justify-center relative z-10 px-5 sm:px-8 lg:px-12 xl:px-16">
+        <div className={`max-w-4xl lg:max-w-5xl w-full space-y-8 sm:space-y-10 lg:space-y-12 transition-all duration-1000 ease-out ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
 
           {/* ── Top badge ── */}
           <div className="flex justify-center">
@@ -227,7 +227,7 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
           </div>
 
           {/* ── Animated statistics ── */}
-          <div className="grid grid-cols-3 gap-3 sm:gap-4 max-w-2xl mx-auto">
+          <div className="grid grid-cols-3 gap-3 sm:gap-4 lg:gap-5 max-w-2xl lg:max-w-3xl mx-auto">
             {STATS.map((stat, i) => {
               const Icon = stat.icon;
               return (
@@ -249,7 +249,7 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
           </div>
 
           {/* ── Features preview ── */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 max-w-3xl mx-auto">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4 max-w-3xl lg:max-w-4xl mx-auto">
             {FEATURES.map((feat, i) => {
               const Icon = feat.icon;
               return (
@@ -269,7 +269,7 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
           </div>
 
           {/* ── Trust indicators ── */}
-          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 sm:gap-x-6">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 sm:gap-x-6 lg:gap-x-8">
             {TRUST_ITEMS.map((item, i) => {
               const Icon = item.icon;
               return (

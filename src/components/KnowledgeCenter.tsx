@@ -477,7 +477,7 @@ export default function KnowledgeCenter() {
         </div>
 
         {/* ── Scam Categories Grid ── */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 animate-fade-slide-up stagger-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-4 lg:gap-5 animate-fade-slide-up stagger-3">
           {filteredCategories.map((category) => {
             const isExpanded = expandedCards.has(category.id);
             const colors = RISK_COLORS[category.riskLevel];

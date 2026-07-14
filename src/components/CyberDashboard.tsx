@@ -136,30 +136,30 @@ export default function CyberDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-zinc-400 p-4 sm:p-6 lg:p-8">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-[#09090b] text-zinc-400 p-4 sm:p-6 lg:p-8 xl:p-10">
+      <div className="max-w-7xl mx-auto space-y-6 lg:space-y-8">
 
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
-          <div className="w-12 h-12 rounded-2xl flex items-center justify-center"
+          <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-2xl flex items-center justify-center flex-shrink-0"
             style={{ background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)' }}>
             <Shield size={24} className="text-blue-400" strokeWidth={1.5} />
           </div>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-zinc-100">Cyber Safety Dashboard</h1>
-            <p className="text-sm text-zinc-500 mt-0.5">Your personal security analytics and protection overview</p>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-zinc-100">Cyber Safety Dashboard</h1>
+            <p className="text-sm lg:text-base text-zinc-500 mt-0.5">Your personal security analytics and protection overview</p>
           </div>
         </div>
 
         {/* Summary Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
           <StatCard icon={BarChart3} label="Total Analyses" value={stats.total} circleColor="#3b82f6" />
           <StatCard icon={ShieldCheck} label="Safe Cases" value={stats.safe} circleColor="#22c55e" />
           <StatCard icon={ShieldAlert} label="Dangerous Cases" value={stats.dangerous} circleColor="#ef4444" />
           <StatCard icon={TrendingUp} label="Personal Safety Score" value={`${stats.safetyScore}%`} circleColor="#06b6d4" />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
 
           {/* Weekly Trends */}
           <div className="lg:col-span-2 glass-panel rounded-2xl p-5 border border-white/[0.06] card-hover">
@@ -211,7 +211,7 @@ export default function CyberDashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
           {/* Recent Activity */}
           <div className="lg:col-span-2 glass-panel rounded-2xl p-5 border border-white/[0.06] card-hover">
             <h3 className="text-sm font-semibold text-zinc-200 mb-4 flex items-center gap-2">

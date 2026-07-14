@@ -1494,6 +1494,16 @@
   max-height: calc(100dvh - 64px);
   animation: modalEnter 350ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
+@media (min-width: 1024px) {
+  .sd-modal-content {
+    max-width: 720px;
+  }
+}
+@media (min-width: 1280px) {
+  .sd-modal-content {
+    max-width: 800px;
+  }
+}
 .sd-modal-panel {
   background: rgba(24, 24, 27, 0.98);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -1775,6 +1785,8 @@
    SCAM DETECTOR — Responsive
    ══════════════════════════════════════ */
 
+/* ── Mobile-first defaults (kept as-is) ── */
+
 @media (min-width: 640px) {
   .sd-header {
     align-items: center;
@@ -1787,27 +1799,8 @@
   }
 }
 
+/* ── Tablet (768px+) ── */
 @media (min-width: 768px) {
-  .sd-main {
-    flex-direction: row;
-  }
-  .sd-transcript {
-    flex: 3;
-    min-height: 280px;
-  }
-  .sd-sidebar {
-    flex: 2;
-    min-height: 0;
-  }
-  .transcript-speaker {
-    width: 80px;
-  }
-  .scenario-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (min-width: 1024px) {
   .sd-title {
     font-size: 20px;
   }
@@ -1816,26 +1809,332 @@
     gap: 16px;
   }
   .sd-transcript {
+    flex: 3;
+    min-height: 300px;
     border-radius: 18px;
-    min-height: 0;
   }
   .sd-sidebar {
+    flex: 2;
+    min-height: 0;
     gap: 14px;
+  }
+  .transcript-speaker {
+    width: 80px;
   }
   .sd-metrics {
     gap: 12px;
   }
-  .scenario-grid {
-    gap: 12px;
+  .sd-metric {
+    padding: 12px 16px;
   }
-}
-
-@media (min-width: 1280px) {
+  .sd-metric-value {
+    font-size: 14px;
+  }
   .scenario-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .sd-tab {
+    padding: 10px 18px;
+    font-size: 13px;
+  }
+  .sd-insights-top {
+    flex-direction: row;
+    align-items: stretch;
   }
 }
 
+/* ── Laptop (1024px+) ── */
+@media (min-width: 1024px) {
+  .sd-title {
+    font-size: 22px;
+  }
+  .sd-header-icon {
+    width: 42px;
+    height: 42px;
+  }
+  .sd-main {
+    gap: 20px;
+  }
+  .sd-transcript {
+    min-height: 340px;
+    border-radius: 20px;
+  }
+  .sd-sidebar {
+    gap: 16px;
+  }
+  .sd-metrics {
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .sd-metric {
+    padding: 14px 18px;
+    gap: 12px;
+  }
+  .sd-metric-value {
+    font-size: 15px;
+  }
+  .sd-metric-label {
+    font-size: 11px;
+  }
+  .sd-transcript-body {
+    padding: 20px;
+  }
+  .transcript-text {
+    font-size: 13px;
+  }
+  .sd-trigger-btn {
+    padding: 16px 22px;
+    font-size: 14px;
+    border-radius: 16px;
+  }
+  .sd-tab {
+    padding: 11px 22px;
+    font-size: 13.5px;
+    gap: 8px;
+    border-radius: 12px;
+    min-height: 40px;
+  }
+  .sd-tabs {
+    gap: 4px;
+    padding: 5px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+  }
+  .sd-tab-content {
+    gap: 24px;
+  }
+  .sd-tab-empty {
+    padding: 80px 40px;
+  }
+  .sd-insights-meta {
+    padding: 24px;
+  }
+  .sd-threat-category {
+    font-size: 20px;
+  }
+  .sd-threat-stat {
+    padding: 10px 16px;
+  }
+  .sd-activity {
+    margin-top: 4px;
+  }
+  .sd-risk {
+    padding: 20px;
+  }
+  .sd-evidence {
+    padding: 20px;
+  }
+  .scenario-grid {
+    gap: 14px;
+  }
+  .scenario-card {
+    padding: 20px;
+    min-height: 140px;
+  }
+  .scenario-card-icon {
+    width: 44px;
+    height: 44px;
+  }
+  .scenario-card-title {
+    font-size: 14px;
+  }
+}
+
+/* ── Desktop (1280px+) ── */
+@media (min-width: 1280px) {
+  .sd-title {
+    font-size: 24px;
+  }
+  .sd-header-icon {
+    width: 46px;
+    height: 46px;
+  }
+  .sd-main {
+    gap: 24px;
+  }
+  .sd-transcript {
+    flex: 5;
+    min-height: 380px;
+    border-radius: 22px;
+  }
+  .sd-sidebar {
+    flex: 3;
+    gap: 18px;
+  }
+  .sd-metrics {
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .sd-metric {
+    padding: 16px 20px;
+    gap: 14px;
+    border-radius: 16px;
+  }
+  .sd-metric-value {
+    font-size: 16px;
+  }
+  .sd-metric-label {
+    font-size: 11.5px;
+  }
+  .sd-metric-icon {
+    width: 32px;
+    height: 32px;
+  }
+  .sd-transcript-body {
+    padding: 24px;
+    line-height: 1.7;
+  }
+  .transcript-speaker {
+    width: 90px;
+    font-size: 11px;
+  }
+  .transcript-text {
+    font-size: 14px;
+  }
+  .sd-trigger-btn {
+    padding: 18px 24px;
+    border-radius: 18px;
+  }
+  .sd-tab {
+    padding: 12px 26px;
+    font-size: 14px;
+    gap: 9px;
+    min-height: 42px;
+  }
+  .sd-tabs {
+    gap: 5px;
+    padding: 6px;
+    border-radius: 18px;
+  }
+  .sd-tab-content {
+    gap: 28px;
+  }
+  .sd-tab-empty {
+    padding: 100px 60px;
+  }
+  .sd-insights-top {
+    gap: 20px;
+  }
+  .sd-insights-meta {
+    padding: 28px;
+    border-radius: 18px;
+  }
+  .sd-threat-category {
+    font-size: 22px;
+  }
+  .sd-threat-stat {
+    padding: 12px 18px;
+    border-radius: 12px;
+  }
+  .sd-threat-stat-label {
+    font-size: 13px;
+  }
+  .sd-threat-stat-value {
+    font-size: 15px;
+  }
+  .sd-risk {
+    padding: 24px;
+    border-radius: 18px;
+  }
+  .sd-evidence {
+    padding: 24px;
+    border-radius: 18px;
+  }
+  .scenario-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .scenario-card {
+    padding: 24px;
+    min-height: 160px;
+    border-radius: 18px;
+  }
+  .scenario-card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+  }
+  .scenario-card-title {
+    font-size: 15px;
+  }
+  .scenario-score-value {
+    font-size: 18px;
+  }
+}
+
+/* ── Large Desktop (1440px+) ── */
+@media (min-width: 1440px) {
+  .sd-title {
+    font-size: 26px;
+  }
+  .sd-header-icon {
+    width: 50px;
+    height: 50px;
+  }
+  .sd-main {
+    gap: 28px;
+  }
+  .sd-transcript {
+    flex: 5;
+    min-height: 420px;
+    border-radius: 24px;
+  }
+  .sd-sidebar {
+    flex: 3;
+    gap: 20px;
+  }
+  .sd-metrics {
+    gap: 18px;
+  }
+  .sd-metric {
+    padding: 18px 22px;
+  }
+  .sd-metric-value {
+    font-size: 17px;
+  }
+  .sd-transcript-body {
+    padding: 28px;
+  }
+  .transcript-speaker {
+    width: 100px;
+  }
+  .transcript-text {
+    font-size: 14.5px;
+  }
+  .sd-tab {
+    padding: 13px 30px;
+    font-size: 14.5px;
+  }
+  .sd-tab-content {
+    gap: 32px;
+  }
+  .sd-insights-meta {
+    padding: 32px;
+  }
+  .sd-threat-category {
+    font-size: 24px;
+  }
+  .sd-risk {
+    padding: 28px;
+  }
+  .sd-evidence {
+    padding: 28px;
+  }
+  .scenario-card {
+    padding: 28px;
+    min-height: 170px;
+  }
+  .scenario-card-icon {
+    width: 52px;
+    height: 52px;
+  }
+  .scenario-card-title {
+    font-size: 16px;
+  }
+}
+
+/* ── Mobile overrides (kept, reordered) ── */
 @media (max-width: 639px) {
   .sd-title {
     font-size: 15px;
@@ -2039,6 +2338,7 @@
   color: #e4e4e7;
 }
 
+/* Mobile tab overrides */
 @media (max-width: 639px) {
   .sd-tabs {
     gap: 1px;
@@ -2054,20 +2354,6 @@
   }
   .sd-insights-top {
     flex-direction: column;
-  }
-}
-
-@media (min-width: 640px) {
-  .sd-insights-top {
-    flex-direction: row;
-    align-items: stretch;
-  }
-}
-
-@media (min-width: 768px) {
-  .sd-tab {
-    padding: 10px 18px;
-    font-size: 13px;
   }
 }
 

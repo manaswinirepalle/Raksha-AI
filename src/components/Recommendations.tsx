@@ -22,7 +22,7 @@ export default function Recommendations({ recommendations, riskLevel, visible = 
         <h3 className="font-mono text-[10px] sm:text-xs font-medium tracking-wider text-zinc-500 uppercase">AI Recommendations</h3>
       </div>
 
-      <div className="space-y-2.5 sm:space-y-3">
+      <div className="space-y-2.5 sm:space-y-3 lg:space-y-4">
         {recommendations.map((rec, i) => {
           const Icon = CARD_ICONS[i % CARD_ICONS.length];
           return (

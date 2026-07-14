@@ -53,7 +53,7 @@ export default function LearningMode({ scenario, visible = true }: { scenario: T
         <h3 className="font-mono text-[10px] sm:text-xs font-medium tracking-wider text-zinc-500 uppercase">AI Learning Mode</h3>
       </div>
 
-      <div className="space-y-3 sm:space-y-4">
+      <div className="space-y-3 sm:space-y-4 lg:space-y-5">
         {steps.map((step, i) => {
           const color = STEP_COLORS[i];
           return (

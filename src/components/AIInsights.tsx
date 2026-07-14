@@ -14,7 +14,7 @@ export default function AIInsights({ insights, visible = true }: { insights: AII
   if (!visible || insights.length === 0) return null;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3 lg:gap-4">
       {insights.map((insight, i) => {
         const Icon = ICON_MAP[insight.icon] || Shield;
         return (

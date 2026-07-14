@@ -10,7 +10,7 @@ export default function SafetyTips({ tips, visible = true }: { tips: string[]; v
         <h3 className="font-mono text-[10px] sm:text-xs font-medium tracking-wider text-zinc-500 uppercase">Smart Safety Tips</h3>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3 lg:gap-4">
         {tips.map((tip, i) => (
           <div
             key={i}
