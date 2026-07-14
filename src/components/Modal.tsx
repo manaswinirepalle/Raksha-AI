@@ -1,53 +1,104 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef, type ReactNode } from 'react';
 import { X } from 'lucide-react';
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
-  children: React.ReactNode;
+  subtitle?: string;
+  children: ReactNode;
   maxWidth?: string;
+  showClose?: boolean;
 }
 
-export default function Modal({ isOpen, onClose, title, children, maxWidth = '440px' }: ModalProps) {
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'Escape') onClose();
-  }, [onClose]);
+export default function Modal({
+  isOpen,
+  onClose,
+  title,
+  subtitle,
+  children,
+  maxWidth = '560px',
+  showClose = true,
+}: ModalProps) {
+  const contentRef = useRef<HTMLDivElement>(null);
+  const previousFocus = useRef<HTMLElement | null>(null);
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        onClose();
+      }
+      if (e.key === 'Tab' && contentRef.current) {
+        const focusable = contentRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    },
+    [onClose]
+  );
 
   useEffect(() => {
     if (isOpen) {
+      previousFocus.current = document.activeElement as HTMLElement;
       document.addEventListener('keydown', handleKeyDown);
       document.body.style.overflow = 'hidden';
+      requestAnimationFrame(() => {
+        const focusable = contentRef.current?.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        focusable?.[0]?.focus();
+      });
     }
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = '';
+      previousFocus.current?.focus();
     };
   }, [isOpen, handleKeyDown]);
 
   if (!isOpen) return null;
 
   return (
-    <div className="modal-backdrop" onClick={onClose} aria-hidden="true">
+    <div className="modal-backdrop" onClick={onClose}>
       <div
-        className="modal-content glass-panel-strong rounded-2xl shadow-2xl shadow-black/40 p-5 sm:p-6"
-        style={{ maxWidth, width: 'calc(100% - 32px)', border: '1px solid rgba(255,255,255,0.08)' }}
-        onClick={e => e.stopPropagation()}
+        ref={contentRef}
+        className="modal-content"
+        style={{ maxWidth, width: 'calc(100% - 32px)' }}
+        onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-label={title}
       >
-        {title && (
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm sm:text-base font-semibold text-zinc-100">{title}</h3>
-            <button onClick={onClose}
-              className="w-7 h-7 rounded-lg flex items-center justify-center text-zinc-500 hover:text-zinc-200 hover:bg-white/[0.05] transition-all cursor-pointer"
-              aria-label="Close dialog">
-              <X size={14} />
+        <div className="modal-panel">
+          {showClose && (
+            <button
+              onClick={onClose}
+              className="modal-close-btn"
+              aria-label="Close dialog"
+              type="button"
+            >
+              <X size={16} strokeWidth={1.5} />
             </button>
-          </div>
-        )}
-        {children}
+          )}
+          {title && (
+            <div className="modal-header">
+              <h3 className="modal-title">{title}</h3>
+              {subtitle && <p className="modal-subtitle">{subtitle}</p>}
+            </div>
+          )}
+          {children}
+        </div>
       </div>
     </div>
   );
