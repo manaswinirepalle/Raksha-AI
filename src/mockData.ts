@@ -1,0 +1,152 @@
+import type { TranscriptScenario } from './types';
+
+export const TRANSCRIPT_SCENARIOS: TranscriptScenario[] = [
+  {
+    id: 'obvious-scam',
+    label: 'Obvious Scam — Digital Arrest',
+    description: 'Classic MHA/CBI impersonation with urgency and threat',
+    transcript: [
+      { speaker: 'SCAMMER', text: 'This is Inspector Rajesh Kumar from the Central Bureau of Investigation, New Delhi. Your Aadhaar number has been linked to a money laundering case — FIR number CBI-2024-8847.' },
+      { speaker: 'SCAMMER', text: 'You must cooperate immediately. If you do not comply, an arrest warrant will be issued within the next 30 minutes. Do you understand the gravity of this situation?' },
+      { speaker: 'SCAMMER', text: 'You are now under digital arrest. Do not contact anyone — your phone lines are being monitored. Share your screen so we can verify your bank accounts for illicit transactions.' },
+      { speaker: 'SCAMMER', text: 'Transfer ₹2,50,000 to the government safe account immediately to prove your innocence. This amount will be refunded after verification. UPI ID: cbisafe2024@ybl.' },
+      { speaker: 'SCAMMER', text: 'Remember — if you tell anyone about this call, you will face additional charges under Section 302 IPC. Your family may also be investigated.' },
+    ],
+    riskLevel: 'CRITICAL',
+    finalScore: 97,
+    redFlags: [
+      { phrase: 'digital arrest', category: 'False Authority', severity: 'CRITICAL' },
+      { phrase: 'CBI', category: 'Agency Impersonation', severity: 'CRITICAL' },
+      { phrase: 'FIR number', category: 'Legal Fabrication', severity: 'HIGH' },
+      { phrase: 'do not contact anyone', category: 'Isolation Tactic', severity: 'CRITICAL' },
+      { phrase: 'share your screen', category: 'Data Theft Attempt', severity: 'HIGH' },
+      { phrase: 'transfer ₹2,50,000', category: 'Financial Extraction', severity: 'CRITICAL' },
+      { phrase: 'safe account', category: 'Fake Safe Harbor', severity: 'CRITICAL' },
+      { phrase: 'if you tell anyone', category: 'Silence Enforcement', severity: 'HIGH' },
+      { phrase: 'arrest warrant', category: 'Fear Induction', severity: 'HIGH' },
+      { phrase: 'family may also be investigated', category: 'Emotional Pressure', severity: 'HIGH' },
+    ],
+    agentFires: [
+      { agent: 'VoicePrint Agent', action: 'Flagged unverified CBI caller ID — spoofed number traced to VoIP provider', timestamp: '00:00:02', triggeredBy: '"Inspector Rajesh Kumar"' },
+      { agent: 'NLP Intent Agent', action: 'Detected urgency+threat pattern in opening statement — confidence 0.96', timestamp: '00:00:04', triggeredBy: '"arrest warrant...30 minutes"' },
+      { agent: 'Entity Extraction Agent', action: 'Matched "digital arrest" against scam keyword database — HIT #SC-2847', timestamp: '00:00:05', triggeredBy: '"digital arrest"' },
+      { agent: 'Financial Flow Agent', action: 'Flagged UPI ID cbisafe2024@ybl — linked to 23 prior complaints', timestamp: '00:00:07', triggeredBy: '"cbisafe2024@ybl"' },
+      { agent: 'Isolation Pattern Agent', action: 'Identified communication suppression tactic — 12 known variants matched', timestamp: '00:00:08', triggeredBy: '"do not contact anyone"' },
+      { agent: 'Threat Escalation Agent', action: 'Family threat detected — escalation score: CRITICAL', timestamp: '00:00:09', triggeredBy: '"family may also be investigated"' },
+      { agent: 'Evidence Compiler', action: 'Auto-generated MHA-style alert package with 5 flagged sections', timestamp: '00:00:10', triggeredBy: 'Risk score threshold exceeded' },
+    ],
+    evidencePackage: [
+      { type: 'ALERT', title: 'MHA/NCRB Digital Arrest Alert', content: 'CRITICAL: Suspected digital arrest scam targeting citizen. Caller impersonating CBI officer demanding ₹2,50,000 via UPI. FIR reference CBI-2024-8847 is fictitious — verified against NCRB database. Recommended immediate NCRB complaint filing.' },
+      { type: 'VOICE', title: 'Voice Analysis Report', content: 'Caller ID spoofed via VoIP (JioTelecom prefix masked). Voice stress analysis: elevated deception markers. Geographic origin: Kolkata IP range (contradicts "New Delhi" claim).' },
+      { type: 'FINANCIAL', title: 'Financial Flow Map', content: 'UPI ID cbisafe2024@ybl linked to 23 complaints across 6 states. Total reported loss: ₹47.3L. Last active: 2 hours ago. Account holder: Unknown — registered with forged documents.' },
+      { type: 'LEGAL', title: 'Legal Reference Package', content: 'Applicable sections: IPC 420 (Cheating), IPC 170 (Impersonating public servant), IT Act 66C (Identity theft), IT Act 66D (Cheating by impersonation using computer resource). Evidence admissible under IT Act Section 65B.' },
+      { type: 'NCRB', title: 'Pre-filled NCRB Complaint', content: 'Cybercrime complaint auto-populated with: incident type (Digital Arrest), financial details (₹2,50,000 demanded), evidence package reference, applicable legal sections. Ready for citizen review and submission at cybercrime.gov.in.' },
+    ],
+  },
+  {
+    id: 'ambiguous',
+    label: 'Ambiguous — Banking Call',
+    description: 'Partial red flags, mixed legitimate and suspicious content',
+    transcript: [
+      { speaker: 'CALLER', text: 'Good morning, this is SBI Card services. I am calling regarding your credit card ending in 4521. We noticed a suspicious transaction of ₹47,500 at an electronics store in Bangalore.' },
+      { speaker: 'CALLER', text: 'Did you authorize this transaction? If not, I can help you block the card immediately and initiate a chargeback.' },
+      { speaker: 'CALLER', text: 'For verification, I need your card number and the OTP that was just sent to your mobile. This is standard procedure under RBI guidelines.' },
+      { speaker: 'CALLER', text: 'Also, we are upgrading our security system. If you share your net banking credentials, I can enable additional fraud protection features on your account at no cost.' },
+      { speaker: 'CALLER', text: 'This offer is valid only for the next 15 minutes. After that, your account will be temporarily restricted for security review.' },
+    ],
+    riskLevel: 'HIGH',
+    finalScore: 72,
+    redFlags: [
+      { phrase: 'OTP', category: 'Credential Harvesting', severity: 'CRITICAL' },
+      { phrase: 'net banking credentials', category: 'Data Theft Attempt', severity: 'CRITICAL' },
+      { phrase: 'valid only for the next 15 minutes', category: 'Artificial Urgency', severity: 'HIGH' },
+      { phrase: 'account will be temporarily restricted', category: 'Coercion Threat', severity: 'HIGH' },
+    ],
+    agentFires: [
+      { agent: 'VoicePrint Agent', action: 'Caller ID partially matches SBI prefix — cannot fully verify', timestamp: '00:00:01', triggeredBy: 'Inconclusive caller verification' },
+      { agent: 'NLP Intent Agent', action: 'Initial statement appears legitimate — transaction dispute pattern', timestamp: '00:00:03', triggeredBy: '"suspicious transaction"' },
+      { agent: 'Credential Request Agent', action: 'ALERT: OTP and net banking credentials requested — outside legitimate protocol', timestamp: '00:00:05', triggeredBy: '"OTP" + "net banking credentials"' },
+      { agent: 'Urgency Detector Agent', action: 'Artificial time pressure detected — 15-minute ultimatum', timestamp: '00:00:07', triggeredBy: '"valid only for the next 15 minutes"' },
+      { agent: 'Policy Compliance Agent', action: 'SBI official policy: agents never request OTP/net banking credentials over phone', timestamp: '00:00:08', triggeredBy: 'Policy violation check' },
+      { agent: 'Evidence Compiler', action: 'Generated partial evidence package — HIGH confidence fraud', timestamp: '00:00:09', triggeredBy: 'Multiple agent flags' },
+    ],
+    evidencePackage: [
+      { type: 'ALERT', title: 'Suspected Banking Fraud Call', content: 'HIGH: Caller claims to be SBI Card services but requests OTP and net banking credentials — violates RBI/SBI official protocol. Mix of legitimate (transaction dispute) and fraudulent (credential harvesting) patterns detected.' },
+      { type: 'ANALYSIS', title: 'Pattern Analysis', content: 'Known tactic: Scammers begin with legitimate-seeming transaction alerts to build trust, then pivot to credential requests. The "15-minute restriction" threat is a common pressure tactic not used by legitimate banks.' },
+      { type: 'LEGAL', title: 'Legal Reference', content: 'Applicable: IT Act 66C (Identity theft), IPC 420 (Cheating), RBI Master Direction on Customer Protection. Report to SBI official helpline: 1800-11-2211 and cybercrime.gov.in.' },
+    ],
+  },
+  {
+    id: 'safe',
+    label: 'Safe — Legitimate Bank Call',
+    description: 'Genuine bank communication, no fraud indicators',
+    transcript: [
+      { speaker: 'BANK AGENT', text: 'Good afternoon. I am calling from HDFC Bank Credit Card division. This is a routine call regarding your annual card review.' },
+      { speaker: 'BANK AGENT', text: 'Your current card has accumulated 12,500 reward points which are expiring next month. Would you like me to help you redeem them?' },
+      { speaker: 'BANK AGENT', text: 'Also, we have a new card upgrade available — HDFC Infinia Metal. The annual fee is ₹12,500 but can be waived with ₹10L annual spend. Shall I send you the details via the HDFC app?' },
+      { speaker: 'BANK AGENT', text: 'No action required from you right now. You can review the offer in your HDFC NetBanking portal under the Offers section. Have a great day!' },
+    ],
+    riskLevel: 'LOW',
+    finalScore: 8,
+    redFlags: [],
+    agentFires: [
+      { agent: 'VoicePrint Agent', action: 'Caller ID verified — legitimate HDFC Bank outgoing call center', timestamp: '00:00:01', triggeredBy: 'Verified caller ID' },
+      { agent: 'NLP Intent Agent', action: 'Routine product call pattern detected', timestamp: '00:00:02', triggeredBy: 'Informational tone' },
+      { agent: 'Credential Request Agent', action: 'No credential requests detected — PASS', timestamp: '00:00:03', triggeredBy: 'No sensitive data requested' },
+      { agent: 'Urgency Detector Agent', action: 'No artificial urgency or threats detected — PASS', timestamp: '00:00:03', triggeredBy: 'Calm, informational tone' },
+      { agent: 'Financial Flow Agent', action: 'No payment requests detected — PASS', timestamp: '00:00:04', triggeredBy: 'No transactions requested' },
+      { agent: 'Evidence Compiler', action: 'Analysis complete — LOW risk. No evidence package generated.', timestamp: '00:00:05', triggeredBy: 'All checks passed' },
+    ],
+    evidencePackage: [],
+  },
+];
+
+export const FRAUD_NODES = [
+  { id: 'n1', label: '+91 98765 ****', type: 'phone' as const, x: 300, y: 200, connections: ['n2', 'n3', 'n7'], complaints: 47, amount: '₹18.2L' },
+  { id: 'n2', label: 'rahul@upi', type: 'upi' as const, x: 500, y: 150, connections: ['n1', 'n4'], complaints: 31, amount: '₹12.7L' },
+  { id: 'n3', label: '+91 87654 ****', type: 'phone' as const, x: 200, y: 350, connections: ['n1', 'n5'], complaints: 23, amount: '₹8.4L' },
+  { id: 'n4', label: 'quickpay@ybl', type: 'upi' as const, x: 600, y: 300, connections: ['n2', 'n6'], complaints: 19, amount: '₹6.1L' },
+  { id: 'n5', label: 'Crypto Wallet', type: 'wallet' as const, x: 150, y: 500, connections: ['n3', 'n6'], complaints: 12, amount: '₹3.8L' },
+  { id: 'n6', label: '+91 76543 ****', type: 'phone' as const, x: 450, y: 450, connections: ['n4', 'n5', 'n8'], complaints: 56, amount: '₹22.4L' },
+  { id: 'n7', label: 'Complaint #4521', type: 'complaint' as const, x: 400, y: 100, connections: ['n1'] },
+  { id: 'n8', label: 'Sunil Verma', type: 'person' as const, x: 600, y: 500, connections: ['n6'], complaints: 8, amount: '₹2.1L' },
+  { id: 'n9', label: 'paytm@oksbi', type: 'upi' as const, x: 750, y: 200, connections: ['n4', 'n10'], complaints: 14, amount: '₹5.3L' },
+  { id: 'n10', label: '+91 65432 ****', type: 'phone' as const, x: 800, y: 350, connections: ['n9', 'n6'], complaints: 38, amount: '₹15.6L' },
+];
+
+export const COUNTERFEIT_FEATURES_500 = [
+  { name: 'Security Thread', present: true, description: 'Embedded security thread visible when held to light', confidence: 95 },
+  { name: 'Watermark', present: true, description: 'Mahatma Gandhi portrait watermark on left side', confidence: 92 },
+  { name: 'Micro-lettering', present: false, description: 'Micro-printed "RBI" text between denomination markings', confidence: 67 },
+  { name: 'Colour-Shifting Ink', present: false, description: 'Denomination number shifts color from green to blue', confidence: 45 },
+  { name: 'Intaglio Print', present: true, description: 'Raised print on Mahatma Gandhi portrait — tactile feel', confidence: 88 },
+  { name: 'See-through Register', present: false, description: 'Partial numeral visible from front and back align perfectly', confidence: 52 },
+  { name: 'Security Fibers', present: true, description: 'Embedded colored fibers visible under UV light', confidence: 91 },
+  { name: 'Latent Image', present: false, description: 'Hidden denomination numeral visible at 45° angle', confidence: 38 },
+];
+
+export const COUNTERFEIT_FEATURES_2000 = [
+  { name: 'Security Thread', present: true, description: 'Wide security thread with RBI text and denomination', confidence: 93 },
+  { name: 'Watermark', present: true, description: 'Gandhi portrait and electrotype 2000 watermark', confidence: 90 },
+  { name: 'Micro-lettering', present: true, description: 'Micro-printed "RBI" and "2000" in defined areas', confidence: 85 },
+  { name: 'Colour-Shifting Ink', present: false, description: 'Number 2000 shifts from green to gold', confidence: 41 },
+  { name: 'Intaglio Print', present: true, description: 'Raised print on portrait and RBI seal', confidence: 87 },
+  { name: 'See-through Register', present: true, description: 'Numeral 2000 aligns when held to light', confidence: 89 },
+  { name: 'Security Fibers', present: true, description: 'Red and blue fibers embedded in paper', confidence: 94 },
+  { name: 'Latent Image', present: false, description: 'Denomination hidden in latitudinal band', confidence: 35 },
+];
+
+export const INDIA_HEATMAP_DATA = [
+  { city: 'Delhi', state: 'Delhi', lat: 28.6139, lng: 77.2090, complaints: 45200, amount: '₹892 Cr' },
+  { city: 'Mumbai', state: 'Maharashtra', lat: 19.0760, lng: 72.8777, complaints: 38700, amount: '₹743 Cr' },
+  { city: 'Bangalore', state: 'Karnataka', lat: 12.9716, lng: 77.5946, complaints: 32100, amount: '₹621 Cr' },
+  { city: 'Hyderabad', state: 'Telangana', lat: 17.3850, lng: 78.4867, complaints: 28400, amount: '₹534 Cr' },
+  { city: 'Chennai', state: 'Tamil Nadu', lat: 13.0827, lng: 80.2707, complaints: 24800, amount: '₹467 Cr' },
+  { city: 'Kolkata', state: 'West Bengal', lat: 22.5726, lng: 88.3639, complaints: 21300, amount: '₹398 Cr' },
+  { city: 'Pune', state: 'Maharashtra', lat: 18.5204, lng: 73.8567, complaints: 18900, amount: '₹342 Cr' },
+  { city: 'Ahmedabad', state: 'Gujarat', lat: 23.0225, lng: 72.5714, complaints: 16700, amount: '₹298 Cr' },
+  { city: 'Jaipur', state: 'Rajasthan', lat: 26.9124, lng: 75.7873, complaints: 14200, amount: '₹256 Cr' },
+  { city: 'Lucknow', state: 'Uttar Pradesh', lat: 26.8467, lng: 80.9462, complaints: 12800, amount: '₹234 Cr' },
+  { city: 'Kochi', state: 'Kerala', lat: 9.9312, lng: 76.2673, complaints: 9800, amount: '₹178 Cr' },
+  { city: 'Chandigarh', state: 'Chandigarh', lat: 30.7333, lng: 76.7794, complaints: 7600, amount: '₹134 Cr' },
+];
