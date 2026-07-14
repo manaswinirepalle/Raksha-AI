@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import type { JSX } from 'react';
 import {
   FileText, AlertTriangle, ShieldAlert, ShieldCheck, Shield,
@@ -97,7 +97,10 @@ export default function ScamDetector() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [focusedCardIndex, setFocusedCardIndex] = useState(-1);
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const pulseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const modalCardRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setIsLoadingScenarios(false), 800);
@@ -107,6 +110,10 @@ export default function ScamDetector() {
   const clearTimeouts = useCallback(() => {
     timeoutsRef.current.forEach((t) => clearTimeout(t));
     timeoutsRef.current = [];
+    if (pulseTimerRef.current) {
+      clearTimeout(pulseTimerRef.current);
+      pulseTimerRef.current = null;
+    }
   }, []);
 
   useEffect(() => {
@@ -123,7 +130,7 @@ export default function ScamDetector() {
       setProgress(0);
 
       const totalSteps = scenario.redFlags.length + scenario.agentFires.length + 1;
-      let step = 0;
+      const stepRef = { current: 0 };
 
       const highlightDuration = Math.min(scenario.redFlags.length * 100, 1500);
       const highlightInterval = highlightDuration / Math.max(scenario.redFlags.length, 1);
@@ -131,8 +138,8 @@ export default function ScamDetector() {
       scenario.redFlags.forEach((_, i) => {
         const t = setTimeout(() => {
           setHighlightIndex(i);
-          step++;
-          setProgress(Math.round((step / totalSteps) * 100));
+          stepRef.current++;
+          setProgress(Math.round((stepRef.current / totalSteps) * 100));
         }, i * highlightInterval);
         timeoutsRef.current.push(t);
       });
@@ -151,8 +158,8 @@ export default function ScamDetector() {
                 color: '',
               },
             ]);
-            step++;
-            setProgress(Math.round((step / totalSteps) * 100));
+            stepRef.current++;
+            setProgress(Math.round((stepRef.current / totalSteps) * 100));
           },
           200 + i * 150
         );
@@ -176,13 +183,16 @@ export default function ScamDetector() {
     [clearTimeouts, addToast]
   );
 
-  const handleSelectScenario = (scenario: TranscriptScenario) => {
-    setSelectedScenario(scenario);
-    setShowScenarioModal(false);
-    runAnalysis(scenario);
-  };
+  const handleSelectScenario = useCallback(
+    (scenario: TranscriptScenario) => {
+      setSelectedScenario(scenario);
+      setShowScenarioModal(false);
+      runAnalysis(scenario);
+    },
+    [runAnalysis]
+  );
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     clearTimeouts();
     setSelectedScenario(null);
     setIsAnalyzing(false);
@@ -190,34 +200,89 @@ export default function ScamDetector() {
     setHighlightIndex(-1);
     setActivityEntries([]);
     setProgress(0);
-  };
+  }, [clearTimeouts]);
 
-  const openModal = () => {
+  const openModal = useCallback(() => {
     setFocusedCardIndex(-1);
+    setHoveredCard(null);
+    previousFocusRef.current = document.activeElement as HTMLElement;
     setShowScenarioModal(true);
-  };
+  }, []);
 
-  const handleModalKeyDown = (e: React.KeyboardEvent) => {
-    const count = TRANSCRIPT_SCENARIOS.length;
-    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
-      e.preventDefault();
-      const next = focusedCardIndex < count - 1 ? focusedCardIndex + 1 : 0;
-      setFocusedCardIndex(next);
-      modalCardRefs.current[next]?.focus();
-    }
-    if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
-      e.preventDefault();
-      const prev = focusedCardIndex > 0 ? focusedCardIndex - 1 : count - 1;
-      setFocusedCardIndex(prev);
-      modalCardRefs.current[prev]?.focus();
-    }
-    if (e.key === 'Enter' && focusedCardIndex >= 0) {
-      e.preventDefault();
-      handleSelectScenario(TRANSCRIPT_SCENARIOS[focusedCardIndex]);
-    }
-  };
+  const closeModal = useCallback(() => {
+    setShowScenarioModal(false);
+    setHoveredCard(null);
+    setFocusedCardIndex(-1);
+    requestAnimationFrame(() => {
+      previousFocusRef.current?.focus();
+    });
+  }, []);
 
-  const renderHighlightedTranscript = () => {
+  useEffect(() => {
+    if (!showScenarioModal) return;
+
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        closeModal();
+      }
+    };
+
+    document.addEventListener('keydown', handleEsc);
+    document.body.style.overflow = 'hidden';
+
+    requestAnimationFrame(() => {
+      const focusable = modalRef.current?.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      focusable?.[0]?.focus();
+    });
+
+    return () => {
+      document.removeEventListener('keydown', handleEsc);
+      document.body.style.overflow = '';
+    };
+  }, [showScenarioModal, closeModal]);
+
+  const handleModalKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      const count = TRANSCRIPT_SCENARIOS.length;
+      if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        const next = focusedCardIndex < count - 1 ? focusedCardIndex + 1 : 0;
+        setFocusedCardIndex(next);
+        modalCardRefs.current[next]?.focus();
+      }
+      if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        const prev = focusedCardIndex > 0 ? focusedCardIndex - 1 : count - 1;
+        setFocusedCardIndex(prev);
+        modalCardRefs.current[prev]?.focus();
+      }
+      if (e.key === 'Enter' && focusedCardIndex >= 0) {
+        e.preventDefault();
+        handleSelectScenario(TRANSCRIPT_SCENARIOS[focusedCardIndex]);
+      }
+      if (e.key === 'Tab' && modalRef.current) {
+        const focusable = modalRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    },
+    [focusedCardIndex, handleSelectScenario]
+  );
+
+  const highlightedTranscript = useMemo(() => {
     if (!selectedScenario) return null;
     return selectedScenario.transcript.map((line, lineIdx) => {
       const text = line.text;
@@ -272,10 +337,10 @@ export default function ScamDetector() {
         </div>
       );
     });
-  };
+  }, [selectedScenario, highlightIndex]);
 
   return (
-    <div className="scam-detector">
+    <div className="scam-detector" aria-busy={isAnalyzing}>
       {/* Header */}
       <div className="sd-header">
         <div className="sd-header-left">
@@ -293,6 +358,8 @@ export default function ScamDetector() {
               onClick={handleReset}
               className="sd-btn-ghost btn-ripple"
               aria-label="Reset analysis"
+              disabled={isAnalyzing}
+              style={{ opacity: isAnalyzing ? 0.5 : 1, pointerEvents: isAnalyzing ? 'none' : 'auto' }}
             >
               <RotateCcw size={13} strokeWidth={1.5} />
               <span className="sd-btn-label">Reset</span>
@@ -394,6 +461,8 @@ export default function ScamDetector() {
           className="sd-trigger-btn btn-premium btn-ripple"
           aria-haspopup="dialog"
           aria-label="Select a transcript scenario to analyze"
+          disabled={isAnalyzing}
+          style={{ opacity: isAnalyzing ? 0.5 : 1, pointerEvents: isAnalyzing ? 'none' : 'auto' }}
         >
           <div className="sd-trigger-left">
             <FileText size={15} strokeWidth={1.5} />
@@ -448,7 +517,7 @@ export default function ScamDetector() {
                 </div>
               </div>
             )}
-            {selectedScenario && renderHighlightedTranscript()}
+            {selectedScenario && highlightedTranscript}
           </div>
         </div>
 
@@ -498,136 +567,139 @@ export default function ScamDetector() {
       </div>
 
       {/* ─── Scenario Selection Modal ─── */}
-      <div
-        className={`sd-modal ${showScenarioModal ? 'sd-modal-open' : ''}`}
-        onClick={() => setShowScenarioModal(false)}
-        aria-hidden={!showScenarioModal}
-      >
-        <div className="sd-modal-backdrop" />
+      {showScenarioModal && (
         <div
-          className="sd-modal-content"
-          onClick={(e) => e.stopPropagation()}
+          ref={modalRef}
+          className="sd-modal sd-modal-open"
+          onClick={closeModal}
+          onKeyDown={handleModalKeyDown}
           role="dialog"
           aria-modal="true"
           aria-label="Select a scenario to analyze"
         >
-          <div className="sd-modal-panel">
-            <div className="sd-modal-header">
-              <div>
-                <h3 className="sd-modal-title">Select Scenario</h3>
-                <p className="sd-modal-subtitle">
-                  Choose a transcript to begin multi-agent analysis
-                </p>
+          <div className="sd-modal-backdrop" />
+          <div
+            className="sd-modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="sd-modal-panel">
+              <div className="sd-modal-header">
+                <div>
+                  <h3 className="sd-modal-title">Select Scenario</h3>
+                  <p className="sd-modal-subtitle">
+                    Choose a transcript to begin multi-agent analysis
+                  </p>
+                </div>
+                <button
+                  onClick={closeModal}
+                  className="sd-modal-close"
+                  aria-label="Close scenario picker"
+                  type="button"
+                >
+                  <span className="sd-modal-close-x">&times;</span>
+                </button>
               </div>
-              <button
-                onClick={() => setShowScenarioModal(false)}
-                className="sd-modal-close"
-                aria-label="Close scenario picker"
-                type="button"
-              >
-                <span className="sd-modal-close-x">&times;</span>
-              </button>
+
+              {isLoadingScenarios ? (
+                <ScenarioSkeletonGrid />
+              ) : (
+                <div className="scenario-grid">
+                  {TRANSCRIPT_SCENARIOS.map((scenario, index) => {
+                    const meta = RISK_META[scenario.riskLevel];
+                    const IconComponent = meta.icon;
+                    const isHovered = hoveredCard === scenario.id;
+                    const isSelected = selectedScenario?.id === scenario.id;
+                    const isFocused = focusedCardIndex === index;
+
+                    return (
+                      <button
+                        key={scenario.id}
+                        ref={(el) => { modalCardRefs.current[index] = el; }}
+                        className={`scenario-card ${isSelected ? 'scenario-card-selected' : ''}`}
+                        style={{
+                          background: isHovered || isSelected ? meta.gradient : undefined,
+                          borderColor: isHovered || isSelected || isFocused ? meta.borderColor : undefined,
+                          boxShadow: isHovered || isSelected ? `0 0 30px ${meta.glowColor}, 0 8px 32px rgba(0,0,0,0.3)` : undefined,
+                        }}
+                        onClick={() => handleSelectScenario(scenario)}
+                        onMouseEnter={() => setHoveredCard(scenario.id)}
+                        onMouseLeave={() => setHoveredCard(null)}
+                        onFocus={() => { setHoveredCard(scenario.id); setFocusedCardIndex(index); }}
+                        onBlur={() => setHoveredCard(null)}
+                        tabIndex={0}
+                        role="option"
+                        aria-selected={isSelected}
+                        aria-label={`${scenario.label} — ${meta.label} risk, score ${scenario.finalScore}`}
+                      >
+                        <div className="scenario-card-header">
+                          <div
+                            className="scenario-card-icon"
+                            style={{
+                              background: meta.bgColor,
+                              borderColor: meta.borderColor,
+                            }}
+                          >
+                            <IconComponent size={20} style={{ color: meta.color }} strokeWidth={1.5} />
+                          </div>
+                          <div
+                            className="scenario-card-badge"
+                            style={{
+                              background: meta.bgColor,
+                              color: meta.color,
+                              borderColor: meta.borderColor,
+                            }}
+                          >
+                            {meta.label}
+                          </div>
+                        </div>
+
+                        <div className="scenario-card-body">
+                          <h4 className="scenario-card-title">{scenario.label}</h4>
+                          <p className="scenario-card-desc">{scenario.description}</p>
+                        </div>
+
+                        <div className="scenario-card-footer">
+                          <div className="scenario-card-stats">
+                            <span className="scenario-stat">
+                              <span className="scenario-stat-icon">
+                                <Brain size={11} strokeWidth={1.5} />
+                              </span>
+                              {scenario.agentFires.length} agents
+                            </span>
+                            <span className="scenario-stat">
+                              <span className="scenario-stat-icon">
+                                <AlertTriangle size={11} strokeWidth={1.5} />
+                              </span>
+                              {scenario.redFlags.length} flags
+                            </span>
+                          </div>
+                          <div className="scenario-card-score">
+                            <span className="scenario-score-label">Risk</span>
+                            <span className="scenario-score-value" style={{ color: meta.color }}>
+                              {scenario.finalScore}
+                            </span>
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
+              {!isLoadingScenarios && (
+                <div className="sd-modal-footer">
+                  <span className="sd-modal-footer-text">
+                    {TRANSCRIPT_SCENARIOS.length} scenarios available
+                  </span>
+                  <span className="sd-modal-footer-hint">
+                    Use arrow keys + Enter to navigate
+                  </span>
+                </div>
+              )}
             </div>
-
-            {isLoadingScenarios ? (
-              <ScenarioSkeletonGrid />
-            ) : (
-              <div className="scenario-grid" onKeyDown={handleModalKeyDown}>
-                {TRANSCRIPT_SCENARIOS.map((scenario, index) => {
-                  const meta = RISK_META[scenario.riskLevel];
-                  const IconComponent = meta.icon;
-                  const isHovered = hoveredCard === scenario.id;
-                  const isSelected = selectedScenario?.id === scenario.id;
-                  const isFocused = focusedCardIndex === index;
-
-                  return (
-                    <button
-                      key={scenario.id}
-                      ref={(el) => { modalCardRefs.current[index] = el; }}
-                      className={`scenario-card ${isSelected ? 'scenario-card-selected' : ''}`}
-                      style={{
-                        background: isHovered || isSelected ? meta.gradient : undefined,
-                        borderColor: isHovered || isSelected || isFocused ? meta.borderColor : undefined,
-                        boxShadow: isHovered || isSelected ? `0 0 30px ${meta.glowColor}, 0 8px 32px rgba(0,0,0,0.3)` : undefined,
-                      }}
-                      onClick={() => handleSelectScenario(scenario)}
-                      onMouseEnter={() => setHoveredCard(scenario.id)}
-                      onMouseLeave={() => setHoveredCard(null)}
-                      onFocus={() => { setHoveredCard(scenario.id); setFocusedCardIndex(index); }}
-                      onBlur={() => setHoveredCard(null)}
-                      tabIndex={0}
-                      role="option"
-                      aria-selected={isSelected}
-                      aria-label={`${scenario.label} — ${meta.label} risk, score ${scenario.finalScore}`}
-                    >
-                      <div className="scenario-card-header">
-                        <div
-                          className="scenario-card-icon"
-                          style={{
-                            background: meta.bgColor,
-                            borderColor: meta.borderColor,
-                          }}
-                        >
-                          <IconComponent size={20} style={{ color: meta.color }} strokeWidth={1.5} />
-                        </div>
-                        <div
-                          className="scenario-card-badge"
-                          style={{
-                            background: meta.bgColor,
-                            color: meta.color,
-                            borderColor: meta.borderColor,
-                          }}
-                        >
-                          {meta.label}
-                        </div>
-                      </div>
-
-                      <div className="scenario-card-body">
-                        <h4 className="scenario-card-title">{scenario.label}</h4>
-                        <p className="scenario-card-desc">{scenario.description}</p>
-                      </div>
-
-                      <div className="scenario-card-footer">
-                        <div className="scenario-card-stats">
-                          <span className="scenario-stat">
-                            <span className="scenario-stat-icon">
-                              <Brain size={11} strokeWidth={1.5} />
-                            </span>
-                            {scenario.agentFires.length} agents
-                          </span>
-                          <span className="scenario-stat">
-                            <span className="scenario-stat-icon">
-                              <AlertTriangle size={11} strokeWidth={1.5} />
-                            </span>
-                            {scenario.redFlags.length} flags
-                          </span>
-                        </div>
-                        <div className="scenario-card-score">
-                          <span className="scenario-score-label">Risk</span>
-                          <span className="scenario-score-value" style={{ color: meta.color }}>
-                            {scenario.finalScore}
-                          </span>
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-
-            {!isLoadingScenarios && (
-              <div className="sd-modal-footer">
-                <span className="sd-modal-footer-text">
-                  {TRANSCRIPT_SCENARIOS.length} scenarios available
-                </span>
-                <span className="sd-modal-footer-hint">
-                  Use arrow keys + Enter to navigate
-                </span>
-              </div>
-            )}
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

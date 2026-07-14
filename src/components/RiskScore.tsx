@@ -21,6 +21,7 @@ export default function RiskScore({ score, level, animate = true }: { score: num
   const [pulse, setPulse] = useState(false);
   const [glowIntensity, setGlowIntensity] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pulseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!animate) {
@@ -50,11 +51,14 @@ export default function RiskScore({ score, level, animate = true }: { score: num
       if (step >= steps) {
         if (intervalRef.current) clearInterval(intervalRef.current);
         setPulse(true);
-        setTimeout(() => setPulse(false), 500);
+        pulseTimerRef.current = setTimeout(() => setPulse(false), 500);
       }
     }, stepTime);
 
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (pulseTimerRef.current) clearTimeout(pulseTimerRef.current);
+    };
   }, [score, level, animate]);
 
   const hexOpacity = (val: number) => Math.min(Math.round(val), 255).toString(16).padStart(2, '0');
