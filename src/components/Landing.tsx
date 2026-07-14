@@ -1,143 +1,322 @@
-import { Shield, ArrowRight, AlertTriangle, TrendingUp, IndianRupee, Activity, Globe, Lock } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import {
+  Shield, ArrowRight, AlertTriangle, TrendingUp, IndianRupee,
+  Activity, Globe, Lock, Fingerprint, Zap, Phone, MessageSquare,
+  Banknote, Map, CheckCircle, ChevronDown, Eye, Brain, Cpu,
+} from 'lucide-react';
 
 const STATS = [
-  { value: '1.14M', label: 'Cybercrime complaints in India, 2023', icon: AlertTriangle, color: '#FF3B4E' },
-  { value: '₹1,776 Cr', label: 'Lost to digital arrest scams (9 months, 2024)', icon: IndianRupee, color: '#FBBF24' },
-  { value: '60%', label: 'Year-over-year increase in cybercrime', icon: TrendingUp, color: '#F97316' },
+  { value: 1140000, display: '1.14M', label: 'Cybercrime complaints in India, 2023', icon: AlertTriangle, color: '#f43f5e' },
+  { value: 1776, display: '₹1,776 Cr', label: 'Lost to digital arrest scams (9 months, 2024)', icon: IndianRupee, color: '#f59e0b', prefix: '₹', suffix: ' Cr' },
+  { value: 60, display: '60%', label: 'Year-over-year increase in cybercrime', icon: TrendingUp, color: '#f97316', suffix: '%' },
 ];
 
-const FLOATING_ICONS = [
-  { Icon: Shield, x: '12%', y: '18%', delay: '0s', dur: '6s', size: 18, opacity: 0.06 },
-  { Icon: Lock, x: '85%', y: '22%', delay: '1s', dur: '7s', size: 16, opacity: 0.05 },
-  { Icon: Activity, x: '8%', y: '72%', delay: '2s', dur: '8s', size: 14, opacity: 0.05 },
-  { Icon: Globe, x: '90%', y: '68%', delay: '0.5s', dur: '6.5s', size: 20, opacity: 0.04 },
-  { Icon: AlertTriangle, x: '20%', y: '85%', delay: '1.5s', dur: '7.5s', size: 15, opacity: 0.05 },
-  { Icon: Shield, x: '78%', y: '82%', delay: '3s', dur: '9s', size: 12, opacity: 0.04 },
-  { Icon: Lock, x: '50%', y: '8%', delay: '2.5s', dur: '8.5s', size: 14, opacity: 0.04 },
-  { Icon: Activity, x: '35%', y: '90%', delay: '1s', dur: '7s', size: 16, opacity: 0.05 },
+const FEATURES = [
+  { icon: Phone, title: 'Scam Detector', desc: 'Real-time transcript analysis with multi-agent fraud detection', color: '#f43f5e', module: 'scam-detector' as const },
+  { icon: MessageSquare, title: 'Citizen Shield', desc: 'Instant scam detection for suspicious messages in 22 languages', color: '#3b82f6', module: 'citizen-shield' as const },
+  { icon: Banknote, title: 'Counterfeit Agent', desc: 'Security feature verification with confidence scoring', color: '#f59e0b', module: 'counterfeit' as const },
+  { icon: Map, title: 'Crime Heatmap', desc: 'Geospatial complaint density visualization across India', color: '#10b981', module: 'heatmap' as const },
 ];
 
-export default function Landing({ onEnter }: { onEnter: () => void }) {
+const TRUST_ITEMS = [
+  { icon: CheckCircle, text: 'MHA Advisory Compliant' },
+  { icon: Shield, text: 'IT Act Section 65B' },
+  { icon: Lock, text: '100% Offline Capable' },
+  { icon: Globe, text: '22 Indian Languages' },
+];
+
+const FLOATING_ELEMENTS = [
+  { Icon: Shield, x: 8, y: 15, size: 20, opacity: 0.035, dur: 18, delay: 0 },
+  { Icon: Lock, x: 88, y: 20, size: 16, opacity: 0.03, dur: 22, delay: 2 },
+  { Icon: Activity, x: 5, y: 75, size: 14, opacity: 0.025, dur: 20, delay: 4 },
+  { Icon: Globe, x: 92, y: 70, size: 22, opacity: 0.025, dur: 24, delay: 1 },
+  { Icon: Fingerprint, x: 15, y: 88, size: 16, opacity: 0.02, dur: 19, delay: 3 },
+  { Icon: Zap, x: 50, y: 5, size: 14, opacity: 0.025, dur: 21, delay: 5 },
+  { Icon: Brain, x: 75, y: 85, size: 18, opacity: 0.02, dur: 23, delay: 2.5 },
+  { Icon: Eye, x: 30, y: 10, size: 12, opacity: 0.02, dur: 17, delay: 6 },
+  { Icon: Cpu, x: 65, y: 12, size: 15, opacity: 0.02, dur: 20, delay: 3.5 },
+];
+
+function useCountUp(target: number, duration: number = 2000, startOnMount: boolean = true) {
+  const [value, setValue] = useState(0);
+  const [started, setStarted] = useState(false);
+  const frameRef = useRef<number>(0);
+
+  const start = useCallback(() => {
+    if (started) return;
+    setStarted(true);
+    const startTime = performance.now();
+    const tick = (now: number) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setValue(Math.round(eased * target));
+      if (progress < 1) {
+        frameRef.current = requestAnimationFrame(tick);
+      }
+    };
+    frameRef.current = requestAnimationFrame(tick);
+  }, [target, duration, started]);
+
+  useEffect(() => {
+    if (startOnMount) start();
+    return () => { if (frameRef.current) cancelAnimationFrame(frameRef.current); };
+  }, [start, startOnMount]);
+
+  return { value, start };
+}
+
+export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => void; onModuleSelect?: (id: string) => void }) {
+  const [heroVisible, setHeroVisible] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 });
+  const heroRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef<number>(0);
+
+  useEffect(() => {
+    const t = setTimeout(() => setHeroVisible(true), 100);
+    return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    if (!heroRef.current) return;
+    const el = heroRef.current;
+    let targetX = 0.5;
+    let targetY = 0.5;
+    let currentX = 0.5;
+    let currentY = 0.5;
+
+    const handleMove = (e: MouseEvent) => {
+      const rect = el.getBoundingClientRect();
+      targetX = (e.clientX - rect.left) / rect.width;
+      targetY = (e.clientY - rect.top) / rect.height;
+    };
+
+    const lerp = () => {
+      currentX += (targetX - currentX) * 0.08;
+      currentY += (targetY - currentY) * 0.08;
+      setMousePos({ x: currentX, y: currentY });
+      rafRef.current = requestAnimationFrame(lerp);
+    };
+
+    el.addEventListener('mousemove', handleMove, { passive: true });
+    rafRef.current = requestAnimationFrame(lerp);
+    return () => {
+      el.removeEventListener('mousemove', handleMove);
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
+
+  const handleFeatureClick = (module: string) => {
+    if (onModuleSelect) onModuleSelect(module);
+    else onEnter();
+  };
+
   return (
-    <div className="flex-1 flex flex-col items-center justify-center relative z-10 overflow-hidden">
-      {/* Floating particles */}
-      {FLOATING_ICONS.map((p, i) => {
-        const Icon = p.Icon;
+    <div ref={heroRef} className="flex-1 flex flex-col relative z-10 overflow-hidden select-none">
+      {/* ── Animated gradient mesh background ── */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {/* Primary orb — follows mouse smoothly via lerp */}
+        <div className="absolute animate-glow-pulse"
+          style={{
+            width: 600, height: 600, borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%)',
+            left: `calc(${mousePos.x * 100}% - 300px)`,
+            top: `calc(${mousePos.y * 100}% - 300px)`,
+            willChange: 'left, top',
+          }} />
+        {/* Secondary orb */}
+        <div className="absolute animate-mesh-2"
+          style={{
+            width: 500, height: 500, borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(139,92,246,0.06) 0%, transparent 70%)',
+            right: '10%', bottom: '15%',
+          }} />
+        {/* Tertiary orb */}
+        <div className="absolute animate-mesh-3"
+          style={{
+            width: 400, height: 400, borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(6,182,212,0.04) 0%, transparent 70%)',
+            left: '20%', top: '60%',
+          }} />
+        {/* Grid pattern */}
+        <div className="absolute inset-0 opacity-[0.015]"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)
+            `,
+            backgroundSize: '60px 60px',
+          }} />
+        {/* Radial fade over grid */}
+        <div className="absolute inset-0"
+          style={{ background: 'radial-gradient(ellipse at center, transparent 30%, #09090b 80%)' }} />
+      </div>
+
+      {/* ── Floating glowing elements ── */}
+      {FLOATING_ELEMENTS.map((el, i) => {
+        const Icon = el.Icon;
         return (
-          <div
-            key={i}
-            className="absolute pointer-events-none"
+          <div key={i} className="absolute pointer-events-none"
             style={{
-              left: p.x,
-              top: p.y,
-              opacity: p.opacity,
-              animation: `float ${p.dur} ease-in-out ${p.delay} infinite`,
-            }}
-          >
-            <Icon size={p.size} className="text-[#22D3EE]" />
+              left: `${el.x}%`, top: `${el.y}%`,
+              animation: `particleFloat ${el.dur}s ease-in-out ${el.delay}s infinite`,
+            }}>
+            <Icon size={el.size} style={{ opacity: el.opacity }} className="text-white" />
           </div>
         );
       })}
 
-      {/* Orbiting rings behind the logo */}
+      {/* ── Orbital rings ── */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-        <div className="w-[320px] h-[320px] rounded-full border border-[#22D3EE]/5 animate-breathe" />
+        <div className="w-[280px] h-[280px] sm:w-[340px] sm:h-[340px] md:w-[400px] md:h-[400px] rounded-full border animate-breathe"
+          style={{ borderColor: 'rgba(59,130,246,0.04)' }} />
       </div>
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-        <div className="w-[480px] h-[480px] rounded-full border border-[#22D3EE]/3" />
+        <div className="w-[420px] h-[420px] sm:w-[500px] sm:h-[500px] md:w-[580px] md:h-[580px] rounded-full"
+          style={{ border: '1px solid rgba(139,92,246,0.03)' }} />
       </div>
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-        <div className="w-[640px] h-[640px] rounded-full border border-[#1F2937]/50" />
+        <div className="w-[560px] h-[560px] sm:w-[660px] sm:h-[660px] md:w-[760px] md:h-[760px] rounded-full"
+          style={{ border: '1px solid rgba(255,255,255,0.015)' }} />
       </div>
 
       {/* Orbiting dots */}
       <div className="absolute top-1/2 left-1/2 pointer-events-none">
         <div className="animate-orbit" style={{ width: 0, height: 0 }}>
-          <div className="w-1.5 h-1.5 rounded-full bg-[#22D3EE]/30 -translate-x-1/2 -translate-y-1/2" />
+          <div className="w-1.5 h-1.5 rounded-full -translate-x-1/2 -translate-y-1/2"
+            style={{ background: 'rgba(59,130,246,0.5)', boxShadow: '0 0 12px rgba(59,130,246,0.3)' }} />
         </div>
       </div>
       <div className="absolute top-1/2 left-1/2 pointer-events-none">
         <div className="animate-orbit-reverse" style={{ width: 0, height: 0 }}>
-          <div className="w-1 h-1 rounded-full bg-[#FBBF24]/25 -translate-x-1/2 -translate-y-1/2" />
+          <div className="w-1 h-1 rounded-full -translate-x-1/2 -translate-y-1/2"
+            style={{ background: 'rgba(139,92,246,0.4)', boxShadow: '0 0 10px rgba(139,92,246,0.25)' }} />
         </div>
       </div>
 
-      <div className="max-w-3xl w-full px-8 space-y-14">
-        {/* Logo */}
-        <div className="flex flex-col items-center gap-6 animate-slide-up-fade">
-          <div className="relative">
-            <div className="w-24 h-24 rounded-2xl bg-[#22D3EE]/8 border border-[#22D3EE]/20 flex items-center justify-center
-              shadow-[0_0_60px_rgba(34,211,238,0.12)] animate-float-slow">
-              <Shield size={44} className="text-[#22D3EE]" />
+      {/* ── Main content ── */}
+      <div className="flex-1 flex flex-col items-center justify-center relative z-10 px-5 sm:px-8">
+        <div className={`max-w-4xl w-full space-y-8 sm:space-y-10 transition-all duration-1000 ease-out ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+
+          {/* ── Top badge ── */}
+          <div className="flex justify-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel text-[10px] sm:text-[11px] font-medium text-zinc-400"
+              style={{ animationDelay: '200ms' }}>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse-glow" />
+              <span>Powered by Multi-Agent AI Intelligence</span>
+              <span className="text-zinc-600">|</span>
+              <span>India First</span>
             </div>
-            <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#22D3EE]/80 animate-pulse-glow" />
           </div>
-          <div className="text-center">
-            <h1 className="text-5xl font-extrabold tracking-tight text-[#E5E7EB]">
-              RAKSHA <span className="bg-gradient-to-r from-[#22D3EE] to-[#A78BFA] bg-clip-text text-transparent">AI</span>
+
+          {/* ── Hero headline ── */}
+          <div className="text-center space-y-5 sm:space-y-6">
+            <div className="flex justify-center">
+              <div className="relative">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center glass-panel-strong glow-blue-soft animate-float-slow">
+                  <Shield size={32} className="text-blue-400 sm:w-9 sm:h-9" strokeWidth={1.5} />
+                </div>
+                <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full"
+                  style={{ background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)', boxShadow: '0 0 12px rgba(59,130,246,0.4)' }} />
+              </div>
+            </div>
+
+            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[0.95]">
+              <span className="text-gradient block">RAKSHA</span>
+              <span className="text-gradient-accent block mt-1">AI</span>
             </h1>
-            <p className="text-[#6B7280] text-sm mt-3 font-mono tracking-[0.2em] uppercase">
-              Digital Public Safety Intelligence
+
+            <p className="text-zinc-400 text-sm sm:text-base md:text-lg max-w-2xl mx-auto leading-relaxed font-light">
+              India's AI-powered defense against digital arrest scams, counterfeiting, and fraud networks.
+              <span className="text-zinc-200 font-medium"> Intelligence before victimization</span> — not after-the-fact complaints.
             </p>
           </div>
-        </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-6" style={{ animationFillMode: 'both' }}>
-          {STATS.map((stat, i) => {
-            const Icon = stat.icon;
-            return (
-              <div
-                key={i}
-                className={`p-6 rounded-2xl bg-[#131B2E]/80 border border-[#1F2937]/80 text-center space-y-3
-                  hover:border-[#1F2937] hover:bg-[#131B2E] transition-all duration-300
-                  animate-slide-up-fade`}
-                style={{ animationDelay: `${300 + i * 120}ms`, animationFillMode: 'both' }}
-              >
-                <Icon size={22} className="mx-auto" style={{ color: stat.color }} />
-                <div className="font-mono text-3xl font-bold" style={{ color: stat.color }}>
-                  {stat.value}
-                </div>
-                <p className="text-[#6B7280] text-xs leading-relaxed">
-                  {stat.label}
-                </p>
+          {/* ── CTA buttons ── */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+            <button onClick={onEnter}
+              className="btn-premium btn-ripple group flex items-center gap-3 px-8 sm:px-10 py-3.5 sm:py-4 rounded-full font-semibold text-sm sm:text-base text-white cursor-pointer touch-target w-full sm:w-auto justify-center relative overflow-hidden"
+              style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1)', boxShadow: '0 0 30px rgba(59,130,246,0.2)' }}>
+              <Shield size={18} strokeWidth={2} />
+              Enter Command Center
+              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-300" strokeWidth={2} />
+            </button>
+            <div className="flex items-center gap-3 text-zinc-500 text-xs sm:text-sm">
+              <div className="flex -space-x-2">
+                {[Phone, MessageSquare, Banknote, Map].map((Icon, i) => (
+                  <div key={i} className="w-8 h-8 rounded-full glass-panel flex items-center justify-center"
+                    style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+                    <Icon size={13} className="text-zinc-400" strokeWidth={1.5} />
+                  </div>
+                ))}
               </div>
-            );
-          })}
-        </div>
+              <span>5 modules ready</span>
+            </div>
+          </div>
 
-        {/* Mission */}
-        <div className="text-center animate-slide-up-fade" style={{ animationDelay: '600ms', animationFillMode: 'both' }}>
-          <p className="text-[#E5E7EB] text-xl leading-relaxed">
-            Intelligence <span className="text-[#22D3EE] font-semibold">before</span> mass victimization —
-            not after-the-fact complaints.
-          </p>
-          <p className="text-[#6B7280] text-sm mt-3 max-w-lg mx-auto leading-relaxed">
-            AI-powered detection of digital arrest scams, counterfeiting, and fraud networks — built for the Indian public safety ecosystem.
-          </p>
-        </div>
+          {/* ── Animated statistics ── */}
+          <div className="grid grid-cols-3 gap-3 sm:gap-4 max-w-2xl mx-auto">
+            {STATS.map((stat, i) => {
+              const Icon = stat.icon;
+              return (
+                <div key={i}
+                  className="glass-panel card-hover rounded-xl sm:rounded-2xl p-3 sm:p-5 text-center group"
+                  style={{ animationDelay: `${400 + i * 150}ms` }}>
+                  <div className="mx-auto w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center mb-2 sm:mb-3 transition-transform duration-300 group-hover:scale-110"
+                    style={{ background: `${stat.color}10` }}>
+                    <Icon size={16} style={{ color: stat.color }} strokeWidth={1.5} />
+                  </div>
+                  <div className="font-mono text-lg sm:text-2xl md:text-3xl font-bold tracking-tight animate-count-up"
+                    style={{ color: stat.color, animationDelay: `${600 + i * 200}ms` }}>
+                    {stat.display}
+                  </div>
+                  <p className="text-zinc-500 text-[9px] sm:text-[11px] leading-snug mt-1 sm:mt-2 line-clamp-2">{stat.label}</p>
+                </div>
+              );
+            })}
+          </div>
 
-        {/* CTA */}
-        <div className="flex justify-center animate-slide-up-fade" style={{ animationDelay: '750ms', animationFillMode: 'both' }}>
-          <button
-            onClick={onEnter}
-            className="group flex items-center gap-3 px-10 py-4 rounded-2xl font-semibold text-base
-              bg-[#22D3EE] text-[#0B1220]
-              hover:shadow-[0_0_32px_rgba(34,211,238,0.35)] hover:scale-[1.03]
-              active:scale-[0.97]
-              transition-all duration-200 cursor-pointer"
-          >
-            Enter Command Center
-            <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform duration-200" />
-          </button>
-        </div>
+          {/* ── Features preview ── */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 max-w-3xl mx-auto">
+            {FEATURES.map((feat, i) => {
+              const Icon = feat.icon;
+              return (
+                <button key={i}
+                  onClick={() => handleFeatureClick(feat.module)}
+                  className="glass-panel card-hover rounded-xl p-3 sm:p-4 text-left cursor-pointer group transition-all duration-300 btn-ripple relative overflow-hidden"
+                  style={{ animationDelay: `${700 + i * 100}ms` }}>
+                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center mb-2 sm:mb-3 transition-all duration-300 group-hover:scale-110"
+                    style={{ background: `${feat.color}10` }}>
+                    <Icon size={16} style={{ color: feat.color }} strokeWidth={1.5} />
+                  </div>
+                  <h3 className="text-zinc-200 text-xs sm:text-sm font-semibold mb-0.5 sm:mb-1">{feat.title}</h3>
+                  <p className="text-zinc-500 text-[9px] sm:text-[10px] leading-relaxed line-clamp-2">{feat.desc}</p>
+                </button>
+              );
+            })}
+          </div>
 
-        {/* Status badge */}
-        <div className="flex justify-center animate-slide-up-fade" style={{ animationDelay: '900ms', animationFillMode: 'both' }}>
-          <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#131B2E]/60 border border-[#1F2937]/60 text-[#6B7280] text-xs font-mono">
-            <span className="w-2 h-2 rounded-full bg-[#22D3EE] animate-pulse-glow" />
-            All systems operational — 100% offline capable
-          </span>
+          {/* ── Trust indicators ── */}
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 sm:gap-x-6">
+            {TRUST_ITEMS.map((item, i) => {
+              const Icon = item.icon;
+              return (
+                <div key={i} className="flex items-center gap-1.5 text-zinc-500 text-[10px] sm:text-[11px] font-medium">
+                  <Icon size={12} className="text-zinc-600" strokeWidth={1.5} />
+                  <span>{item.text}</span>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* ── Scroll / CTA indicator ── */}
+          <div className="flex justify-center pt-2">
+            <button onClick={onEnter}
+              className="flex flex-col items-center gap-1.5 text-zinc-600 hover:text-zinc-400 transition-colors cursor-pointer group btn-ripple relative overflow-hidden rounded-lg px-3 py-2">
+              <span className="text-[9px] sm:text-[10px] font-medium tracking-wider uppercase">Explore Platform</span>
+              <ChevronDown size={16} className="animate-scroll-bounce group-hover:text-blue-400 transition-colors" strokeWidth={1.5} />
+            </button>
+          </div>
         </div>
       </div>
     </div>

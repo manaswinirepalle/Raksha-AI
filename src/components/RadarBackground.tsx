@@ -11,68 +11,89 @@ export default function RadarBackground() {
 
     let animFrame: number;
     let angle = 0;
+    let isVisible = true;
 
     const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      const dpr = window.devicePixelRatio || 1;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = `${w}px`;
+      canvas.style.height = `${h}px`;
+      ctx.scale(dpr, dpr);
     };
     resize();
     window.addEventListener('resize', resize);
 
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const cx = canvas.width / 2;
-      const cy = canvas.height / 2;
-      const maxR = Math.max(canvas.width, canvas.height) * 0.5;
+    const onVisibilityChange = () => {
+      isVisible = !document.hidden;
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
 
-      // Concentric rings
-      for (let i = 1; i <= 4; i++) {
+    const draw = () => {
+      if (!isVisible) {
+        animFrame = requestAnimationFrame(draw);
+        return;
+      }
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      ctx.clearRect(0, 0, w, h);
+      const cx = w / 2;
+      const cy = h / 2;
+      const maxR = Math.max(w, h) * 0.45;
+
+      const bgGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxR * 0.8);
+      bgGrad.addColorStop(0, 'rgba(59, 130, 246, 0.02)');
+      bgGrad.addColorStop(0.5, 'rgba(139, 92, 246, 0.01)');
+      bgGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, w, h);
+
+      for (let i = 1; i <= 5; i++) {
         ctx.beginPath();
-        ctx.arc(cx, cy, (maxR * i) / 4, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(34, 211, 238, 0.08)';
-        ctx.lineWidth = 1;
+        ctx.arc(cx, cy, (maxR * i) / 5, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(255, 255, 255, ${0.015 + i * 0.003})`;
+        ctx.lineWidth = 0.5;
         ctx.stroke();
       }
 
-      // Cross lines
       ctx.beginPath();
       ctx.moveTo(cx - maxR, cy);
       ctx.lineTo(cx + maxR, cy);
       ctx.moveTo(cx, cy - maxR);
       ctx.lineTo(cx, cy + maxR);
-      ctx.strokeStyle = 'rgba(34, 211, 238, 0.05)';
-      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.015)';
+      ctx.lineWidth = 0.5;
       ctx.stroke();
 
-      // Sweep wedge
       ctx.save();
       ctx.translate(cx, cy);
       ctx.rotate(angle);
       ctx.beginPath();
       ctx.moveTo(0, 0);
-      ctx.arc(0, 0, maxR, -0.3, 0);
+      ctx.arc(0, 0, maxR, -0.25, 0);
       ctx.lineTo(0, 0);
       ctx.closePath();
       const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, maxR);
-      grad.addColorStop(0, 'rgba(34, 211, 238, 0.15)');
-      grad.addColorStop(1, 'rgba(34, 211, 238, 0.01)');
+      grad.addColorStop(0, 'rgba(59, 130, 246, 0.08)');
+      grad.addColorStop(1, 'rgba(59, 130, 246, 0.005)');
       ctx.fillStyle = grad;
       ctx.fill();
       ctx.restore();
 
-      // Sweep line
       ctx.save();
       ctx.translate(cx, cy);
       ctx.rotate(angle);
       ctx.beginPath();
       ctx.moveTo(0, 0);
       ctx.lineTo(maxR, 0);
-      ctx.strokeStyle = 'rgba(34, 211, 238, 0.2)';
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = 'rgba(59, 130, 246, 0.12)';
+      ctx.lineWidth = 1;
       ctx.stroke();
       ctx.restore();
 
-      angle += (2 * Math.PI) / (12 * 60); // 12s rotation at 60fps
+      angle += (2 * Math.PI) / (16 * 60);
       animFrame = requestAnimationFrame(draw);
     };
 
@@ -80,6 +101,7 @@ export default function RadarBackground() {
     return () => {
       cancelAnimationFrame(animFrame);
       window.removeEventListener('resize', resize);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
     };
   }, []);
 
@@ -87,7 +109,7 @@ export default function RadarBackground() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none"
-      style={{ opacity: 0.04, zIndex: 0 }}
+      style={{ opacity: 0.06, zIndex: 0 }}
     />
   );
 }

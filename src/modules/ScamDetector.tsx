@@ -1,20 +1,23 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import React from 'react';
-import { FileText, AlertTriangle, ChevronDown, BarChart3 } from 'lucide-react';
+import type { JSX } from 'react';
+import { FileText, AlertTriangle, ChevronDown, BarChart3, Sparkles, RotateCcw } from 'lucide-react';
 import { TRANSCRIPT_SCENARIOS } from '../mockData';
 import type { ActivityEntry, TranscriptScenario } from '../types';
 import RiskScore from '../components/RiskScore';
 import ActivityLog from '../components/ActivityLog';
 import EvidencePackage from '../components/EvidencePackage';
 import Tooltip from '../components/Tooltip';
+import { useToast } from '../components/Toast';
 
 export default function ScamDetector() {
+  const { addToast } = useToast();
   const [selectedScenario, setSelectedScenario] = useState<TranscriptScenario | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analyzed, setAnalyzed] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(-1);
   const [activityEntries, setActivityEntries] = useState<ActivityEntry[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [progress, setProgress] = useState(0);
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const clearTimeouts = useCallback(() => {
@@ -32,12 +35,20 @@ export default function ScamDetector() {
     setAnalyzed(false);
     setHighlightIndex(-1);
     setActivityEntries([]);
+    setProgress(0);
+
+    const totalSteps = scenario.redFlags.length + scenario.agentFires.length + 1;
+    let step = 0;
 
     const highlightDuration = Math.min(scenario.redFlags.length * 100, 1500);
     const highlightInterval = highlightDuration / Math.max(scenario.redFlags.length, 1);
 
     scenario.redFlags.forEach((_, i) => {
-      const t = setTimeout(() => setHighlightIndex(i), i * highlightInterval);
+      const t = setTimeout(() => {
+        setHighlightIndex(i);
+        step++;
+        setProgress(Math.round((step / totalSteps) * 100));
+      }, i * highlightInterval);
       timeoutsRef.current.push(t);
     });
 
@@ -45,15 +56,10 @@ export default function ScamDetector() {
       const t = setTimeout(() => {
         setActivityEntries(prev => [
           ...prev,
-          {
-            id: `entry-${i}`,
-            agent: fire.agent,
-            action: fire.action,
-            timestamp: fire.timestamp,
-            triggeredBy: fire.triggeredBy,
-            color: '',
-          },
+          { id: `entry-${i}`, agent: fire.agent, action: fire.action, timestamp: fire.timestamp, triggeredBy: fire.triggeredBy, color: '' },
         ]);
+        step++;
+        setProgress(Math.round((step / totalSteps) * 100));
       }, 200 + i * 150);
       timeoutsRef.current.push(t);
     });
@@ -61,6 +67,8 @@ export default function ScamDetector() {
     const completionTimeout = setTimeout(() => {
       setIsAnalyzing(false);
       setAnalyzed(true);
+      setProgress(100);
+      addToast(`Analysis complete — ${scenario.riskLevel} risk detected`, scenario.riskLevel === 'CRITICAL' || scenario.riskLevel === 'HIGH' ? 'error' : 'info');
     }, Math.max(scenario.agentFires.length * 150 + 200, 1500));
     timeoutsRef.current.push(completionTimeout);
   }, [clearTimeouts]);
@@ -71,9 +79,18 @@ export default function ScamDetector() {
     runAnalysis(scenario);
   };
 
+  const handleReset = () => {
+    clearTimeouts();
+    setSelectedScenario(null);
+    setIsAnalyzing(false);
+    setAnalyzed(false);
+    setHighlightIndex(-1);
+    setActivityEntries([]);
+    setProgress(0);
+  };
+
   const renderHighlightedTranscript = () => {
     if (!selectedScenario) return null;
-
     return selectedScenario.transcript.map((line, lineIdx) => {
       const text = line.text;
       const flags = selectedScenario.redFlags
@@ -82,53 +99,46 @@ export default function ScamDetector() {
 
       if (flags.length === 0) {
         return (
-          <div key={lineIdx} className="flex gap-4 py-2.5">
-            <span className="font-mono text-[11px] text-[#6B7280] w-20 flex-shrink-0 pt-0.5 uppercase">
+          <div key={lineIdx} className="flex gap-3 sm:gap-4 py-2.5">
+            <span className="font-mono text-[10px] sm:text-[11px] text-zinc-500 w-14 sm:w-20 flex-shrink-0 pt-0.5 uppercase">
               {line.speaker}
             </span>
-            <span className="text-sm text-[#E5E7EB]/70 leading-relaxed">{text}</span>
+            <span className="text-xs sm:text-sm text-zinc-400 leading-relaxed">{text}</span>
           </div>
         );
       }
 
-      let parts: (string | React.JSX.Element)[] = [text];
+      let parts: (string | JSX.Element)[] = [text];
       flags.forEach(flag => {
-        const newParts: (string | React.JSX.Element)[] = [];
+        const newParts: (string | JSX.Element)[] = [];
         parts.forEach(part => {
-          if (typeof part !== 'string') {
-            newParts.push(part);
-            return;
-          }
+          if (typeof part !== 'string') { newParts.push(part); return; }
           const regex = new RegExp(`(${flag.phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
           const splits = part.split(regex);
           splits.forEach((s, si) => {
             if (s.toLowerCase() === flag.phrase.toLowerCase()) {
               const bgColors: Record<string, string> = {
-                CRITICAL: 'bg-[#FF3B4E]/20 text-[#FF3B4E] border-[#FF3B4E]/40',
-                HIGH: 'bg-[#F97316]/20 text-[#F97316] border-[#F97316]/40',
-                MEDIUM: 'bg-[#FBBF24]/20 text-[#FBBF24] border-[#FBBF24]/40',
-                LOW: 'bg-[#22D3EE]/20 text-[#22D3EE] border-[#22D3EE]/40',
+                CRITICAL: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+                HIGH: 'bg-orange-500/10 text-orange-400 border-orange-500/20',
+                MEDIUM: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+                LOW: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
               };
               newParts.push(
-                <span key={`${lineIdx}-${si}`} className={`px-1 py-0.5 rounded border text-xs font-semibold ${bgColors[flag.severity]} animate-fade-slide-up`}
-                  style={{ animationFillMode: 'both' }}>
-                  {s}
-                </span>
+                <span key={`${lineIdx}-${si}`} className={`px-1.5 py-0.5 rounded-md border text-[11px] sm:text-xs font-medium ${bgColors[flag.severity]} animate-fade-slide-up`}
+                  style={{ animationFillMode: 'both' }}>{s}</span>
               );
-            } else {
-              newParts.push(s);
-            }
+            } else { newParts.push(s); }
           });
         });
         parts = newParts;
       });
 
       return (
-        <div key={lineIdx} className="flex gap-4 py-2.5">
-          <span className="font-mono text-[11px] text-[#6B7280] w-20 flex-shrink-0 pt-0.5 uppercase">
+        <div key={lineIdx} className="flex gap-3 sm:gap-4 py-2.5">
+          <span className="font-mono text-[10px] sm:text-[11px] text-zinc-500 w-14 sm:w-20 flex-shrink-0 pt-0.5 uppercase">
             {line.speaker}
           </span>
-          <span className="text-sm text-[#E5E7EB]/70 flex flex-wrap items-center gap-0.5 leading-relaxed">{parts}</span>
+          <span className="text-xs sm:text-sm text-zinc-400 flex flex-wrap items-center gap-0.5 leading-relaxed">{parts}</span>
         </div>
       );
     });
@@ -137,71 +147,137 @@ export default function ScamDetector() {
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between mb-5 animate-fade-slide-up">
-        <div>
-          <h2 className="text-xl font-bold text-[#E5E7EB] flex items-center gap-2.5">
-            <AlertTriangle size={22} className="text-[#FF3B4E]" />
-            Digital Arrest Scam Detector
+      <div className="flex items-start sm:items-center justify-between gap-3 mb-4 sm:mb-5 animate-fade-slide-up">
+        <div className="min-w-0">
+          <h2 className="text-base sm:text-lg lg:text-xl font-semibold text-zinc-100 flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(244,63,94,0.1)' }}>
+              <AlertTriangle size={16} className="text-rose-400" strokeWidth={1.5} />
+            </div>
+            <span className="truncate">Digital Arrest Scam Detector</span>
           </h2>
-          <p className="text-[#6B7280] text-xs mt-1">Real-time transcript analysis with multi-agent detection</p>
+          <p className="text-zinc-500 text-[10px] sm:text-xs mt-1 hidden sm:block">Real-time transcript analysis with multi-agent detection</p>
         </div>
-        <Tooltip text="MHA Digital Arrest Advisory Compliance" />
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {selectedScenario && (
+            <button onClick={handleReset}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg glass-subtle text-[10px] sm:text-[11px] text-zinc-500 hover:text-zinc-200 transition-all duration-300 cursor-pointer touch-target btn-ripple relative overflow-hidden"
+              aria-label="Reset analysis">
+              <RotateCcw size={12} strokeWidth={1.5} />
+              <span className="hidden sm:inline">Reset</span>
+            </button>
+          )}
+          <div className="hidden sm:block">
+            <Tooltip text="MHA Digital Arrest Advisory Compliance" />
+          </div>
+        </div>
       </div>
 
-      {/* Official Metrics Bar */}
-      <div className="grid grid-cols-4 gap-4 mb-5 animate-fade-slide-up stagger-1" style={{ animationFillMode: 'both' }}>
+      {/* Progress bar during analysis */}
+      {isAnalyzing && (
+        <div className="mb-4 sm:mb-5 animate-fade-in">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[10px] sm:text-[11px] text-zinc-400 font-mono">Analyzing transcript...</span>
+            <span className="text-[10px] sm:text-[11px] text-blue-400 font-mono">{progress}%</span>
+          </div>
+          <div className="progress-premium h-1.5" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
+            <div className="progress-fill"
+              style={{
+                width: `${progress}%`,
+                background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)',
+              }}>
+              <div className="progress-glow" style={{ background: '#8b5cf6' }} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success banner */}
+      {analyzed && selectedScenario && (
+        <div className="mb-4 sm:mb-5 p-3 rounded-xl flex items-center gap-3 animate-fade-slide-up"
+          style={{
+            background: selectedScenario.riskLevel === 'CRITICAL' || selectedScenario.riskLevel === 'HIGH'
+              ? 'rgba(244,63,94,0.06)' : 'rgba(59,130,246,0.06)',
+            border: `1px solid ${selectedScenario.riskLevel === 'CRITICAL' || selectedScenario.riskLevel === 'HIGH'
+              ? 'rgba(244,63,94,0.15)' : 'rgba(59,130,246,0.15)'}`,
+          }}>
+          <Sparkles size={14} className="text-blue-400 flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <span className="text-[11px] sm:text-xs text-zinc-200 font-medium">Analysis complete — </span>
+            <span className={`text-[11px] sm:text-xs font-mono font-semibold ${
+              selectedScenario.riskLevel === 'CRITICAL' ? 'text-rose-400' :
+              selectedScenario.riskLevel === 'HIGH' ? 'text-orange-400' :
+              selectedScenario.riskLevel === 'MEDIUM' ? 'text-amber-400' : 'text-blue-400'
+            }`}>{selectedScenario.riskLevel} RISK</span>
+            <span className="text-[10px] sm:text-[11px] text-zinc-500 ml-2">
+              {selectedScenario.redFlags.length} flags across {new Set(selectedScenario.redFlags.map(f => f.category)).size} categories
+            </span>
+          </div>
+          <button onClick={handleReset}
+            className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] sm:text-[11px] text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer btn-ripple relative overflow-hidden"
+            aria-label="Analyze another transcript">
+            <RotateCcw size={10} />
+            <span className="hidden sm:inline">New</span>
+          </button>
+        </div>
+      )}
+
+      {/* Metrics Bar */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 mb-4 sm:mb-5 animate-fade-slide-up stagger-1" style={{ animationFillMode: 'both' }}>
         {[
-          { label: 'Detection Precision', value: '97.3%', color: '#22D3EE', sub: 'MHA Standard' },
-          { label: 'Recall (Sensitivity)', value: '94.8%', color: '#34D399', sub: 'NCRB Benchmark' },
-          { label: 'False Positive Rate', value: '2.1%', color: '#22D3EE', sub: 'Visibly Low', highlight: true },
-          { label: 'Alert Lead Time', value: '14.2 days', color: '#A78BFA', sub: 'Avg Pre-Victimization' },
+          { label: 'Detection Precision', value: '97.3%', color: '#3b82f6' },
+          { label: 'Recall (Sensitivity)', value: '94.8%', color: '#10b981' },
+          { label: 'False Positive Rate', value: '2.1%', color: '#06b6d4', highlight: true },
+          { label: 'Alert Lead Time', value: '14.2 days', color: '#8b5cf6' },
         ].map((m, i) => (
-          <div key={i} className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-[#131B2E] border border-[#1F2937]">
-            <BarChart3 size={14} style={{ color: m.color }} />
-            <div>
+          <div key={i} className="flex items-center gap-2.5 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl glass-panel card-hover">
+            <BarChart3 size={13} className="flex-shrink-0" style={{ color: m.color }} strokeWidth={1.5} />
+            <div className="min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="font-mono text-sm font-bold" style={{ color: m.color }}>{m.value}</span>
-                {m.highlight && <span className="text-[8px] px-1 py-0.5 rounded bg-[#22D3EE]/10 text-[#22D3EE] font-mono">LOW</span>}
+                <span className="font-mono text-xs sm:text-sm font-semibold" style={{ color: m.color }}>{m.value}</span>
+                {m.highlight && <span className="text-[7px] px-1.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 font-mono font-medium">LOW</span>}
               </div>
-              <span className="text-[10px] text-[#6B7280]">{m.label}</span>
+              <span className="text-[9px] sm:text-[10px] text-zinc-500 truncate block">{m.label}</span>
             </div>
           </div>
         ))}
       </div>
 
       {/* Scenario Selector */}
-      <div className="relative mb-5 animate-fade-slide-up stagger-2" style={{ animationFillMode: 'both', zIndex: 100 }}>
+      <div className="relative mb-4 sm:mb-5 animate-fade-slide-up stagger-2" style={{ animationFillMode: 'both', zIndex: 50 }}>
         <button
           onClick={() => setShowDropdown(!showDropdown)}
-          className="w-full flex items-center justify-between px-5 py-3 rounded-2xl bg-[#131B2E] border border-[#1F2937]
-            text-[#E5E7EB] text-sm hover:border-[#22D3EE]/30 transition-colors cursor-pointer"
+          className="w-full flex items-center justify-between px-4 sm:px-5 py-3 rounded-xl glass-panel btn-premium btn-ripple relative overflow-hidden
+            text-zinc-300 text-xs sm:text-sm cursor-pointer touch-target"
+          aria-haspopup="listbox"
+          aria-expanded={showDropdown}
+          aria-label="Select a transcript scenario"
         >
-          <div className="flex items-center gap-3">
-            <FileText size={16} className="text-[#6B7280]" />
-            <span>{selectedScenario ? selectedScenario.label : 'Select a sample transcript to analyze...'}</span>
+          <div className="flex items-center gap-2.5 min-w-0">
+            <FileText size={14} className="text-zinc-500 flex-shrink-0" strokeWidth={1.5} />
+            <span className="truncate">{selectedScenario ? selectedScenario.label : 'Choose a scam scenario to analyze...'}</span>
           </div>
-          <ChevronDown size={16} className={`text-[#6B7280] transition-transform ${showDropdown ? 'rotate-180' : ''}`} />
+          <ChevronDown size={14} className={`text-zinc-500 transition-transform duration-300 flex-shrink-0 ${showDropdown ? 'rotate-180' : ''}`} strokeWidth={1.5} />
         </button>
         {showDropdown && (
-          <div className="absolute z-[200] w-full mt-2 bg-[#131B2E] border border-[#1F2937] rounded-2xl shadow-2xl shadow-black/40">
+          <div className="absolute z-[200] w-full mt-2 glass-panel-strong rounded-xl shadow-2xl shadow-black/40 overflow-hidden" role="listbox" aria-label="Scam scenarios">
             {TRANSCRIPT_SCENARIOS.map(scenario => (
               <button
                 key={scenario.id}
                 onClick={() => handleSelectScenario(scenario)}
-                className="w-full px-5 py-4 text-left hover:bg-[#1F2937] transition-colors cursor-pointer border-b border-[#1F2937] last:border-b-0"
+                className="w-full px-4 sm:px-5 py-3 sm:py-4 text-left hover:bg-white/[0.04] transition-colors cursor-pointer border-b border-white/[0.04] last:border-b-0 touch-target"
+                role="option"
+                aria-selected={selectedScenario?.id === scenario.id}
               >
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-[#E5E7EB] font-medium">{scenario.label}</span>
-                  <span className={`text-[10px] font-mono font-bold px-2.5 py-1 rounded-full ${
-                    scenario.riskLevel === 'CRITICAL' ? 'bg-[#FF3B4E]/15 text-[#FF3B4E]' :
-                    scenario.riskLevel === 'HIGH' ? 'bg-[#F97316]/15 text-[#F97316]' :
-                    scenario.riskLevel === 'MEDIUM' ? 'bg-[#FBBF24]/15 text-[#FBBF24]' :
-                    'bg-[#22D3EE]/15 text-[#22D3EE]'
-                  }`}>
-                    {scenario.riskLevel}
-                  </span>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs sm:text-sm text-zinc-200 font-medium">{scenario.label}</span>
+                  <span className={`text-[9px] sm:text-[10px] font-mono font-semibold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full flex-shrink-0 ${
+                    scenario.riskLevel === 'CRITICAL' ? 'bg-rose-500/10 text-rose-400' :
+                    scenario.riskLevel === 'HIGH' ? 'bg-orange-500/10 text-orange-400' :
+                    scenario.riskLevel === 'MEDIUM' ? 'bg-amber-500/10 text-amber-400' :
+                    'bg-blue-500/10 text-blue-400'
+                  }`}>{scenario.riskLevel}</span>
                 </div>
-                <span className="text-[11px] text-[#6B7280] mt-0.5 block">{scenario.description}</span>
+                <span className="text-[10px] sm:text-[11px] text-zinc-500 mt-0.5 block">{scenario.description}</span>
               </button>
             ))}
           </div>
@@ -209,40 +285,56 @@ export default function ScamDetector() {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 grid grid-cols-5 gap-6 min-h-0 animate-fade-slide-up stagger-3" style={{ animationFillMode: 'both' }}>
-        {/* Left: Transcript */}
-        <div className="col-span-3 flex flex-col bg-[#131B2E] rounded-2xl border border-[#1F2937] overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#1F2937]">
-            <span className="font-mono text-[11px] text-[#6B7280] uppercase tracking-wider">Transcript Analysis</span>
+      <div className="flex-1 flex flex-col lg:grid lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-5 min-h-0 animate-fade-slide-up stagger-3" style={{ animationFillMode: 'both' }}>
+        {/* Transcript */}
+        <div className="lg:col-span-3 flex flex-col glass-panel card-hover rounded-xl sm:rounded-2xl overflow-hidden min-h-[200px] sm:min-h-[280px] lg:min-h-0">
+          <div className="flex items-center justify-between px-4 sm:px-5 py-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+            <span className="font-mono text-[10px] sm:text-[11px] text-zinc-500 uppercase tracking-wider">Transcript Analysis</span>
             {isAnalyzing && (
-              <span className="flex items-center gap-1.5 text-[11px] text-[#FF3B4E] font-mono">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#FF3B4E] animate-pulse" />
+              <span className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-rose-400 font-mono" aria-live="polite">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse" />
                 ANALYZING
               </span>
             )}
             {analyzed && (
-              <span className="flex items-center gap-1.5 text-[11px] text-[#22D3EE] font-mono">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#22D3EE]" />
-                ANALYSIS COMPLETE
+              <span className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-blue-400 font-mono" aria-live="polite">
+                <Sparkles size={10} />
+                COMPLETE
               </span>
             )}
           </div>
-          <div className="flex-1 overflow-y-auto p-5 space-y-1">
+          <div className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-5 space-y-1 mobile-scroll">
             {!selectedScenario && (
-              <div className="flex flex-col items-center justify-center h-full text-[#6B7280]">
-                <FileText size={36} className="mb-4 opacity-20" />
-                <p className="text-sm">Select a transcript scenario to begin analysis</p>
-                <p className="text-xs mt-1.5">3 pre-loaded scenarios available — Obvious Scam, Ambiguous, Safe</p>
+              <div className="flex flex-col items-center justify-center h-full text-zinc-500 py-8">
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <FileText size={24} className="text-zinc-600" strokeWidth={1} />
+                </div>
+                <p className="text-xs sm:text-sm text-center font-medium text-zinc-400 mb-1">Select a scam scenario above</p>
+                <p className="text-[10px] sm:text-xs text-center text-zinc-600 max-w-[260px]">
+                  Choose from {TRANSCRIPT_SCENARIOS.length} pre-loaded scenarios to see real-time multi-agent analysis
+                </p>
+                <div className="flex items-center gap-3 mt-4">
+                  {TRANSCRIPT_SCENARIOS.map((s, i) => (
+                    <div key={i} className="flex items-center gap-1.5 text-[9px] text-zinc-600">
+                      <div className={`w-1.5 h-1.5 rounded-full ${
+                        s.riskLevel === 'CRITICAL' ? 'bg-rose-500/40' :
+                        s.riskLevel === 'HIGH' ? 'bg-orange-500/40' :
+                        s.riskLevel === 'MEDIUM' ? 'bg-amber-500/40' : 'bg-blue-500/40'
+                      }`} />
+                      <span className="font-mono">{s.riskLevel}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
             {selectedScenario && renderHighlightedTranscript()}
           </div>
         </div>
 
-        {/* Right: Risk Score + Evidence */}
-        <div className="col-span-2 flex flex-col gap-6">
-          <div className="bg-[#131B2E] rounded-2xl border border-[#1F2937] p-8 flex flex-col items-center justify-center">
-            <span className="font-mono text-[11px] text-[#6B7280] uppercase tracking-wider mb-5">Threat Assessment</span>
+        {/* Risk Score + Evidence */}
+        <div className="lg:col-span-2 flex flex-col gap-3 sm:gap-4 lg:gap-5">
+          <div className="glass-panel card-hover rounded-xl sm:rounded-2xl p-5 sm:p-6 lg:p-8 flex flex-col items-center justify-center">
+            <span className="font-mono text-[10px] sm:text-[11px] text-zinc-500 uppercase tracking-wider mb-4 sm:mb-5">Threat Assessment</span>
             {selectedScenario ? (
               <RiskScore
                 score={analyzed || isAnalyzing ? selectedScenario.finalScore : 0}
@@ -250,11 +342,11 @@ export default function ScamDetector() {
                 animate={isAnalyzing || analyzed}
               />
             ) : (
-              <div className="text-[#6B7280] text-sm">Awaiting input</div>
+              <div className="text-zinc-600 text-xs sm:text-sm">Awaiting input</div>
             )}
             {selectedScenario && analyzed && (
-              <div className="mt-5 text-center">
-                <p className="text-[#6B7280] text-xs">
+              <div className="mt-4 sm:mt-5 text-center animate-fade-slide-up">
+                <p className="text-zinc-500 text-[10px] sm:text-xs">
                   {selectedScenario.redFlags.length} red flags detected across{' '}
                   {new Set(selectedScenario.redFlags.map(f => f.category)).size} categories
                 </p>
@@ -262,12 +354,17 @@ export default function ScamDetector() {
             )}
           </div>
 
-          <div className="bg-[#131B2E] rounded-2xl border border-[#1F2937] p-5 flex-1 overflow-y-auto">
+          <div className="glass-panel card-hover rounded-xl sm:rounded-2xl p-4 sm:p-5 flex-1 overflow-y-auto mobile-scroll">
             {analyzed && selectedScenario && selectedScenario.evidencePackage.length > 0 ? (
               <EvidencePackage items={selectedScenario.evidencePackage} />
             ) : (
-              <div className="flex flex-col items-center justify-center h-full text-[#6B7280]">
-                <p className="text-sm">Evidence package appears after analysis</p>
+              <div className="flex flex-col items-center justify-center h-full text-zinc-600 py-6">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}>
+                  <FileText size={16} className="text-zinc-600" strokeWidth={1} />
+                </div>
+                <p className="text-[10px] sm:text-xs text-center text-zinc-500">
+                  {isAnalyzing ? 'Building evidence package...' : 'Complete analysis to generate evidence package'}
+                </p>
               </div>
             )}
           </div>
@@ -275,7 +372,7 @@ export default function ScamDetector() {
       </div>
 
       {/* Activity Log */}
-      <div className="mt-5 bg-[#131B2E] rounded-2xl border border-[#1F2937] p-5 max-h-[200px] overflow-hidden animate-fade-slide-up stagger-4" style={{ animationFillMode: 'both' }}>
+      <div className="mt-3 sm:mt-4 glass-panel card-hover rounded-xl sm:rounded-2xl p-4 sm:p-5 max-h-[160px] sm:max-h-[200px] overflow-hidden animate-fade-slide-up stagger-4" style={{ animationFillMode: 'both' }}>
         <ActivityLog entries={activityEntries} isAnimating={isAnalyzing} />
       </div>
     </div>
