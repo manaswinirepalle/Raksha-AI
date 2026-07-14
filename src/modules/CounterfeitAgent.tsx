@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Banknote, Check, X, Fingerprint, ShieldCheck, RotateCcw } from 'lucide-react';
+import { Banknote, Check, X, RotateCcw } from 'lucide-react';
 import { COUNTERFEIT_FEATURES_500, COUNTERFEIT_FEATURES_2000 } from '../mockData';
 import Tooltip from '../components/Tooltip';
 import { useToast } from '../components/Toast';

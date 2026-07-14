@@ -37,34 +37,6 @@ const FLOATING_ELEMENTS = [
   { Icon: Cpu, x: 65, y: 12, size: 15, opacity: 0.02, dur: 20, delay: 3.5 },
 ];
 
-function useCountUp(target: number, duration: number = 2000, startOnMount: boolean = true) {
-  const [value, setValue] = useState(0);
-  const [started, setStarted] = useState(false);
-  const frameRef = useRef<number>(0);
-
-  const start = useCallback(() => {
-    if (started) return;
-    setStarted(true);
-    const startTime = performance.now();
-    const tick = (now: number) => {
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setValue(Math.round(eased * target));
-      if (progress < 1) {
-        frameRef.current = requestAnimationFrame(tick);
-      }
-    };
-    frameRef.current = requestAnimationFrame(tick);
-  }, [target, duration, started]);
-
-  useEffect(() => {
-    if (startOnMount) start();
-    return () => { if (frameRef.current) cancelAnimationFrame(frameRef.current); };
-  }, [start, startOnMount]);
-
-  return { value, start };
-}
 
 export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => void; onModuleSelect?: (id: string) => void }) {
   const [heroVisible, setHeroVisible] = useState(false);

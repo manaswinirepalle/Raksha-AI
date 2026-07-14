@@ -52,10 +52,10 @@ export default function ActivityLog({ entries, isAnimating }: { entries: Activit
               <Bot size={16} className="text-zinc-600" strokeWidth={1} />
             </div>
             <p className="text-xs sm:text-sm text-zinc-500 mb-0.5">
-              {isAnalyzing ? 'Initializing agents...' : 'Select a transcript to begin analysis'}
+              {isAnimating ? 'Initializing agents...' : 'Select a transcript to begin analysis'}
             </p>
             <p className="text-[10px] text-zinc-600">
-              {isAnalyzing ? 'Multi-agent pipeline starting up' : 'Agent activity will appear here in real-time'}
+              {isAnimating ? 'Multi-agent pipeline starting up' : 'Agent activity will appear here in real-time'}
             </p>
           </div>
         )}

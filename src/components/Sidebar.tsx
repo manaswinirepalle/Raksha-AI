@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
   Shield, Phone, Banknote, Network, Map, MessageSquare,
-  ChevronLeft, ChevronRight, Settings, HelpCircle, LogOut,
+  ChevronLeft, ChevronRight, Settings, HelpCircle,
 } from 'lucide-react';
 
 export type ModuleId = 'landing' | 'scam-detector' | 'counterfeit' | 'fraud-network' | 'heatmap' | 'citizen-shield';

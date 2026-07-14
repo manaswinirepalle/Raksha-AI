@@ -31,7 +31,7 @@ export default function App() {
       <ToastProvider>
         <div className="w-full h-full flex flex-col" style={{ background: '#09090b' }}>
           <RadarBackground />
-          <Landing onEnter={handleEnter} onModuleSelect={handleModuleSelect} />
+          <Landing onEnter={handleEnter} onModuleSelect={id => handleModuleSelect(id as ModuleId)} />
         </div>
       </ToastProvider>
     );

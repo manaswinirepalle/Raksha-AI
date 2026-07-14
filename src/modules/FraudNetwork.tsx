@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { Network, GitBranch, Search, X } from 'lucide-react';
+import { Network, Search, X } from 'lucide-react';
 import { FRAUD_NODES } from '../mockData';
 import type { FraudNode } from '../types';
 import Tooltip from '../components/Tooltip';
