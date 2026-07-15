@@ -20,7 +20,7 @@ import AIExplanation from '../components/AIExplanation';
 import SafetyTips from '../components/SafetyTips';
 import Recommendations from '../components/Recommendations';
 import ExportPanel from '../components/ExportPanel';
-import LearningMode from '../components/LearningMode';
+import TranscriptLearning from '../components/TranscriptLearning';
 
 const RISK_META: Record<RiskLevel, {
   label: string;
@@ -528,7 +528,7 @@ export default function ScamDetector() {
 
   const renderLearnTab = () => (
     <div className="sd-tab-content">
-      <LearningMode scenario={selectedScenario} visible={true} />
+      <TranscriptLearning scenario={selectedScenario} visible={true} />
     </div>
   );
 
