@@ -1,13 +1,11 @@
-import { Phone, MessageSquare, Banknote, Network, Map } from 'lucide-react';
-import type { ModuleId } from './Sidebar';
+import { MODULES, type ModuleId } from '../MODULE_REGISTRY';
+import type { LucideIcon } from 'lucide-react';
 
-const NAV_ITEMS: { id: ModuleId; icon: typeof Phone; label: string }[] = [
-  { id: 'scam-detector', icon: Phone, label: 'Scam' },
-  { id: 'citizen-shield', icon: MessageSquare, label: 'Shield' },
-  { id: 'counterfeit', icon: Banknote, label: 'Currency' },
-  { id: 'fraud-network', icon: Network, label: 'Network' },
-  { id: 'heatmap', icon: Map, label: 'Heatmap' },
-];
+const NAV_ITEMS = MODULES.slice(0, 5).map(m => ({
+  id: m.id,
+  icon: m.icon as unknown as LucideIcon,
+  label: m.shortLabel,
+}));
 
 export default function MobileNav({ active, onSelect }: { active: ModuleId; onSelect: (id: ModuleId) => void }) {
   return (

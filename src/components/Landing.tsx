@@ -13,10 +13,10 @@ const STATS = [
 ];
 
 const FEATURES = [
-  { icon: Phone, title: 'Scam Detector', desc: 'Real-time transcript analysis with multi-agent fraud detection', color: '#f43f5e', module: 'scam-detector' as const },
-  { icon: MessageSquare, title: 'Citizen Shield', desc: 'Instant scam detection for suspicious messages in 22 languages', color: '#3b82f6', module: 'citizen-shield' as const },
-  { icon: Banknote, title: 'Counterfeit Agent', desc: 'Security feature verification with confidence scoring', color: '#f59e0b', module: 'counterfeit' as const },
-  { icon: Map, title: 'Crime Heatmap', desc: 'Geospatial complaint density visualization across India', color: '#10b981', module: 'heatmap' as const },
+  { icon: Phone, title: 'Scam Scanner', desc: 'Real-time transcript analysis with multi-agent fraud detection', color: '#f43f5e', module: 'scam-scanner' },
+  { icon: MessageSquare, title: 'Message Checker', desc: 'Instant scam detection for suspicious messages in 22 languages', color: '#3b82f6', module: 'message-checker' },
+  { icon: Shield, title: 'Safety Center', desc: 'Emergency contacts, safety score, and protection tools', color: '#f59e0b', module: 'safety-center' },
+  { icon: Map, title: 'Threat Insights', desc: 'AI-powered threat intelligence and analysis', color: '#10b981', module: 'threat-insights' },
 ];
 
 const TRUST_ITEMS = [
@@ -363,7 +363,7 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
                   </div>
                 ))}
               </div>
-              <span>5 modules ready</span>
+              <span>15 modules ready</span>
             </div>
           </div>
 

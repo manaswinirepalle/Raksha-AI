@@ -3,15 +3,14 @@ import {
   Shield, AlertTriangle, Activity, TrendingDown, ChevronRight,
   Search, Bell, Command,
 } from 'lucide-react';
-import type { ModuleId } from './Sidebar';
+import { getModuleById, type ModuleId } from '../MODULE_REGISTRY';
 
-const MODULE_LABELS: Record<string, string> = {
-  'scam-detector': 'Scam Detector',
-  'citizen-shield': 'Citizen Shield',
-  'counterfeit': 'Counterfeit Agent',
-  'fraud-network': 'Fraud Network',
-  'heatmap': 'Crime Heatmap',
-};
+const MODULE_LABELS: Record<string, string> = Object.fromEntries(
+  ['scam-scanner', 'message-checker', 'call-protection', 'safety-center', 'scam-alerts',
+   'report-fraud', 'threat-insights', 'scam-trends', 'safety-tips',
+   'activity-dashboard', 'reports', 'security-overview', 'help-center', 'contact-support', 'settings']
+    .map(id => [id, getModuleById(id as ModuleId)?.label || id])
+);
 
 interface TickerStat {
   icon: typeof Shield;

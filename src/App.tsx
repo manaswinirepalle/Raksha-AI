@@ -1,23 +1,62 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, lazy, Suspense } from 'react';
 import RadarBackground from './components/RadarBackground';
 import Sidebar, { type ModuleId } from './components/Sidebar';
 import MobileNav from './components/MobileNav';
 import TopTicker from './components/TopTicker';
 import Landing from './components/Landing';
 import { ToastProvider } from './components/Toast';
-import ScamDetector from './modules/ScamDetector';
-import CounterfeitAgent from './modules/CounterfeitAgent';
-import FraudNetwork from './modules/FraudNetwork';
-import CrimeHeatmap from './modules/CrimeHeatmap';
-import CitizenShield from './modules/CitizenShield';
-import { Shield } from 'lucide-react';
+import { Shield, Loader2 } from 'lucide-react';
+
+const ScamDetector = lazy(() => import('./modules/ScamDetector'));
+const MessageChecker = lazy(() => import('./modules/CitizenShield'));
+const CallProtection = lazy(() => import('./modules/CounterfeitAgent'));
+const SafetyCenter = lazy(() => import('./modules/SafetyCenter'));
+const ScamAlerts = lazy(() => import('./modules/ScamAlerts'));
+const ReportFraud = lazy(() => import('./modules/ReportFraud'));
+const ThreatInsights = lazy(() => import('./modules/ThreatInsights'));
+const ScamTrends = lazy(() => import('./modules/ScamTrends'));
+const SafetyTips = lazy(() => import('./components/LearningMode'));
+const ActivityDashboard = lazy(() => import('./modules/ActivityDashboard'));
+const Reports = lazy(() => import('./modules/Reports'));
+const SecurityOverview = lazy(() => import('./modules/SecurityOverview'));
+const HelpCenter = lazy(() => import('./modules/HelpCenter'));
+const ContactSupport = lazy(() => import('./modules/ContactSupport'));
+const SettingsPage = lazy(() => import('./modules/SettingsPage'));
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const MODULE_COMPONENTS: Record<string, React.LazyExoticComponent<React.ComponentType<any>>> = {
+  'scam-scanner': ScamDetector,
+  'message-checker': MessageChecker,
+  'call-protection': CallProtection,
+  'safety-center': SafetyCenter,
+  'scam-alerts': ScamAlerts,
+  'report-fraud': ReportFraud,
+  'threat-insights': ThreatInsights,
+  'scam-trends': ScamTrends,
+  'safety-tips': SafetyTips,
+  'activity-dashboard': ActivityDashboard,
+  'reports': Reports,
+  'security-overview': SecurityOverview,
+  'help-center': HelpCenter,
+  'contact-support': ContactSupport,
+  'settings': SettingsPage,
+};
+
+function PageLoader() {
+  return (
+    <div className="flex items-center justify-center h-full gap-3">
+      <Loader2 size={20} className="text-blue-400 animate-spin" />
+      <span className="text-sm text-zinc-500">Loading...</span>
+    </div>
+  );
+}
 
 export default function App() {
   const [currentView, setCurrentView] = useState<ModuleId>('landing');
   const [pageKey, setPageKey] = useState(0);
 
   const handleEnter = useCallback(() => {
-    setCurrentView('scam-detector');
+    setCurrentView('scam-scanner');
     setPageKey(k => k + 1);
   }, []);
 
@@ -36,6 +75,8 @@ export default function App() {
       </ToastProvider>
     );
   }
+
+  const ActiveComponent = MODULE_COMPONENTS[currentView];
 
   return (
     <ToastProvider>
@@ -67,21 +108,11 @@ export default function App() {
           </div>
           <div className="flex-1 p-4 sm:p-5 lg:p-6 xl:p-8 2xl:p-10 overflow-y-auto overflow-x-hidden relative pb-20 lg:pb-6 mobile-scroll min-h-0">
             <div key={pageKey} className="h-full animate-page-enter">
-              <div style={{ display: currentView === 'scam-detector' ? 'block' : 'none' }} className="h-full">
-                <ScamDetector />
-              </div>
-              <div style={{ display: currentView === 'counterfeit' ? 'block' : 'none' }} className="h-full">
-                <CounterfeitAgent />
-              </div>
-              <div style={{ display: currentView === 'fraud-network' ? 'block' : 'none' }} className="h-full">
-                <FraudNetwork />
-              </div>
-              <div style={{ display: currentView === 'heatmap' ? 'block' : 'none' }} className="h-full">
-                <CrimeHeatmap />
-              </div>
-              <div style={{ display: currentView === 'citizen-shield' ? 'block' : 'none' }} className="h-full">
-                <CitizenShield />
-              </div>
+              {ActiveComponent && (
+                <Suspense fallback={<PageLoader />}>
+                  <ActiveComponent />
+                </Suspense>
+              )}
             </div>
           </div>
         </div>
