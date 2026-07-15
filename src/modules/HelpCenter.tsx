@@ -3,6 +3,7 @@ import {
   HelpCircle, Search, ChevronDown, Mail, MessageSquare,
 } from 'lucide-react';
 import { useToast } from '../components/Toast';
+import useViewportAnimation from '../hooks/useViewportAnimation';
 
 interface FAQ {
   id: string;
@@ -27,6 +28,11 @@ const FAQS: FAQ[] = [
 const CATEGORIES = ['All', 'Getting Started', 'Detection', 'Protection', 'Account'];
 
 export default function HelpCenter() {
+  const headerVP = useViewportAnimation();
+  const searchVP = useViewportAnimation({ threshold: 0.1 });
+  const filtersVP = useViewportAnimation({ threshold: 0.1 });
+  const faqVP = useViewportAnimation({ threshold: 0.05 });
+  const contactVP = useViewportAnimation({ threshold: 0.1 });
   const { addToast } = useToast();
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -57,20 +63,32 @@ export default function HelpCenter() {
   }
 
   return (
-    <div className="space-y-5 animate-fade-in max-w-3xl">
+    <div className="space-y-5 animate-fade-in max-w-3xl" ref={headerVP.ref} style={{
+      opacity: headerVP.isVisible ? 1 : 0,
+      transform: headerVP.isVisible ? 'translateY(0)' : 'translateY(20px)',
+      transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1), transform 600ms cubic-bezier(0.16, 1, 0.3, 1)',
+    }}>
       <div>
         <h2 className="text-lg font-semibold text-zinc-100">Help Center</h2>
         <p className="text-xs text-zinc-500 mt-0.5">Find answers to common questions</p>
       </div>
 
-      <div className="relative">
+      <div className="relative" ref={searchVP.ref} style={{
+        opacity: searchVP.isVisible ? 1 : 0,
+        transform: searchVP.isVisible ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 80ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 80ms',
+      }}>
         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600" />
         <input value={search} onChange={e => setSearch(e.target.value)}
           placeholder="Search help articles..."
           className="w-full pl-9 pr-3 py-2.5 rounded-lg bg-white/[0.03] border border-white/[0.06] text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-blue-500/30 transition-colors" />
       </div>
 
-      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar" ref={filtersVP.ref} style={{
+        opacity: filtersVP.isVisible ? 1 : 0,
+        transform: filtersVP.isVisible ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 160ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 160ms',
+      }}>
         {CATEGORIES.map(c => (
           <button key={c} onClick={() => setCategory(c)}
             className={`btn-ripple flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
@@ -81,7 +99,11 @@ export default function HelpCenter() {
         ))}
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2" ref={faqVP.ref} style={{
+        opacity: faqVP.isVisible ? 1 : 0,
+        transform: faqVP.isVisible ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 240ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 240ms',
+      }}>
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-3">
             <HelpCircle size={32} className="text-zinc-700" />
@@ -90,7 +112,7 @@ export default function HelpCenter() {
               className="btn-ripple text-xs text-blue-400 hover:text-blue-300 cursor-pointer">Clear search</button>
           </div>
         ) : filtered.map(faq => (
-          <div key={faq.id} className="glass-panel rounded-xl overflow-hidden">
+          <div key={faq.id} className="glass-panel card-premium rounded-xl overflow-hidden">
             <button onClick={() => setExpandedId(expandedId === faq.id ? null : faq.id)}
               className="w-full p-4 text-left cursor-pointer flex items-center gap-3 hover:bg-white/[0.01] transition-colors">
               <div className="flex-1">
@@ -108,7 +130,11 @@ export default function HelpCenter() {
         ))}
       </div>
 
-      <div className="glass-panel rounded-xl p-5">
+      <div className="glass-panel rounded-xl p-5" ref={contactVP.ref} style={{
+        opacity: contactVP.isVisible ? 1 : 0,
+        transform: contactVP.isVisible ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 320ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 320ms',
+      }}>
         <h3 className="text-sm font-medium text-zinc-300 mb-3">Still need help?</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {[

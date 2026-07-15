@@ -21,6 +21,7 @@ import SafetyTips from '../components/SafetyTips';
 import Recommendations from '../components/Recommendations';
 import ExportPanel from '../components/ExportPanel';
 import LearningMode from '../components/LearningMode';
+import useViewportAnimation from '../hooks/useViewportAnimation';
 
 const RISK_META: Record<RiskLevel, {
   label: string;
@@ -140,6 +141,10 @@ function ScenarioSkeletonGrid() {
 }
 
 export default function ScamDetector() {
+  const headerVP = useViewportAnimation();
+  const metricsVP = useViewportAnimation({ threshold: 0.1 });
+  const mainVP = useViewportAnimation({ threshold: 0.05 });
+  const scenarioTriggerVP = useViewportAnimation({ threshold: 0.2 });
   const { addToast } = useToast();
   const [selectedScenario, setSelectedScenario] = useState<TranscriptScenario | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -409,7 +414,7 @@ export default function ScamDetector() {
           </button>
         </div>
       )}
-      <div className="sd-metrics">
+      <div className="sd-metrics" ref={metricsVP.ref} style={{ opacity: metricsVP.isVisible ? 1 : 0, transform: metricsVP.isVisible ? 'translateY(0)' : 'translateY(16px)', transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 100ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 100ms' }}>
         {[
           { label: 'Detection Precision', value: '97.3%', color: '#3b82f6', icon: TargetIcon },
           { label: 'Recall', value: '94.8%', color: '#10b981', icon: TrendingUp },
@@ -428,7 +433,7 @@ export default function ScamDetector() {
           </div>
         ))}
       </div>
-      <div className="sd-main">
+      <div className="sd-main" ref={mainVP.ref} style={{ opacity: mainVP.isVisible ? 1 : 0, transform: mainVP.isVisible ? 'translateY(0)' : 'translateY(16px)', transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 200ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 200ms' }}>
         <div className="sd-transcript glass-panel card-hover">
           <div className="sd-transcript-header">
             <span className="sd-section-label">Transcript Analysis</span>
@@ -534,7 +539,7 @@ export default function ScamDetector() {
 
   return (
     <div className="scam-detector" aria-busy={isAnalyzing}>
-      <div className="sd-header">
+      <div className="sd-header" ref={headerVP.ref} style={{ opacity: headerVP.isVisible ? 1 : 0, transform: headerVP.isVisible ? 'translateY(0)' : 'translateY(16px)', transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1), transform 600ms cubic-bezier(0.16, 1, 0.3, 1)' }}>
         <div className="sd-header-left">
           <div className="sd-header-icon"><AlertTriangle size={16} strokeWidth={1.5} /></div>
           <div className="sd-header-text">
@@ -552,7 +557,7 @@ export default function ScamDetector() {
         </div>
       </div>
 
-      <div className="sd-scenario-trigger">
+      <div className="sd-scenario-trigger" ref={scenarioTriggerVP.ref} style={{ opacity: scenarioTriggerVP.isVisible ? 1 : 0, transform: scenarioTriggerVP.isVisible ? 'translateY(0)' : 'translateY(12px)', transition: 'opacity 500ms cubic-bezier(0.16, 1, 0.3, 1) 50ms, transform 500ms cubic-bezier(0.16, 1, 0.3, 1) 50ms' }}>
         <button onClick={openModal} className="sd-trigger-btn btn-premium btn-ripple" aria-haspopup="dialog" aria-label="Select a transcript scenario to analyze" disabled={isAnalyzing} style={{ opacity: isAnalyzing ? 0.5 : 1, pointerEvents: isAnalyzing ? 'none' : 'auto' }}>
           <div className="sd-trigger-left">
             <FileText size={15} strokeWidth={1.5} />

@@ -5,6 +5,7 @@ import {
   Mail, Globe,
 } from 'lucide-react';
 import { useToast } from '../components/Toast';
+import useViewportAnimation from '../hooks/useViewportAnimation';
 
 interface SecurityCheck {
   id: string;
@@ -29,6 +30,9 @@ const CHECKS: SecurityCheck[] = [
 ];
 
 export default function SecurityOverview() {
+  const headerVP = useViewportAnimation();
+  const scoreVP = useViewportAnimation({ threshold: 0.1 });
+  const categoryVP = useViewportAnimation({ threshold: 0.05 });
   const { addToast } = useToast();
   const [loading, setLoading] = useState(true);
   const [checks, setChecks] = useState(CHECKS);
@@ -73,7 +77,11 @@ export default function SecurityOverview() {
 
   if (loading) {
     return (
-      <div className="space-y-5 animate-fade-in">
+    <div className="space-y-5 animate-fade-in" ref={headerVP.ref} style={{
+      opacity: headerVP.isVisible ? 1 : 0,
+      transform: headerVP.isVisible ? 'translateY(0)' : 'translateY(20px)',
+      transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1), transform 600ms cubic-bezier(0.16, 1, 0.3, 1)',
+    }}>
         <div className="h-32 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }} />
         {[1, 2, 3].map(i => <div key={i} className="h-16 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }} />)}
       </div>
@@ -93,7 +101,11 @@ export default function SecurityOverview() {
         </button>
       </div>
 
-      <div className="glass-panel rounded-xl p-6 flex items-center gap-6">
+      <div className="glass-panel card-premium rounded-xl p-6 flex items-center gap-6" ref={scoreVP.ref} style={{
+        opacity: scoreVP.isVisible ? 1 : 0,
+        transform: scoreVP.isVisible ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 80ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 80ms',
+      }}>
         <div className="relative w-24 h-24 flex-shrink-0">
           <svg className="w-24 h-24 -rotate-90" viewBox="0 0 96 96">
             <circle cx="48" cy="48" r="40" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="7" />
@@ -117,9 +129,13 @@ export default function SecurityOverview() {
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4" ref={categoryVP.ref} style={{
+        opacity: categoryVP.isVisible ? 1 : 0,
+        transform: categoryVP.isVisible ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 160ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 160ms',
+      }}>
         {categories.map(cat => (
-          <div key={cat.name} className="glass-panel rounded-xl p-4">
+          <div key={cat.name} className="glass-panel card-premium rounded-xl p-4">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-medium text-zinc-300">{cat.name}</h3>
               <span className="text-[10px] text-zinc-500">{cat.passed}/{cat.total} passed</span>

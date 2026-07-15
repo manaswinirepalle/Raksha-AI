@@ -4,6 +4,7 @@ import {
   Clock, AlertTriangle, Paperclip, ChevronDown,
 } from 'lucide-react';
 import { useToast } from '../components/Toast';
+import useViewportAnimation from '../hooks/useViewportAnimation';
 
 interface Ticket {
   id: string;
@@ -29,6 +30,10 @@ const STATUS_MAP = {
 };
 
 export default function ContactSupport() {
+  const headerVP = useViewportAnimation();
+  const methodsVP = useViewportAnimation({ threshold: 0.1 });
+  const formVP = useViewportAnimation({ threshold: 0.05 });
+  const ticketsVP = useViewportAnimation({ threshold: 0.1 });
   const { addToast } = useToast();
   const [loading, setLoading] = useState(true);
   const [subject, setSubject] = useState('');
@@ -85,13 +90,21 @@ export default function ContactSupport() {
   }
 
   return (
-    <div className="space-y-5 animate-fade-in max-w-3xl">
+    <div className="space-y-5 animate-fade-in max-w-3xl" ref={headerVP.ref} style={{
+      opacity: headerVP.isVisible ? 1 : 0,
+      transform: headerVP.isVisible ? 'translateY(0)' : 'translateY(20px)',
+      transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1), transform 600ms cubic-bezier(0.16, 1, 0.3, 1)',
+    }}>
       <div>
         <h2 className="text-lg font-semibold text-zinc-100">Contact Support</h2>
         <p className="text-xs text-zinc-500 mt-0.5">Get help from our support team</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3" ref={methodsVP.ref} style={{
+        opacity: methodsVP.isVisible ? 1 : 0,
+        transform: methodsVP.isVisible ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 80ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 80ms',
+      }}>
         {[
           { icon: Mail, label: 'Email', value: 'support@raksha.ai', color: '#3b82f6' },
           { icon: MessageSquare, label: 'Live Chat', value: '9am — 6pm IST', color: '#10b981' },
@@ -99,7 +112,7 @@ export default function ContactSupport() {
         ].map((item, i) => (
           <button key={i}
             onClick={() => addToast(`Connecting via ${item.value}`, 'info')}
-            className="btn-ripple glass-panel rounded-xl p-4 flex items-center gap-3 hover:border-white/[0.08] transition-all cursor-pointer text-left">
+            className="btn-ripple glass-panel card-premium rounded-xl p-4 flex items-center gap-3 hover:border-white/[0.08] transition-all cursor-pointer text-left">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: `${item.color}10` }}>
               <item.icon size={18} style={{ color: item.color }} />
             </div>
@@ -111,7 +124,11 @@ export default function ContactSupport() {
         ))}
       </div>
 
-      <div className="glass-panel rounded-xl p-5">
+      <div className="glass-panel rounded-xl p-5" ref={formVP.ref} style={{
+        opacity: formVP.isVisible ? 1 : 0,
+        transform: formVP.isVisible ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 160ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 160ms',
+      }}>
         <h3 className="text-sm font-medium text-zinc-300 mb-4">Submit a Ticket</h3>
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
@@ -157,7 +174,11 @@ export default function ContactSupport() {
         </div>
       </div>
 
-      <div className="glass-panel rounded-xl p-5">
+      <div className="glass-panel rounded-xl p-5" ref={ticketsVP.ref} style={{
+        opacity: ticketsVP.isVisible ? 1 : 0,
+        transform: ticketsVP.isVisible ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 240ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 240ms',
+      }}>
         <button onClick={() => setShowTickets(!showTickets)}
           className="flex items-center justify-between w-full cursor-pointer">
           <h3 className="text-sm font-medium text-zinc-300">Your Tickets</h3>
@@ -169,7 +190,7 @@ export default function ContactSupport() {
               const st = STATUS_MAP[ticket.status];
               const StIcon = st.icon;
               return (
-                <div key={ticket.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-white/[0.02] transition-colors">
+                <div key={ticket.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-white/[0.02] transition-colors card-premium">
                   <StIcon size={14} style={{ color: st.color }} className="flex-shrink-0" />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">

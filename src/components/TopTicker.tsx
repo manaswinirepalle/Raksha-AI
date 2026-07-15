@@ -29,7 +29,19 @@ export default function TopTicker({ activeView }: { activeView: ModuleId }) {
   ]);
 
   const [flashIndex, setFlashIndex] = useState<number | null>(null);
+  const [prevView, setPrevView] = useState(activeView);
+  const [viewTransition, setViewTransition] = useState(false);
   const flashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (activeView !== prevView) {
+      setViewTransition(true);
+      setTimeout(() => {
+        setPrevView(activeView);
+        setViewTransition(false);
+      }, 200);
+    }
+  }, [activeView, prevView]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -51,13 +63,26 @@ export default function TopTicker({ activeView }: { activeView: ModuleId }) {
   }, []);
 
   return (
-    <header className="hidden lg:flex h-14 items-center gap-0 flex-1 min-w-0 flex-shrink-0"
-      style={{ background: 'rgba(9,9,11,0.6)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}>
+    <header
+      className="hidden lg:flex h-14 items-center gap-0 flex-1 min-w-0 flex-shrink-0"
+      style={{
+        background: 'rgba(9,9,11,0.6)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+      }}
+    >
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 px-5 h-full flex-shrink-0" style={{ borderRight: '1px solid rgba(255,255,255,0.04)' }}>
         <span className="text-[12px] text-zinc-600 font-medium">Dashboard</span>
         <ChevronRight size={12} className="text-zinc-700" />
-        <span className="text-[12px] text-zinc-300 font-medium">
+        <span
+          className="text-[12px] text-zinc-300 font-medium"
+          style={{
+            opacity: viewTransition ? 0 : 1,
+            transform: viewTransition ? 'translateY(4px)' : 'translateY(0)',
+            transition: 'opacity 200ms ease, transform 200ms ease',
+          }}
+        >
           {MODULE_LABELS[activeView] || 'Overview'}
         </span>
       </div>
@@ -68,21 +93,37 @@ export default function TopTicker({ activeView }: { activeView: ModuleId }) {
           const Icon = stat.icon;
           const isFlashing = flashIndex === i;
           return (
-            <div key={i}
-              className="flex items-center gap-2 flex-shrink-0 px-2 py-1 rounded-lg transition-all duration-300 hover:bg-white/[0.02] cursor-default group"
-              style={{ background: isFlashing ? `${stat.color}08` : undefined }}>
-              <div className="w-5 h-5 rounded flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
-                style={{ background: `${stat.color}10` }}>
+            <div
+              key={i}
+              className="flex items-center gap-2 flex-shrink-0 px-2 py-1 rounded-lg cursor-default group"
+              style={{
+                background: isFlashing ? `${stat.color}08` : 'transparent',
+                transition: 'background 300ms ease',
+              }}
+              onMouseEnter={(e) => {
+                if (!isFlashing) e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
+              }}
+              onMouseLeave={(e) => {
+                if (!isFlashing) e.currentTarget.style.background = 'transparent';
+              }}
+            >
+              <div
+                className="w-5 h-5 rounded flex items-center justify-center icon-hover-rotate"
+                style={{ background: `${stat.color}10`, transition: 'transform 300ms cubic-bezier(0.16, 1, 0.3, 1)' }}
+              >
                 <Icon size={11} style={{ color: stat.color }} strokeWidth={1.5} />
               </div>
               <span className="text-zinc-500 text-[11px] font-medium whitespace-nowrap group-hover:text-zinc-400 transition-colors duration-200">
                 {stat.label}
               </span>
-              <span className="font-mono text-[11px] font-semibold tabular-nums transition-all duration-300"
+              <span
+                className="font-mono text-[11px] font-semibold tabular-nums"
                 style={{
                   color: stat.color,
                   textShadow: isFlashing ? `0 0 8px ${stat.color}40` : undefined,
-                }}>
+                  transition: 'text-shadow 300ms ease',
+                }}
+              >
                 {stat.value.toLocaleString()}{stat.suffix}
               </span>
             </div>
@@ -92,27 +133,53 @@ export default function TopTicker({ activeView }: { activeView: ModuleId }) {
 
       {/* Right actions */}
       <div className="flex items-center gap-1 px-3 h-full flex-shrink-0" style={{ borderLeft: '1px solid rgba(255,255,255,0.04)' }}>
-        <button className="w-9 h-9 rounded-lg flex items-center justify-center text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.04] transition-all duration-200 cursor-pointer btn-ripple relative overflow-hidden"
-          aria-label="Search">
+        <button
+          className="w-9 h-9 rounded-lg flex items-center justify-center text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.04] transition-all duration-200 cursor-pointer btn-ripple relative overflow-hidden"
+          aria-label="Search"
+        >
           <Search size={15} strokeWidth={1.5} />
         </button>
 
-        <div className="hidden xl:flex items-center gap-1 px-2 py-1 rounded-md text-zinc-600 text-[10px] font-mono transition-colors duration-200 hover:text-zinc-500 cursor-default"
-          style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}>
+        <div
+          className="hidden xl:flex items-center gap-1 px-2 py-1 rounded-md text-zinc-600 text-[10px] font-mono hover:text-zinc-500 cursor-default"
+          style={{
+            background: 'rgba(255,255,255,0.02)',
+            border: '1px solid rgba(255,255,255,0.04)',
+            transition: 'color 200ms ease',
+          }}
+        >
           <Command size={10} />
           <span>K</span>
         </div>
 
-        <button className="relative w-9 h-9 rounded-lg flex items-center justify-center text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.04] transition-all duration-200 cursor-pointer btn-ripple relative overflow-hidden"
-          aria-label="Notifications">
+        <button
+          className="relative w-9 h-9 rounded-lg flex items-center justify-center text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.04] transition-all duration-200 cursor-pointer btn-ripple relative overflow-hidden"
+          aria-label="Notifications"
+        >
           <Bell size={15} strokeWidth={1.5} />
-          <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-rose-400 animate-glow-pulse"
-            style={{ boxShadow: '0 0 6px rgba(244,63,94,0.4)' }} />
+          <span
+            className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-rose-400"
+            style={{
+              boxShadow: '0 0 6px rgba(244,63,94,0.4)',
+              animation: 'glowPulse 3s ease-in-out infinite',
+            }}
+          />
         </button>
 
-        <div className="w-9 h-9 rounded-full flex items-center justify-center ml-1 text-[10px] font-semibold text-zinc-300 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg"
-          style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.2), rgba(139,92,246,0.15))' }}
-          aria-label="AI Assistant">
+        <div
+          className="w-9 h-9 rounded-full flex items-center justify-center ml-1 text-[10px] font-semibold text-zinc-300 cursor-pointer hover:scale-105"
+          style={{
+            background: 'linear-gradient(135deg, rgba(59,130,246,0.2), rgba(139,92,246,0.15))',
+            transition: 'transform 200ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 200ms ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.boxShadow = '0 0 16px rgba(59,130,246,0.2)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow = 'none';
+          }}
+          aria-label="AI Assistant"
+        >
           AI
         </div>
       </div>

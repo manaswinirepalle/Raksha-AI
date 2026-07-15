@@ -822,6 +822,167 @@
 }
 
 /* ══════════════════════════════════════
+   PHASE 12 — PREMIUM MOTION KEYFRAMES
+   ══════════════════════════════════════ */
+
+/* ── Viewport reveal — stagger-aware entrance ── */
+@keyframes viewportReveal {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.97);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes viewportRevealLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-28px) scale(0.97);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes viewportRevealRight {
+  from {
+    opacity: 0;
+    transform: translateX(28px) scale(0.97);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes viewportRevealScale {
+  from {
+    opacity: 0;
+    transform: scale(0.88);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
+/* ── Light beam sweep for radar ── */
+@keyframes lightBeamSweep {
+  0% { transform: rotate(0deg); opacity: 0.4; }
+  50% { opacity: 0.7; }
+  100% { transform: rotate(360deg); opacity: 0.4; }
+}
+
+/* ── Gradient mesh drift — premium background orbs ── */
+@keyframes premiumMeshDrift1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(40px, -30px) scale(1.08); }
+  50% { transform: translate(-20px, 40px) scale(0.92); }
+  75% { transform: translate(30px, 20px) scale(1.05); }
+}
+@keyframes premiumMeshDrift2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-50px, 40px) scale(0.94); }
+  66% { transform: translate(35px, -30px) scale(1.1); }
+}
+@keyframes premiumMeshDrift3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  40% { transform: translate(25px, 35px) scale(1.06); }
+  80% { transform: translate(-30px, -20px) scale(0.96); }
+}
+
+/* ── Cursor glow pulse — follows mouse ── */
+@keyframes cursorGlowPulse {
+  0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.05); }
+}
+
+/* ── Floating particle premium ── */
+@keyframes particleFloatPremium {
+  0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+  15% { opacity: var(--p-opacity, 0.4); }
+  85% { opacity: var(--p-opacity, 0.4); }
+  100% { transform: translateY(calc(var(--p-drift-y, -60px))) translateX(calc(var(--p-drift-x, 15px))) rotate(var(--p-rotate, 180deg)); opacity: 0; }
+}
+
+/* ── Staggered card entrance ── */
+@keyframes staggerCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ── Sidebar collapse/expand ── */
+@keyframes sidebarExpand {
+  from { width: 68px; opacity: 0.8; }
+  to { width: 232px; opacity: 1; }
+}
+@keyframes sidebarCollapse {
+  from { width: 232px; opacity: 1; }
+  to { width: 68px; opacity: 0.8; }
+}
+
+/* ── Ticker flash ── */
+@keyframes tickerFlash {
+  0% { background: transparent; }
+  30% { background: var(--flash-color, rgba(59,130,246,0.08)); }
+  100% { background: transparent; }
+}
+
+/* ── Mobile nav indicator slide ── */
+@keyframes mobileIndicatorSlide {
+  from { transform: translateX(var(--from-x, 0)) scaleX(0.5); opacity: 0; }
+  to { transform: translateX(var(--to-x, 0)) scaleX(1); opacity: 1; }
+}
+
+/* ── Premium shimmer overlay ── */
+@keyframes premiumShimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ── Hover lift micro-interaction ── */
+@keyframes hoverLift {
+  from { transform: translateY(0); }
+  to { transform: translateY(-3px); }
+}
+
+/* ── Subtle rotate for icons on hover ── */
+@keyframes iconHoverRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(8deg); }
+}
+
+/* ── Counting number animation ── */
+@keyframes numberTick {
+  from { transform: translateY(4px); opacity: 0.5; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* ── Glass border glow pulse ── */
+@keyframes glassBorderPulse {
+  0%, 100% { border-color: rgba(255,255,255,0.06); }
+  50% { border-color: rgba(59,130,246,0.15); }
+}
+
+/* ══════════════════════════════════════
    ANIMATION CLASSES
    ══════════════════════════════════════ */
 
@@ -944,6 +1105,139 @@
 }
 .animate-glow-pulse {
   animation: glowPulse 4s ease-in-out infinite;
+}
+
+/* ══════════════════════════════════════
+   PHASE 12 — PREMIUM ANIMATION CLASSES
+   ══════════════════════════════════════ */
+
+/* Viewport reveal — used by useViewportAnimation hook */
+.animate-viewport-reveal {
+  opacity: 0;
+  transform: translateY(24px) scale(0.97);
+  filter: blur(4px);
+  transition: opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
+              transform 700ms cubic-bezier(0.16, 1, 0.3, 1),
+              filter 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.animate-viewport-reveal.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}
+
+.animate-viewport-left {
+  opacity: 0;
+  transform: translateX(-28px) scale(0.97);
+  filter: blur(4px);
+  transition: opacity 600ms cubic-bezier(0.16, 1, 0.3, 1),
+              transform 600ms cubic-bezier(0.16, 1, 0.3, 1),
+              filter 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.animate-viewport-left.visible {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  filter: blur(0);
+}
+
+.animate-viewport-right {
+  opacity: 0;
+  transform: translateX(28px) scale(0.97);
+  filter: blur(4px);
+  transition: opacity 600ms cubic-bezier(0.16, 1, 0.3, 1),
+              transform 600ms cubic-bezier(0.16, 1, 0.3, 1),
+              filter 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.animate-viewport-right.visible {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  filter: blur(0);
+}
+
+.animate-viewport-scale {
+  opacity: 0;
+  transform: scale(0.88);
+  filter: blur(6px);
+  transition: opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
+              transform 700ms cubic-bezier(0.16, 1, 0.3, 1),
+              filter 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.animate-viewport-scale.visible {
+  opacity: 1;
+  transform: scale(1);
+  filter: blur(0);
+}
+
+/* Stagger delays for viewport reveals */
+.stagger-viewport-1 { transition-delay: 60ms; }
+.stagger-viewport-2 { transition-delay: 120ms; }
+.stagger-viewport-3 { transition-delay: 180ms; }
+.stagger-viewport-4 { transition-delay: 240ms; }
+.stagger-viewport-5 { transition-delay: 300ms; }
+.stagger-viewport-6 { transition-delay: 360ms; }
+.stagger-viewport-7 { transition-delay: 420ms; }
+.stagger-viewport-8 { transition-delay: 480ms; }
+.stagger-viewport-9 { transition-delay: 540ms; }
+.stagger-viewport-10 { transition-delay: 600ms; }
+
+/* Premium card hover — enhanced depth effect */
+.card-premium {
+  transition: transform 450ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 450ms cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 450ms cubic-bezier(0.16, 1, 0.3, 1),
+              background 300ms ease;
+  will-change: transform, box-shadow;
+}
+.card-premium:hover {
+  transform: translateY(-3px) scale(1.005);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35),
+              0 0 0 1px rgba(255, 255, 255, 0.08),
+              0 0 20px rgba(59, 130, 246, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+}
+.card-premium:active {
+  transform: translateY(0) scale(0.99);
+  transition-duration: 80ms;
+}
+
+/* Icon hover rotation */
+.icon-hover-rotate {
+  transition: transform 350ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.group:hover .icon-hover-rotate,
+*:hover > .icon-hover-rotate {
+  transform: rotate(8deg) scale(1.1);
+}
+
+/* Premium button hover shimmer */
+.btn-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.btn-shimmer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.06) 50%, transparent 60%);
+  background-size: 200% 100%;
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+.btn-shimmer:hover::before {
+  opacity: 1;
+  animation: premiumShimmer 1.8s linear infinite;
+}
+
+/* Glass panel hover glow */
+.glass-glow {
+  transition: box-shadow 400ms cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 400ms ease;
+}
+.glass-glow:hover {
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.06),
+              0 8px 32px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
 /* ── Micro-interaction classes ── */
@@ -2398,22 +2692,33 @@
   .animate-slide-up-fade,
   .animate-content-reveal,
   .animate-toast-in,
-  .animate-modal-enter {
+  .animate-modal-enter,
+  .animate-viewport-reveal,
+  .animate-viewport-left,
+  .animate-viewport-right,
+  .animate-viewport-scale {
     opacity: 1 !important;
     transform: none !important;
+    filter: none !important;
   }
 
   .card-hover:hover,
-  .card-hover:active {
+  .card-hover:active,
+  .card-premium:hover,
+  .card-premium:active {
     transform: none;
     box-shadow: none;
   }
 
   .btn-premium:hover,
-  .btn-premium:active {
+  .btn-premium:active,
+  .btn-shimmer:hover {
     transform: none;
     box-shadow: none;
     filter: none;
+  }
+  .btn-shimmer::before {
+    display: none;
   }
 
   .toggle-track .toggle-thumb {
@@ -2481,5 +2786,18 @@
   }
   .sd-trigger-btn:hover .sd-trigger-chevron {
     transform: none !important;
+  }
+
+  .icon-hover-rotate:hover,
+  *:hover > .icon-hover-rotate {
+    transform: none;
+  }
+
+  .glass-glow:hover {
+    box-shadow: none;
+  }
+
+  canvas {
+    animation: none !important;
   }
 }
