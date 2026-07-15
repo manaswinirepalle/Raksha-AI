@@ -65,7 +65,7 @@ export default function App() {
               </span>
             </div>
           </div>
-          <div className="flex-1 p-4 sm:p-5 lg:p-6 xl:p-8 2xl:p-10 overflow-hidden relative pb-20 lg:pb-6 mobile-scroll min-h-0">
+          <div className="flex-1 p-4 sm:p-5 lg:p-6 xl:p-8 2xl:p-10 overflow-y-auto overflow-x-hidden relative pb-20 lg:pb-6 mobile-scroll min-h-0">
             <div key={pageKey} className="h-full animate-page-enter">
               <div style={{ display: currentView === 'scam-detector' ? 'block' : 'none' }} className="h-full">
                 <ScamDetector />

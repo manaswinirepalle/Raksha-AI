@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import type { JSX } from 'react';
 import {
   FileText, AlertTriangle,   ShieldAlert, ShieldCheck, Shield,
@@ -590,8 +591,8 @@ export default function ScamDetector() {
         {activeTab === 'dashboard' && <CyberDashboardLazy />}
       </div>
 
-      {/* Scenario Selection Modal */}
-      {showScenarioModal && (
+      {/* Scenario Selection Modal — portaled to body to escape overflow:hidden ancestors */}
+      {showScenarioModal && createPortal(
         <div ref={modalRef} className="sd-modal sd-modal-open" onClick={closeModal} onKeyDown={handleModalKeyDown} role="dialog" aria-modal="true" aria-label="Select a scenario to analyze">
           <div className="sd-modal-backdrop" />
           <div className="sd-modal-content" onClick={(e) => e.stopPropagation()}>
@@ -641,7 +642,8 @@ export default function ScamDetector() {
               )}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
