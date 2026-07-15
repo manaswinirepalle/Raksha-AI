@@ -85,7 +85,7 @@ export default function App() {
         <Sidebar active={currentView} onSelect={handleModuleSelect} />
         <div className="flex-1 flex flex-col min-w-0 relative z-10 min-h-0">
           <TopTicker activeView={currentView} />
-          <div className="flex lg:hidden h-14 items-center px-4 safe-top flex-shrink-0"
+          <div className="flex lg:hidden h-11 items-center px-4 safe-top flex-shrink-0"
             style={{
               background: 'rgba(9,9,11,0.9)',
               backdropFilter: 'blur(20px)',
@@ -106,7 +106,7 @@ export default function App() {
               </span>
             </div>
           </div>
-          <div className="flex-1 p-4 sm:p-5 lg:p-6 xl:p-8 2xl:p-10 overflow-y-auto overflow-x-hidden relative pb-20 lg:pb-6 mobile-scroll min-h-0">
+          <div className="flex-1 p-3 sm:p-4 lg:p-5 xl:p-6 2xl:p-8 overflow-y-auto overflow-x-hidden relative pb-20 lg:pb-5 mobile-scroll min-h-0">
             <div key={pageKey} className="h-full animate-page-enter">
               {ActiveComponent && (
                 <Suspense fallback={<PageLoader />}>

@@ -65,49 +65,58 @@ export default function ActivityDashboard() {
 
   if (loading) {
     return (
-      <div className="space-y-5 animate-fade-in">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          {[1, 2, 3, 4].map(i => <div key={i} className="h-24 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }} />)}
+      <div className="db-page animate-fade-in">
+      <div className="db-stats">
+          {[1, 2, 3, 4].map(i => <div key={i} className="h-16 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }} />)}
         </div>
-        {[1, 2, 3].map(i => <div key={i} className="h-20 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }} />)}
+        {[1, 2, 3].map(i => <div key={i} className="h-14 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }} />)}
       </div>
     );
   }
 
   return (
-    <div className="space-y-5 animate-fade-in">
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h2 className="text-lg font-semibold text-zinc-100">Activity Dashboard</h2>
-          <p className="text-xs text-zinc-500 mt-0.5">Recent scans, alerts, and protection activity</p>
+    <div className="db-page animate-fade-in">
+      {/* Header */}
+      <div className="db-header">
+        <div className="db-header-left">
+          <div className="db-header-icon bg-blue-500/10">
+            <BarChart3 size={16} className="text-blue-400" />
+          </div>
+          <div className="db-header-text">
+            <h2 className="db-title">Activity Dashboard</h2>
+            <p className="db-subtitle">Recent scans, alerts, and protection activity</p>
+          </div>
         </div>
-        <button onClick={handleRefresh} disabled={refreshing}
-          className="btn-ripple flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.03] transition-colors cursor-pointer disabled:opacity-50">
-          {refreshing ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />} Refresh
-        </button>
+        <div className="db-header-actions">
+          <button onClick={handleRefresh} disabled={refreshing} className="db-btn">
+            {refreshing ? <Loader2 size={11} className="animate-spin" /> : <RefreshCw size={11} />} Refresh
+          </button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      {/* Stats */}
+      <div className="db-stats">
         {[
           { label: 'Total Scans', value: stats.totalScans, icon: Eye, color: '#3b82f6', change: '+8 today' },
           { label: 'Threats Blocked', value: stats.threatsBlocked, icon: Shield, color: '#10b981', change: '+2 today' },
           { label: 'Reports Filed', value: stats.reports, icon: BarChart3, color: '#8b5cf6', change: '+1 today' },
           { label: 'Active Alerts', value: stats.alerts, icon: AlertTriangle, color: '#f59e0b', change: '1 new' },
         ].map((s, i) => (
-          <div key={i} className="glass-panel card-premium rounded-xl p-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: `${s.color}10` }}>
-              <s.icon size={18} style={{ color: s.color }} strokeWidth={1.5} />
+          <div key={i} className="db-stat">
+            <div className="db-stat-icon" style={{ background: `${s.color}15` }}>
+              <s.icon size={14} style={{ color: s.color }} />
             </div>
             <div>
-              <span className="text-xl font-bold text-zinc-100 block">{s.value}</span>
-              <span className="text-[10px] text-zinc-500">{s.label}</span>
-              <span className="text-[9px] text-zinc-600 block">{s.change}</span>
+              <span className="db-stat-value">{s.value}</span>
+              <span className="db-stat-label">{s.label}</span>
+              <span className="text-[8px] text-zinc-600 block">{s.change}</span>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="flex items-center gap-2">
+      {/* Filter Bar */}
+      <div className="flex items-center gap-1.5">
         {[
           { key: 'all', label: 'All Activity' },
           { key: 'scan', label: 'Scans' },
@@ -116,29 +125,28 @@ export default function ActivityDashboard() {
           { key: 'report', label: 'Reports' },
         ].map(f => (
           <button key={f.key} onClick={() => setFilter(f.key)}
-            className={`btn-ripple px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
-              filter === f.key ? 'bg-blue-500/15 text-blue-400 border border-blue-500/20' : 'text-zinc-500 hover:text-zinc-300 border border-transparent'
-            }`}>
+            className={`db-btn ${filter === f.key ? 'db-btn-primary' : ''}`}>
             {f.label}
           </button>
         ))}
       </div>
 
-      <div className="space-y-2">
+      {/* Activity Feed */}
+      <div className="space-y-1.5">
         {filtered.map(item => {
           const Icon = TYPE_ICONS[item.type] || Shield;
           const color = STATUS_COLORS[item.status];
           return (
-            <div key={item.id} className="glass-panel card-premium rounded-xl p-4 flex items-start gap-3 hover:border-white/[0.08] transition-all">
-              <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+            <div key={item.id} className="db-card flex items-start gap-2.5">
+              <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
                 style={{ background: `${color}10` }}>
-                <Icon size={16} style={{ color }} />
+                <Icon size={13} style={{ color }} />
               </div>
               <div className="flex-1 min-w-0">
-                <span className="text-sm font-medium text-zinc-200 block">{item.title}</span>
-                <span className="text-xs text-zinc-500 mt-0.5 block">{item.details}</span>
+                <span className="text-[11px] font-medium text-zinc-200 block">{item.title}</span>
+                <span className="text-[10px] text-zinc-500 block">{item.details}</span>
               </div>
-              <span className="text-[10px] text-zinc-600 flex-shrink-0 mt-1">{item.timestamp}</span>
+              <span className="text-[9px] text-zinc-600 flex-shrink-0">{item.timestamp}</span>
             </div>
           );
         })}

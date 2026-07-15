@@ -160,61 +160,63 @@ export default function LearningMode() {
   ];
 
   return (
-    <div className="space-y-5 sm:space-y-6 max-w-5xl">
+    <div className="db-page max-w-5xl">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h2 className="text-lg font-semibold text-zinc-100 flex items-center gap-2">
-            <Lightbulb size={18} className="text-amber-400" />
-            Safety Tips &amp; Learning Center
-          </h2>
-          <p className="text-xs text-zinc-500 mt-0.5">Master cybersecurity with interactive lessons and expert guides</p>
+      <div className="db-header">
+        <div className="db-header-left">
+          <div className="db-header-icon bg-amber-500/10">
+            <Lightbulb size={16} className="text-amber-400" />
+          </div>
+          <div className="db-header-text">
+            <h2 className="db-title">Safety Tips &amp; Learning Center</h2>
+            <p className="db-subtitle">Master cybersecurity with interactive lessons and expert guides</p>
+          </div>
         </div>
-        <button onClick={markAllRead} className="btn-secondary text-xs px-3 py-1.5">
-          <CheckCircle size={12} /> Mark All Read
-        </button>
+        <div className="db-header-actions">
+          <button onClick={markAllRead} className="db-btn">
+            <CheckCircle size={11} /> Mark All Read
+          </button>
+        </div>
       </div>
 
       {/* Progress */}
-      <div className="glass-panel rounded-xl p-4">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-xs text-zinc-400">Overall Progress</span>
-          <span className="text-xs font-mono text-blue-400">{progress}%</span>
+      <div className="db-card">
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="text-[10px] text-zinc-400">Overall Progress</span>
+          <span className="text-[10px] font-mono text-blue-400">{progress}%</span>
         </div>
-        <div className="w-full h-2 rounded-full bg-zinc-800 overflow-hidden">
+        <div className="w-full h-1.5 rounded-full bg-zinc-800 overflow-hidden">
           <div
             className="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-400 transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
         </div>
-        <p className="text-[10px] text-zinc-600 mt-1.5">{readCards.size} of {LEARNING_CARDS.length} lessons completed</p>
+        <p className="text-[9px] text-zinc-600 mt-1">{readCards.size} of {LEARNING_CARDS.length} lessons completed</p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="db-stats">
         {stats.map((s) => (
-          <div key={s.label} className="glass-panel rounded-xl p-3 sm:p-4">
-            <div className="flex items-center gap-2 mb-1.5">
+          <div key={s.label} className="db-stat">
+            <div className="db-stat-icon" style={{ background: `${s.color}15` }}>
               <s.icon size={14} style={{ color: s.color }} />
-              <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">{s.label}</span>
             </div>
-            <p className="text-xl font-bold text-zinc-100">{s.value}</p>
+            <div>
+              <span className="db-stat-value">{s.value}</span>
+              <span className="db-stat-label">{s.label}</span>
+            </div>
           </div>
         ))}
       </div>
 
       {/* Category Pills */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1.5">
         {CATEGORIES.map((cat) => (
           <button
             key={cat}
             onClick={() => setSelectedCategory(cat)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
-              selectedCategory === cat
-                ? 'text-white shadow-lg'
-                : 'bg-white/[0.03] text-zinc-400 border border-white/[0.06] hover:bg-white/[0.06]'
-            }`}
-            style={selectedCategory === cat ? { background: CATEGORY_COLORS[cat], boxShadow: `0 0 15px ${CATEGORY_COLORS[cat]}40` } : undefined}
+            className={`db-btn ${selectedCategory === cat ? 'db-btn-primary' : ''}`}
+            style={selectedCategory === cat ? { background: CATEGORY_COLORS[cat], boxShadow: `0 0 12px ${CATEGORY_COLORS[cat]}40` } : undefined}
           >
             {cat} ({categoryCounts[cat]})
           </button>
@@ -222,52 +224,50 @@ export default function LearningMode() {
       </div>
 
       {/* Learning Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="db-grid-2">
         {filteredCards.map((card) => {
           const isRead = readCards.has(card.id);
           return (
             <div
               key={card.id}
-              className={`glass-panel rounded-xl p-4 transition-all duration-300 ${
-                isRead ? 'border-green-500/20 bg-green-500/[0.03]' : 'hover:bg-white/[0.04]'
-              }`}
+              className={`db-card ${isRead ? 'border-green-500/20 bg-green-500/[0.03]' : ''}`}
               style={{ animation: 'fadeSlideUp 500ms cubic-bezier(0.16, 1, 0.3, 1) both' }}
             >
-              <div className="flex items-start justify-between gap-2 mb-2">
-                <div className="flex items-center gap-2 min-w-0">
+              <div className="flex items-center justify-between gap-2 mb-1.5">
+                <div className="flex items-center gap-1.5 min-w-0">
                   <span
-                    className="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold uppercase tracking-wider flex-shrink-0"
+                    className="px-1.5 py-0.5 rounded text-[8px] font-mono font-semibold uppercase tracking-wider flex-shrink-0"
                     style={{ background: `${CATEGORY_COLORS[card.category]}15`, color: CATEGORY_COLORS[card.category] }}
                   >
                     {card.category}
                   </span>
                   <span
-                    className="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold uppercase tracking-wider flex-shrink-0"
+                    className="px-1.5 py-0.5 rounded text-[8px] font-mono font-semibold uppercase tracking-wider flex-shrink-0"
                     style={{ background: `${DIFFICULTY_COLORS[card.difficulty]}15`, color: DIFFICULTY_COLORS[card.difficulty] }}
                   >
                     {card.difficulty}
                   </span>
                 </div>
                 <div className="flex items-center gap-1 text-zinc-600 flex-shrink-0">
-                  <Clock size={10} />
-                  <span className="text-[10px] font-mono">{card.readTime}</span>
+                  <Clock size={9} />
+                  <span className="text-[9px] font-mono">{card.readTime}</span>
                 </div>
               </div>
-              <h3 className="text-sm font-semibold text-zinc-200 mb-1.5">{card.title}</h3>
-              <p className="text-xs text-zinc-400 leading-relaxed mb-3">{card.description}</p>
-              <div className="flex items-start gap-2 p-2.5 rounded-lg bg-blue-500/[0.06] border border-blue-500/10 mb-3">
-                <Brain size={12} className="text-blue-400 flex-shrink-0 mt-0.5" />
-                <p className="text-[11px] text-blue-300/80 leading-relaxed">{card.keyTakeaway}</p>
+              <h3 className="text-[11px] font-semibold text-zinc-200 mb-1">{card.title}</h3>
+              <p className="text-[10px] text-zinc-400 leading-relaxed mb-2">{card.description}</p>
+              <div className="flex items-start gap-1.5 p-2 rounded-lg bg-blue-500/[0.06] border border-blue-500/10 mb-2">
+                <Brain size={10} className="text-blue-400 flex-shrink-0 mt-0.5" />
+                <p className="text-[10px] text-blue-300/80 leading-relaxed">{card.keyTakeaway}</p>
               </div>
               <button
                 onClick={() => toggleRead(card.id)}
-                className={`w-full text-xs py-1.5 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-1.5 ${
+                className={`w-full text-[10px] py-1.5 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-1.5 ${
                   isRead
                     ? 'bg-green-500/10 text-green-400 border border-green-500/20'
                     : 'bg-white/[0.03] text-zinc-400 border border-white/[0.06] hover:bg-white/[0.06]'
                 }`}
               >
-                {isRead ? <><CheckCircle size={12} /> Completed</> : <><Eye size={12} /> Mark as Read</>}
+                {isRead ? <><CheckCircle size={10} /> Completed</> : <><Eye size={10} /> Mark as Read</>}
               </button>
             </div>
           );
@@ -275,70 +275,69 @@ export default function LearningMode() {
       </div>
 
       {/* Emergency Guide */}
-      <div className="glass-panel rounded-xl p-5">
-        <div className="flex items-center gap-2 mb-4">
-          <AlertTriangle size={14} className="text-red-400" />
-          <h3 className="text-sm font-semibold text-zinc-200">Emergency Response — If You've Been Scammed</h3>
+      <div className="db-card">
+        <div className="db-card-header">
+          <AlertTriangle size={12} className="text-red-400" />
+          <span className="db-card-title">Emergency Response — If You've Been Scammed</span>
         </div>
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           {EMERGENCY_STEPS.map((step, i) => (
-            <div key={i} className="flex items-center gap-3 p-2.5 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+            <div key={i} className="flex items-center gap-2.5 p-2 rounded-lg bg-white/[0.02] border border-white/[0.04]">
               <div
-                className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-bold text-white"
+                className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 text-[9px] font-bold text-white"
                 style={{ background: step.color }}
               >
                 {i + 1}
               </div>
-              <span className="text-xs text-zinc-300">{step.text}</span>
+              <span className="text-[10px] text-zinc-300">{step.text}</span>
             </div>
           ))}
         </div>
       </div>
 
       {/* Prevention Guides */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="db-grid-3">
         {PREVENTION_GUIDES.map((guide) => (
-          <div key={guide.title} className="glass-panel rounded-xl p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <guide.icon size={14} style={{ color: guide.color }} />
-              <h3 className="text-sm font-semibold text-zinc-200">{guide.title}</h3>
+          <div key={guide.title} className="db-card">
+            <div className="db-card-header">
+              <guide.icon size={12} style={{ color: guide.color }} />
+              <span className="db-card-title">{guide.title}</span>
             </div>
-            <ul className="space-y-1.5">
+            <div className="space-y-1">
               {guide.steps.map((step, i) => (
-                <li key={i} className="flex items-start gap-2 text-xs text-zinc-400">
-                  <CheckCircle size={10} className="flex-shrink-0 mt-0.5" style={{ color: guide.color }} />
+                <div key={i} className="flex items-start gap-1.5 text-[10px] text-zinc-400">
+                  <CheckCircle size={8} className="flex-shrink-0 mt-0.5" style={{ color: guide.color }} />
                   <span>{step}</span>
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
         ))}
       </div>
 
       {/* FAQ */}
-      <div>
-        <div className="flex items-center gap-2 mb-4">
-          <MessageCircle size={14} className="text-blue-400" />
-          <h3 className="text-sm font-semibold text-zinc-300">Frequently Asked Questions</h3>
+      <div className="db-section">
+        <div className="db-section-header">
+          <span className="db-section-title"><MessageCircle size={11} /> FAQ</span>
         </div>
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           {FAQ_ITEMS.map((item, i) => (
-            <div key={i} className="glass-panel rounded-xl overflow-hidden">
+            <div key={i} className="db-card overflow-hidden">
               <button
                 onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
-                className="w-full flex items-center justify-between p-4 text-left"
+                className="w-full flex items-center justify-between p-3 text-left"
               >
-                <span className="text-xs font-medium text-zinc-300 pr-4">{item.q}</span>
+                <span className="text-[11px] font-medium text-zinc-300 pr-3">{item.q}</span>
                 <ChevronDown
-                  size={14}
+                  size={12}
                   className={`text-zinc-500 flex-shrink-0 transition-transform duration-200 ${
                     expandedFaq === i ? 'rotate-180' : ''
                   }`}
                 />
               </button>
               {expandedFaq === i && (
-                <div className="px-4 pb-4 border-t border-white/[0.04]">
-                  <p className="text-xs text-zinc-400 leading-relaxed pt-3">{item.a}</p>
+                <div className="px-3 pb-3 border-t border-white/[0.04]">
+                  <p className="text-[10px] text-zinc-400 leading-relaxed pt-2">{item.a}</p>
                 </div>
               )}
             </div>
@@ -347,26 +346,25 @@ export default function LearningMode() {
       </div>
 
       {/* Video Suggestions */}
-      <div>
-        <div className="flex items-center gap-2 mb-4">
-          <Play size={14} className="text-purple-400" />
-          <h3 className="text-sm font-semibold text-zinc-300">Recommended Videos</h3>
+      <div className="db-section">
+        <div className="db-section-header">
+          <span className="db-section-title"><Play size={11} className="text-purple-400" /> Recommended Videos</span>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="db-grid-3">
           {VIDEO_SUGGESTIONS.map((video) => (
-            <div key={video.title} className="glass-panel rounded-xl p-4 hover:bg-white/[0.04] transition-all duration-200 cursor-pointer">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center">
-                  <Play size={14} className="text-purple-400" />
+            <div key={video.title} className="db-card cursor-pointer">
+              <div className="db-card-header">
+                <div className="w-6 h-6 rounded-md bg-purple-500/10 flex items-center justify-center">
+                  <Play size={10} className="text-purple-400" />
                 </div>
                 <div className="flex items-center gap-1 text-zinc-600">
-                  <Clock size={10} />
-                  <span className="text-[10px] font-mono">{video.duration}</span>
+                  <Clock size={8} />
+                  <span className="text-[8px] font-mono">{video.duration}</span>
                 </div>
               </div>
-              <h4 className="text-xs font-semibold text-zinc-200 mb-1">{video.title}</h4>
-              <p className="text-[10px] text-zinc-500 mb-1.5">{video.channel}</p>
-              <p className="text-[11px] text-zinc-400 leading-relaxed">{video.description}</p>
+              <h4 className="text-[11px] font-semibold text-zinc-200 mb-0.5">{video.title}</h4>
+              <p className="text-[9px] text-zinc-500 mb-1">{video.channel}</p>
+              <p className="text-[10px] text-zinc-400 leading-relaxed">{video.description}</p>
             </div>
           ))}
         </div>

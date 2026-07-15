@@ -41,7 +41,7 @@ export default function Sidebar({ active, onSelect }: { active: ModuleId; onSele
     >
       {/* Brand */}
       <div
-        className={`flex items-center h-14 px-4 ${collapsed ? 'justify-center' : 'gap-3'}`}
+        className={`flex items-center h-11 px-4 ${collapsed ? 'justify-center' : 'gap-3'}`}
         style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}
       >
         <div

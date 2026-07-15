@@ -79,82 +79,89 @@ export default function Reports() {
 
   if (loading) {
     return (
-    <div className="space-y-5 animate-fade-in">
-        <div className="h-10 w-48 rounded-lg" style={{ background: 'rgba(255,255,255,0.04)' }} />
-        {[1, 2, 3].map(i => <div key={i} className="h-28 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }} />)}
+    <div className="db-page animate-fade-in">
+        <div className="h-8 w-32 rounded-lg" style={{ background: 'rgba(255,255,255,0.04)' }} />
+        {[1, 2, 3].map(i => <div key={i} className="h-20 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }} />)}
       </div>
     );
   }
 
   return (
-    <div className="space-y-5 animate-fade-in">
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h2 className="text-lg font-semibold text-zinc-100">Reports</h2>
-          <p className="text-xs text-zinc-500 mt-0.5">{reports.length} reports available</p>
+    <div className="db-page animate-fade-in">
+      {/* Header */}
+      <div className="db-header">
+        <div className="db-header-left">
+          <div className="db-header-icon bg-indigo-500/10">
+            <FileText size={16} className="text-indigo-400" />
+          </div>
+          <div className="db-header-text">
+            <h2 className="db-title">Reports</h2>
+            <p className="db-subtitle">{reports.length} reports available</p>
+          </div>
         </div>
-        <button onClick={handleGenerate} disabled={generating}
-          className="btn-ripple flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white transition-colors cursor-pointer disabled:opacity-50"
-          style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1)' }}>
-          {generating ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />} Generate Report
-        </button>
+        <div className="db-header-actions">
+          <button onClick={handleGenerate} disabled={generating}
+            className="db-btn db-btn-primary">
+            {generating ? <Loader2 size={11} className="animate-spin" /> : <Plus size={11} />} Generate Report
+          </button>
+        </div>
       </div>
 
-      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+      {/* Type Filter */}
+      <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
         {TYPES.map(t => (
           <button key={t} onClick={() => setTypeFilter(t)}
-            className={`btn-ripple flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
-              typeFilter === t ? 'bg-blue-500/15 text-blue-400 border border-blue-500/20' : 'text-zinc-500 hover:text-zinc-300 border border-transparent'
-            }`}>
+            className={`db-btn flex-shrink-0 ${typeFilter === t ? 'db-btn-primary' : ''}`}>
             {t}
           </button>
         ))}
       </div>
 
-      <div className="space-y-3">
+      {/* Report List */}
+      <div className="space-y-1.5">
         {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 gap-3">
-            <FileText size={32} className="text-zinc-700" />
-            <p className="text-sm text-zinc-500">No reports match this filter</p>
+          <div className="flex flex-col items-center justify-center py-12 gap-2">
+            <FileText size={24} className="text-zinc-700" />
+            <p className="text-[11px] text-zinc-500">No reports match this filter</p>
           </div>
         ) : filtered.map(report => {
           const st = STATUS_MAP[report.status];
           return (
-            <div key={report.id} className="glass-panel card-premium rounded-xl p-4 hover:border-white/[0.08] transition-all">
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+            <div key={report.id} className="db-card">
+              <div className="flex items-start gap-2.5">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
                   style={{ background: `${st.color}10` }}>
-                  <FileText size={18} style={{ color: st.color }} />
+                  <FileText size={14} style={{ color: st.color }} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-sm font-medium text-zinc-200">{report.title}</span>
-                    <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full" style={{ background: `${st.color}15`, color: st.color }}>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-[11px] font-medium text-zinc-200">{report.title}</span>
+                    <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full" style={{ background: `${st.color}15`, color: st.color }}>
                       {st.label}
                     </span>
                   </div>
-                  <p className="text-xs text-zinc-500 mt-1">{report.summary}</p>
-                  <div className="flex items-center gap-3 mt-2">
-                    <span className="text-[10px] text-zinc-600">{report.type}</span>
-                    <span className="text-[10px] text-zinc-600">{report.date}</span>
-                    {report.size !== '—' && <span className="text-[10px] text-zinc-600">{report.size}</span>}
+                  <p className="text-[10px] text-zinc-500 mt-0.5">{report.summary}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-[9px] text-zinc-600">{report.type}</span>
+                    <span className="text-[9px] text-zinc-600">{report.date}</span>
+                    {report.size !== '—' && <span className="text-[9px] text-zinc-600">{report.size}</span>}
                   </div>
                 </div>
-                <div className="flex items-center gap-1.5 flex-shrink-0">
+                <div className="flex items-center gap-1 flex-shrink-0">
                   <button onClick={() => handleDownload(report)}
-                    className="btn-ripple p-2 rounded-lg text-zinc-500 hover:text-blue-400 hover:bg-blue-500/10 transition-colors cursor-pointer"
+                    className="db-btn p-1.5"
                     title="Download">
-                    <Download size={14} />
+                    <Download size={11} />
                   </button>
                   <button onClick={() => { navigator.clipboard?.writeText(`${report.title}\n${report.summary}`); addToast('Report summary copied', 'success'); }}
-                    className="btn-ripple p-2 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.03] transition-colors cursor-pointer"
+                    className="db-btn p-1.5"
                     title="Share">
-                    <Share2 size={14} />
+                    <Share2 size={11} />
                   </button>
                   <button onClick={() => handleDelete(report.id)}
-                    className="btn-ripple p-2 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                    className="db-btn p-1.5 hover:!text-rose-400"
                     title="Delete">
-                    <Trash2 size={14} />
+                    <Trash2 size={11} />
                   </button>
                 </div>
               </div>

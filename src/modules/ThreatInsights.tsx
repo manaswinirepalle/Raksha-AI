@@ -255,46 +255,46 @@ export default function ThreatInsights() {
 
   if (loading) {
     return (
-      <div className="space-y-5 animate-fade-in">
-        <div className="glass-panel rounded-xl p-5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl animate-pulse" style={{ background: 'rgba(139,92,246,0.15)' }} />
-          <div>
-            <div className="h-5 w-40 rounded bg-white/[0.06] animate-pulse mb-2" />
-            <div className="h-3 w-64 rounded bg-white/[0.04] animate-pulse" />
+      <div className="db-page animate-fade-in">
+        <div className="db-card">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg animate-pulse" style={{ background: 'rgba(139,92,246,0.15)' }} />
+            <div className="space-y-1">
+              <div className="h-4 w-36 rounded bg-white/[0.06] animate-pulse" />
+              <div className="h-3 w-52 rounded bg-white/[0.04] animate-pulse" />
+            </div>
           </div>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="db-stats">
           {[1, 2, 3, 4].map(i => (
-            <div key={i} className="glass-panel rounded-xl p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl animate-pulse" style={{ background: 'rgba(255,255,255,0.04)' }} />
-                <div>
-                  <div className="h-6 w-16 rounded bg-white/[0.06] animate-pulse mb-1" />
-                  <div className="h-3 w-20 rounded bg-white/[0.04] animate-pulse" />
-                </div>
+            <div key={i} className="db-stat">
+              <div className="w-7 h-7 rounded-lg animate-pulse" style={{ background: 'rgba(255,255,255,0.04)' }} />
+              <div>
+                <div className="h-5 w-14 rounded bg-white/[0.06] animate-pulse mb-1" />
+                <div className="h-2.5 w-16 rounded bg-white/[0.04] animate-pulse" />
               </div>
             </div>
           ))}
         </div>
-        <div className="glass-panel rounded-xl p-5">
-          <div className="h-5 w-48 rounded bg-white/[0.06] animate-pulse mb-4" />
+        <div className="db-card p-3">
+          <div className="h-4 w-40 rounded bg-white/[0.06] animate-pulse mb-3" />
           <div className="flex gap-4">
-            <div className="w-48 h-24 rounded bg-white/[0.04] animate-pulse" />
-            <div className="flex-1 space-y-2">
+            <div className="w-40 h-20 rounded bg-white/[0.04] animate-pulse" />
+            <div className="flex-1 space-y-1.5">
               {[1, 2, 3].map(i => (
-                <div key={i} className="h-3 rounded bg-white/[0.04] animate-pulse" style={{ width: `${90 - i * 15}%` }} />
+                <div key={i} className="h-2.5 rounded bg-white/[0.04] animate-pulse" style={{ width: `${90 - i * 15}%` }} />
               ))}
             </div>
           </div>
         </div>
-        <div className="glass-panel rounded-xl p-5">
-          <div className="h-5 w-48 rounded bg-white/[0.06] animate-pulse mb-4" />
-          <div className="space-y-3">
+        <div className="db-card p-3">
+          <div className="h-4 w-40 rounded bg-white/[0.06] animate-pulse mb-3" />
+          <div className="space-y-2">
             {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="flex items-center gap-3">
-                <div className="h-3 w-36 rounded bg-white/[0.04] animate-pulse" />
-                <div className="flex-1 h-4 rounded bg-white/[0.04] animate-pulse" />
-                <div className="h-3 w-10 rounded bg-white/[0.06] animate-pulse" />
+              <div key={i} className="flex items-center gap-2">
+                <div className="h-2.5 w-28 rounded bg-white/[0.04] animate-pulse" />
+                <div className="flex-1 h-3 rounded bg-white/[0.04] animate-pulse" />
+                <div className="h-2.5 w-8 rounded bg-white/[0.06] animate-pulse" />
               </div>
             ))}
           </div>
@@ -304,236 +304,216 @@ export default function ThreatInsights() {
   }
 
   return (
-    <div className="space-y-5 animate-fade-in">
-      {/* Premium Header */}
-      <div className="glass-panel rounded-xl p-5 flex items-center justify-between flex-wrap gap-3">
-        <div className="flex items-center gap-4">
+    <div className="db-page animate-fade-in">
+      <div className="db-header">
+        <div className="db-header-left">
           <div
-            className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+            className="db-header-icon"
             style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.25), rgba(168,85,247,0.15))' }}
           >
-            <Brain size={22} className="text-purple-400" strokeWidth={1.5} />
+            <Brain size={16} className="text-purple-400" strokeWidth={1.5} />
           </div>
-          <div>
-            <h2 className="text-lg font-semibold text-zinc-100">Threat Insights</h2>
-            <p className="text-xs text-zinc-500 mt-0.5">AI-powered threat intelligence and fraud pattern analysis</p>
+          <div className="db-header-text">
+            <h2 className="db-title">Threat Insights</h2>
+            <p className="db-subtitle">AI-powered threat intelligence and fraud pattern analysis</p>
           </div>
         </div>
-        <button
-          onClick={handleRefresh}
-          disabled={refreshing}
-          className="btn-ripple flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.05] transition-colors cursor-pointer disabled:opacity-50 border border-white/[0.06]"
-        >
-          {refreshing ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
-          Refresh
-        </button>
+        <div className="db-header-actions">
+          <button
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="db-btn"
+          >
+            {refreshing ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />}
+            Refresh
+          </button>
+        </div>
       </div>
 
-      {/* Threat Overview Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <div className="glass-panel rounded-xl p-4 flex items-center gap-3">
-          <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={{ background: 'rgba(239,68,68,0.12)' }}
-          >
-            <AlertTriangle size={18} style={{ color: '#ef4444' }} strokeWidth={1.5} />
+      <div className="db-stats">
+        <div className="db-stat">
+          <div className="db-stat-icon" style={{ background: 'rgba(239,68,68,0.12)' }}>
+            <AlertTriangle size={14} style={{ color: '#ef4444' }} strokeWidth={1.5} />
           </div>
           <div>
-            <span className="text-lg font-bold text-zinc-100 block">{stats.activeThreats}</span>
-            <span className="text-[10px] text-zinc-500">Active Threats</span>
+            <span className="db-stat-value">{stats.activeThreats}</span>
+            <span className="db-stat-label">Active Threats</span>
           </div>
         </div>
-
-        <div className="glass-panel rounded-xl p-4 flex items-center gap-3">
-          <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={{ background: 'rgba(59,130,246,0.12)' }}
-          >
-            <Brain size={18} style={{ color: '#3b82f6' }} strokeWidth={1.5} />
+        <div className="db-stat">
+          <div className="db-stat-icon" style={{ background: 'rgba(59,130,246,0.12)' }}>
+            <Brain size={14} style={{ color: '#3b82f6' }} strokeWidth={1.5} />
           </div>
           <div>
-            <span className="text-lg font-bold text-zinc-100 block">{stats.avgConfidence}%</span>
-            <span className="text-[10px] text-zinc-500">AI Confidence</span>
+            <span className="db-stat-value">{stats.avgConfidence}%</span>
+            <span className="db-stat-label">AI Confidence</span>
           </div>
         </div>
-
-        <div className="glass-panel rounded-xl p-4 flex items-center gap-3">
-          <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={{ background: 'rgba(245,158,11,0.12)' }}
-          >
-            <Globe size={18} style={{ color: '#f59e0b' }} strokeWidth={1.5} />
+        <div className="db-stat">
+          <div className="db-stat-icon" style={{ background: 'rgba(245,158,11,0.12)' }}>
+            <Globe size={14} style={{ color: '#f59e0b' }} strokeWidth={1.5} />
           </div>
           <div>
-            <span className="text-lg font-bold text-zinc-100 block">{stats.regionsAffected}</span>
-            <span className="text-[10px] text-zinc-500">Regions Affected</span>
+            <span className="db-stat-value">{stats.regionsAffected}</span>
+            <span className="db-stat-label">Regions Affected</span>
           </div>
         </div>
-
-        <div className="glass-panel rounded-xl p-4 flex items-center gap-3">
-          <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={{ background: SEVERITY_BG[stats.threatLevel] }}
-          >
-            <Shield size={18} style={{ color: SEVERITY_COLORS[stats.threatLevel] }} strokeWidth={1.5} />
+        <div className="db-stat">
+          <div className="db-stat-icon" style={{ background: SEVERITY_BG[stats.threatLevel] }}>
+            <Shield size={14} style={{ color: SEVERITY_COLORS[stats.threatLevel] }} strokeWidth={1.5} />
           </div>
           <div>
             <span
-              className="text-sm font-bold block uppercase tracking-wide"
+              className="text-xs font-bold block uppercase tracking-wide"
               style={{ color: SEVERITY_COLORS[stats.threatLevel] }}
             >
               {stats.threatLevel}
             </span>
-            <span className="text-[10px] text-zinc-500">Threat Level</span>
+            <span className="db-stat-label">Threat Level</span>
           </div>
         </div>
       </div>
 
-      {/* AI Analysis Panel */}
-      <div className="glass-panel rounded-xl p-5 card-premium">
-        <div className="flex items-center gap-2 mb-4">
-          <Brain size={16} className="text-purple-400" />
-          <h3 className="text-sm font-semibold text-zinc-200">AI Threat Assessment</h3>
-        </div>
-
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Semicircle Gauge */}
-          <div className="flex flex-col items-center flex-shrink-0">
-            <svg width="160" height="95" viewBox="0 0 160 95">
-              <defs>
-                <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#10b981" />
-                  <stop offset="35%" stopColor="#f59e0b" />
-                  <stop offset="65%" stopColor="#f97316" />
-                  <stop offset="100%" stopColor="#ef4444" />
-                </linearGradient>
-              </defs>
-              <path
-                d="M 15 85 A 65 65 0 0 1 145 85"
-                fill="none"
-                stroke="rgba(255,255,255,0.06)"
-                strokeWidth="10"
-                strokeLinecap="round"
-              />
-              <path
-                d="M 15 85 A 65 65 0 0 1 145 85"
-                fill="none"
-                stroke="url(#gaugeGrad)"
-                strokeWidth="10"
-                strokeLinecap="round"
-                strokeDasharray={`${(stats.avgConfidence / 100) * 204.2} 204.2`}
-              />
-              <text x="80" y="72" textAnchor="middle" className="fill-zinc-100" fontSize="24" fontWeight="700">
-                {stats.avgConfidence}%
-              </text>
-              <text x="80" y="88" textAnchor="middle" className="fill-zinc-500" fontSize="10">
-                Overall Confidence
-              </text>
-            </svg>
+      <div className="db-grid-2">
+        <div className="db-card p-3">
+          <div className="db-card-header">
+            <Brain size={13} className="text-purple-400" />
+            <span className="db-card-title">AI Threat Assessment</span>
           </div>
 
-          <div className="flex-1 space-y-4">
-            {/* Key Findings */}
-            <div>
-              <h4 className="text-[10px] text-zinc-600 uppercase tracking-wider mb-2">Key Findings</h4>
-              <ul className="space-y-2">
-                {KEY_FINDINGS.map((finding, i) => (
-                  <li key={i} className="flex items-start gap-2 text-xs text-zinc-400 leading-relaxed">
-                    <Zap size={10} className="text-purple-400 flex-shrink-0 mt-1" />
-                    {finding}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Confidence Meter */}
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[10px] text-zinc-600 uppercase tracking-wider">Confidence Meter</span>
-                <span className="text-xs font-medium text-blue-400">{stats.avgConfidence}%</span>
-              </div>
-              <div className="w-full h-2.5 rounded-full bg-white/[0.06] overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-700"
-                  style={{
-                    width: `${stats.avgConfidence}%`,
-                    background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)',
-                  }}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col items-center flex-shrink-0">
+              <svg width="140" height="82" viewBox="0 0 160 95">
+                <defs>
+                  <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#10b981" />
+                    <stop offset="35%" stopColor="#f59e0b" />
+                    <stop offset="65%" stopColor="#f97316" />
+                    <stop offset="100%" stopColor="#ef4444" />
+                  </linearGradient>
+                </defs>
+                <path
+                  d="M 15 85 A 65 65 0 0 1 145 85"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.06)"
+                  strokeWidth="8"
+                  strokeLinecap="round"
                 />
-              </div>
+                <path
+                  d="M 15 85 A 65 65 0 0 1 145 85"
+                  fill="none"
+                  stroke="url(#gaugeGrad)"
+                  strokeWidth="8"
+                  strokeLinecap="round"
+                  strokeDasharray={`${(stats.avgConfidence / 100) * 204.2} 204.2`}
+                />
+                <text x="80" y="72" textAnchor="middle" className="fill-zinc-100" fontSize="22" fontWeight="700">
+                  {stats.avgConfidence}%
+                </text>
+                <text x="80" y="86" textAnchor="middle" className="fill-zinc-500" fontSize="9">
+                  Overall Confidence
+                </text>
+              </svg>
             </div>
-          </div>
-        </div>
 
-        <div className="mt-4 pt-3 border-t border-white/[0.04] flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-[11px] text-zinc-500">Last analyzed: 2 minutes ago</span>
-        </div>
-      </div>
-
-      {/* Threat Categories Chart */}
-      <div className="glass-panel rounded-xl p-5">
-        <div className="flex items-center gap-2 mb-4">
-          <BarChart3 size={16} className="text-amber-400" />
-          <h3 className="text-sm font-semibold text-zinc-200">Threat Categories</h3>
-        </div>
-        <div className="space-y-3">
-          {CATEGORY_DATA.map((cat, i) => (
-            <div key={i} className="flex items-center gap-3">
-              <span className="text-xs text-zinc-400 w-32 flex-shrink-0 text-right">{cat.name}</span>
-              <div className="flex-1 h-4 rounded-full bg-white/[0.04] overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-700 flex items-center justify-end pr-2"
-                  style={{
-                    width: `${cat.value}%`,
-                    background: `linear-gradient(90deg, ${cat.color}40, ${cat.color})`,
-                  }}
-                >
-                  <span className="text-[9px] font-semibold text-white drop-shadow-sm">{cat.value}%</span>
+            <div className="flex-1 space-y-3">
+              <div>
+                <span className="text-[9px] text-zinc-600 uppercase tracking-wider mb-1 block">Key Findings</span>
+                <ul className="space-y-1.5">
+                  {KEY_FINDINGS.map((finding, i) => (
+                    <li key={i} className="flex items-start gap-1.5 text-[10px] text-zinc-400 leading-relaxed">
+                      <Zap size={8} className="text-purple-400 flex-shrink-0 mt-0.5" />
+                      {finding}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[9px] text-zinc-600 uppercase tracking-wider">Confidence Meter</span>
+                  <span className="text-[10px] font-medium text-blue-400">{stats.avgConfidence}%</span>
+                </div>
+                <div className="w-full h-2 rounded-full bg-white/[0.06] overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-700"
+                    style={{
+                      width: `${stats.avgConfidence}%`,
+                      background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)',
+                    }}
+                  />
                 </div>
               </div>
             </div>
-          ))}
+          </div>
+
+          <div className="mt-3 pt-2 border-t border-white/[0.04] flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-[9px] text-zinc-500">Last analyzed: 2 minutes ago</span>
+          </div>
+        </div>
+
+        <div className="db-card p-3">
+          <div className="db-card-header">
+            <BarChart3 size={13} className="text-amber-400" />
+            <span className="db-card-title">Threat Categories</span>
+          </div>
+          <div className="space-y-2">
+            {CATEGORY_DATA.map((cat, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <span className="text-[10px] text-zinc-400 w-28 flex-shrink-0 text-right truncate">{cat.name}</span>
+                <div className="flex-1 h-3.5 rounded-full bg-white/[0.04] overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-700 flex items-center justify-end pr-1.5"
+                    style={{
+                      width: `${cat.value}%`,
+                      background: `linear-gradient(90deg, ${cat.color}40, ${cat.color})`,
+                    }}
+                  >
+                    <span className="text-[8px] font-semibold text-white drop-shadow-sm">{cat.value}%</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Search + Filters */}
-      <div className="space-y-3">
+      <div className="db-section">
         <div className="relative">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600" />
+          <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600" />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search threats by name or description..."
-            className="w-full pl-9 pr-3 py-2.5 rounded-lg bg-white/[0.03] border border-white/[0.06] text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-blue-500/30 transition-colors"
+            className="w-full pl-8 pr-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-xs text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-blue-500/30 transition-colors"
           />
         </div>
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar flex-wrap">
-          <span className="text-[10px] text-zinc-600 uppercase tracking-wider mr-1 flex-shrink-0">Category:</span>
+        <div className="flex items-center gap-1 overflow-x-auto no-scrollbar flex-wrap">
+          <span className="text-[9px] text-zinc-600 uppercase tracking-wider mr-1 flex-shrink-0">Category:</span>
           {CATEGORIES.map(c => (
             <button
               key={c}
               onClick={() => setCategory(c)}
-              className={`btn-ripple flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer border ${
+              className={`db-btn flex-shrink-0 ${
                 category === c
-                  ? 'bg-purple-500/15 text-purple-400 border-purple-500/20'
-                  : 'text-zinc-500 hover:text-zinc-300 border-transparent hover:bg-white/[0.03]'
+                  ? '!bg-purple-500/15 !text-purple-400 !border-purple-500/20'
+                  : ''
               }`}
             >
               {c}
             </button>
           ))}
         </div>
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar flex-wrap">
-          <span className="text-[10px] text-zinc-600 uppercase tracking-wider mr-1 flex-shrink-0">Severity:</span>
+        <div className="flex items-center gap-1 overflow-x-auto no-scrollbar flex-wrap">
+          <span className="text-[9px] text-zinc-600 uppercase tracking-wider mr-1 flex-shrink-0">Severity:</span>
           {SEVERITIES.map(s => (
             <button
               key={s}
               onClick={() => setSeverityFilter(s)}
-              className={`btn-ripple flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer border ${
+              className={`db-btn flex-shrink-0 ${
                 severityFilter === s
-                  ? 'bg-white/[0.08] text-zinc-200 border-white/[0.12]'
-                  : 'text-zinc-500 hover:text-zinc-300 border-transparent hover:bg-white/[0.03]'
+                  ? '!bg-white/[0.08] !text-zinc-200 !border-white/[0.12]'
+                  : ''
               }`}
             >
               {s}
@@ -542,18 +522,17 @@ export default function ThreatInsights() {
         </div>
       </div>
 
-      {/* Threat Feed */}
-      <div className="space-y-3">
+      <div className="db-section">
         {filtered.length === 0 ? (
-          <div className="glass-panel rounded-xl flex flex-col items-center justify-center py-16 gap-3">
-            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.03)' }}>
-              <Brain size={28} className="text-zinc-700" />
+          <div className="db-card flex flex-col items-center justify-center py-10 gap-2">
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.03)' }}>
+              <Brain size={20} className="text-zinc-700" />
             </div>
-            <p className="text-sm text-zinc-500 font-medium">No threats match your filters</p>
-            <p className="text-xs text-zinc-600">Try adjusting your search or filter criteria</p>
+            <p className="text-xs text-zinc-500 font-medium">No threats match your filters</p>
+            <p className="text-[10px] text-zinc-600">Try adjusting your search or filter criteria</p>
             <button
               onClick={() => { setSearch(''); setCategory('All'); setSeverityFilter('All'); }}
-              className="btn-ripple text-xs text-blue-400 hover:text-blue-300 transition-colors cursor-pointer mt-1"
+              className="db-btn text-blue-400 mt-1"
             >
               Clear all filters
             </button>
@@ -562,39 +541,38 @@ export default function ThreatInsights() {
           filtered.map(threat => (
             <div
               key={threat.id}
-              className="glass-panel card-premium rounded-xl overflow-hidden transition-all hover:border-white/[0.08]"
+              className="db-card overflow-hidden transition-all hover:border-white/[0.08]"
               style={{ borderLeft: `3px solid ${SEVERITY_COLORS[threat.severity]}` }}
             >
-              <div className="p-4">
-                <div className="flex items-start gap-3">
+              <div className="p-3">
+                <div className="flex items-start gap-2">
                   <div
-                    className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                    className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
                     style={{ background: SEVERITY_BG[threat.severity] }}
                   >
-                    <Brain size={16} style={{ color: SEVERITY_COLORS[threat.severity] }} />
+                    <Brain size={12} style={{ color: SEVERITY_COLORS[threat.severity] }} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-sm font-medium text-zinc-200">{threat.title}</span>
+                      <span className="text-xs font-medium text-zinc-200">{threat.title}</span>
                     </div>
-                    <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                    <div className="flex items-center gap-1.5 mt-1 flex-wrap">
                       <span
-                        className="text-[10px] px-2 py-0.5 rounded-md font-medium"
+                        className="text-[9px] px-1.5 py-0.5 rounded-md font-medium"
                         style={{ background: SEVERITY_BG[threat.severity], color: SEVERITY_COLORS[threat.severity] }}
                       >
                         {threat.severity.toUpperCase()}
                       </span>
-                      <span className="text-[10px] px-2 py-0.5 rounded-md bg-white/[0.04] text-zinc-400 border border-white/[0.04]">
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-md bg-white/[0.04] text-zinc-400 border border-white/[0.04]">
                         {threat.category}
                       </span>
                     </div>
-                    <p className="text-xs text-zinc-400 mt-2 leading-relaxed">{threat.description}</p>
+                    <p className="text-[10px] text-zinc-400 mt-1.5 leading-relaxed">{threat.description}</p>
 
-                    {/* Confidence Score */}
-                    <div className="mt-3">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[10px] text-zinc-600">Confidence Score</span>
-                        <span className="text-[11px] font-semibold" style={{ color: SEVERITY_COLORS[threat.severity] }}>
+                    <div className="mt-2">
+                      <div className="flex items-center justify-between mb-0.5">
+                        <span className="text-[9px] text-zinc-600">Confidence Score</span>
+                        <span className="text-[10px] font-semibold" style={{ color: SEVERITY_COLORS[threat.severity] }}>
                           {threat.confidence}%
                         </span>
                       </div>
@@ -609,106 +587,101 @@ export default function ThreatInsights() {
                       </div>
                     </div>
 
-                    {/* Source + Timestamp */}
-                    <div className="flex items-center gap-3 mt-3 text-[10px] text-zinc-500">
+                    <div className="flex items-center gap-2 mt-2 text-[9px] text-zinc-500">
                       <span className="flex items-center gap-1">
-                        <Shield size={10} />
+                        <Shield size={8} />
                         Source: {threat.source}
                       </span>
                       <span>·</span>
                       <span>{threat.timestamp}</span>
                     </div>
 
-                    {/* Affected Regions */}
-                    <div className="mt-3">
-                      <span className="text-[10px] text-zinc-600 uppercase tracking-wider">Affected Regions</span>
-                      <div className="flex flex-wrap gap-1.5 mt-1.5">
+                    <div className="mt-2">
+                      <span className="text-[9px] text-zinc-600 uppercase tracking-wider">Affected Regions</span>
+                      <div className="flex flex-wrap gap-1 mt-1">
                         {threat.affectedRegions.map((r, i) => (
-                          <span key={i} className="text-[10px] px-2 py-1 rounded-md bg-blue-500/[0.06] text-blue-400/80 border border-blue-500/10 flex items-center gap-1">
-                            <Globe size={8} />
+                          <span key={i} className="text-[9px] px-1.5 py-0.5 rounded-md bg-blue-500/[0.06] text-blue-400/80 border border-blue-500/10 flex items-center gap-0.5">
+                            <Globe size={7} />
                             {r}
                           </span>
                         ))}
                       </div>
                     </div>
 
-                    {/* Key Indicators */}
-                    <div className="mt-3">
-                      <span className="text-[10px] text-zinc-600 uppercase tracking-wider">Key Indicators</span>
-                      <div className="flex flex-wrap gap-1.5 mt-1.5">
+                    <div className="mt-2">
+                      <span className="text-[9px] text-zinc-600 uppercase tracking-wider">Key Indicators</span>
+                      <div className="flex flex-wrap gap-1 mt-1">
                         {threat.indicators.map((ind, i) => (
-                          <span key={i} className="text-[10px] px-2 py-1 rounded-md bg-white/[0.03] text-zinc-400 border border-white/[0.04] flex items-center gap-1">
-                            <AlertTriangle size={8} className="text-amber-400/60" />
+                          <span key={i} className="text-[9px] px-1.5 py-0.5 rounded-md bg-white/[0.03] text-zinc-400 border border-white/[0.04] flex items-center gap-0.5">
+                            <AlertTriangle size={7} className="text-amber-400/60" />
                             {ind}
                           </span>
                         ))}
                       </div>
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/[0.04]">
+                    <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-white/[0.04]">
                       <button
                         onClick={() => handleBookmark(threat.id)}
-                        className={`btn-ripple flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors cursor-pointer ${
+                        className={`db-btn ${
                           threat.isBookmarked
-                            ? 'text-amber-400 bg-amber-500/10'
-                            : 'text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.03]'
+                            ? '!text-amber-400 !bg-amber-500/10'
+                            : ''
                         }`}
                       >
-                        <Bookmark size={11} fill={threat.isBookmarked ? 'currentColor' : 'none'} />
+                        <Bookmark size={9} fill={threat.isBookmarked ? 'currentColor' : 'none'} />
                         {threat.isBookmarked ? 'Bookmarked' : 'Bookmark'}
                       </button>
                       <button
                         onClick={() => handleShare(threat)}
-                        className="btn-ripple flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.03] transition-colors cursor-pointer"
+                        className="db-btn"
                       >
-                        <Share2 size={11} />
+                        <Share2 size={9} />
                         Share
                       </button>
                       <button
                         onClick={() => handleViewReport(threat)}
-                        className="btn-ripple flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.03] transition-colors cursor-pointer"
+                        className="db-btn"
                       >
-                        <FileText size={11} />
-                        View Full Report
+                        <FileText size={9} />
+                        Report
                       </button>
                       <div className="flex-1" />
                       <button
                         onClick={() => setExpandedId(expandedId === threat.id ? null : threat.id)}
-                        className="btn-ripple flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-medium text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.03] transition-colors cursor-pointer"
+                        className="db-btn"
                       >
-                        <Eye size={11} />
+                        <Eye size={9} />
                         {expandedId === threat.id ? 'Less' : 'More'}
-                        <ChevronDown size={10} className={`transition-transform duration-200 ${expandedId === threat.id ? 'rotate-180' : ''}`} />
+                        <ChevronDown size={8} className={`transition-transform duration-200 ${expandedId === threat.id ? 'rotate-180' : ''}`} />
                       </button>
                     </div>
 
-                    {/* Expandable Details */}
                     {expandedId === threat.id && (
-                      <div className="mt-3 pt-3 border-t border-white/[0.04] space-y-3 animate-fade-in">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          <div className="rounded-lg bg-white/[0.02] p-3 border border-white/[0.04]">
-                            <span className="text-[10px] text-zinc-600 uppercase tracking-wider block mb-1">Threat ID</span>
-                            <span className="text-xs text-zinc-300 font-mono">THR-{threat.id.padStart(6, '0')}</span>
+                      <div className="mt-2 pt-2 border-t border-white/[0.04] space-y-2 animate-fade-in">
+                        <div className="db-grid-2">
+                          <div className="rounded-lg bg-white/[0.02] p-2 border border-white/[0.04]">
+                            <span className="text-[9px] text-zinc-600 uppercase tracking-wider block mb-0.5">Threat ID</span>
+                            <span className="text-[10px] text-zinc-300 font-mono">THR-{threat.id.padStart(6, '0')}</span>
                           </div>
-                          <div className="rounded-lg bg-white/[0.02] p-3 border border-white/[0.04]">
-                            <span className="text-[10px] text-zinc-600 uppercase tracking-wider block mb-1">Risk Rating</span>
-                            <span className="text-xs font-semibold" style={{ color: SEVERITY_COLORS[threat.severity] }}>
+                          <div className="rounded-lg bg-white/[0.02] p-2 border border-white/[0.04]">
+                            <span className="text-[9px] text-zinc-600 uppercase tracking-wider block mb-0.5">Risk Rating</span>
+                            <span className="text-[10px] font-semibold" style={{ color: SEVERITY_COLORS[threat.severity] }}>
                               {threat.confidence >= 90 ? 'SEVERE' : threat.confidence >= 80 ? 'HIGH' : threat.confidence >= 70 ? 'MODERATE' : 'LOW'}
                             </span>
                           </div>
-                          <div className="rounded-lg bg-white/[0.02] p-3 border border-white/[0.04]">
-                            <span className="text-[10px] text-zinc-600 uppercase tracking-wider block mb-1">First Seen</span>
-                            <span className="text-xs text-zinc-300">2026-06-28</span>
+                          <div className="rounded-lg bg-white/[0.02] p-2 border border-white/[0.04]">
+                            <span className="text-[9px] text-zinc-600 uppercase tracking-wider block mb-0.5">First Seen</span>
+                            <span className="text-[10px] text-zinc-300">2026-06-28</span>
                           </div>
-                          <div className="rounded-lg bg-white/[0.02] p-3 border border-white/[0.04]">
-                            <span className="text-[10px] text-zinc-600 uppercase tracking-wider block mb-1">Last Updated</span>
-                            <span className="text-xs text-zinc-300">2026-07-15</span>
+                          <div className="rounded-lg bg-white/[0.02] p-2 border border-white/[0.04]">
+                            <span className="text-[9px] text-zinc-600 uppercase tracking-wider block mb-0.5">Last Updated</span>
+                            <span className="text-[10px] text-zinc-300">2026-07-15</span>
                           </div>
                         </div>
-                        <div className="rounded-lg bg-white/[0.02] p-3 border border-white/[0.04]">
-                          <span className="text-[10px] text-zinc-600 uppercase tracking-wider block mb-1.5">Recommendation</span>
-                          <p className="text-xs text-zinc-400 leading-relaxed">
+                        <div className="rounded-lg bg-white/[0.02] p-2 border border-white/[0.04]">
+                          <span className="text-[9px] text-zinc-600 uppercase tracking-wider block mb-1">Recommendation</span>
+                          <p className="text-[10px] text-zinc-400 leading-relaxed">
                             {threat.severity === 'critical'
                               ? 'Immediate action required. Block related communications and report to authorities. Monitor for related phishing attempts.'
                               : threat.severity === 'high'
@@ -726,126 +699,140 @@ export default function ThreatInsights() {
         )}
       </div>
 
-      {/* Fraud Pattern Analysis - Radar Chart */}
       {topThreat && (
-        <div className="glass-panel rounded-xl p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <TrendingUp size={16} className="text-emerald-400" />
-            <h3 className="text-sm font-semibold text-zinc-200">Fraud Pattern Analysis</h3>
-            <span className="text-[10px] text-zinc-500 ml-1">— {topThreat.title}</span>
-          </div>
+        <div className="db-grid-2">
+          <div className="db-card p-3">
+            <div className="db-card-header">
+              <TrendingUp size={13} className="text-emerald-400" />
+              <span className="db-card-title">Fraud Pattern Analysis</span>
+              <span className="text-[9px] text-zinc-500 ml-auto">— {topThreat.title}</span>
+            </div>
 
-          <div className="flex flex-col lg:flex-row items-center gap-6">
-            <svg width="240" height="220" viewBox="0 0 240 220" className="flex-shrink-0">
-              {/* Background rings */}
-              {[20, 40, 60, 80, 100].map(ring => {
-                const cx = 120;
-                const cy = 110;
-                const r = (ring / 100) * 80;
-                const pts = RADAR_DIMS.map((_, i) => {
-                  const angle = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
-                  return `${cx + r * Math.cos(angle)},${cy + r * Math.sin(angle)}`;
-                }).join(' ');
-                return (
-                  <polygon
-                    key={ring}
-                    points={pts}
-                    fill="none"
-                    stroke="rgba(255,255,255,0.04)"
-                    strokeWidth="1"
-                  />
-                );
-              })}
-
-              {/* Axes */}
-              {RADAR_DIMS.map((_, i) => {
-                const cx = 120;
-                const cy = 110;
-                const angle = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
-                const ex = cx + 80 * Math.cos(angle);
-                const ey = cy + 80 * Math.sin(angle);
-                return (
-                  <line
-                    key={i}
-                    x1={cx}
-                    y1={cy}
-                    x2={ex}
-                    y2={ey}
-                    stroke="rgba(255,255,255,0.04)"
-                    strokeWidth="1"
-                  />
-                );
-              })}
-
-              {/* Data polygon */}
-              {radarPoints && (
-                <polygon
-                  points={radarPoints}
-                  fill="rgba(139,92,246,0.15)"
-                  stroke="#8b5cf6"
-                  strokeWidth="2"
-                />
-              )}
-
-              {/* Data points */}
-              {radarPoints && (() => {
-                const cx = 120;
-                const cy = 110;
-                const values = RADAR_DATA[topThreat.id] || [50, 50, 50, 50, 50];
-                return values.map((v, i) => {
-                  const angle = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
-                  const r = (v / 100) * 80;
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <svg width="220" height="200" viewBox="0 0 240 220" className="flex-shrink-0">
+                {[20, 40, 60, 80, 100].map(ring => {
+                  const cx = 120;
+                  const cy = 110;
+                  const r = (ring / 100) * 80;
+                  const pts = RADAR_DIMS.map((_, i) => {
+                    const angle = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
+                    return `${cx + r * Math.cos(angle)},${cy + r * Math.sin(angle)}`;
+                  }).join(' ');
                   return (
-                    <circle
-                      key={i}
-                      cx={cx + r * Math.cos(angle)}
-                      cy={cy + r * Math.sin(angle)}
-                      r="3"
-                      fill="#8b5cf6"
-                      stroke="#1a1a2e"
-                      strokeWidth="2"
+                    <polygon
+                      key={ring}
+                      points={pts}
+                      fill="none"
+                      stroke="rgba(255,255,255,0.04)"
+                      strokeWidth="1"
                     />
                   );
-                });
-              })()}
-
-              {/* Labels */}
-              {radarLabelPositions.map((lp, i) => (
-                <text
-                  key={i}
-                  x={lp.x}
-                  y={lp.y}
-                  textAnchor={lp.anchor as "start" | "middle" | "end"}
-                  dominantBaseline="middle"
-                  className="fill-zinc-400"
-                  fontSize="9"
-                >
-                  {lp.dim}
-                </text>
-              ))}
-            </svg>
-
-            <div className="flex-1 space-y-3 w-full">
-              {RADAR_DIMS.map((dim, i) => {
-                const val = (RADAR_DATA[topThreat.id] || [50, 50, 50, 50, 50])[i];
-                return (
-                  <div key={i}>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs text-zinc-400">{dim}</span>
-                      <span className="text-xs font-medium text-purple-400">{val}%</span>
-                    </div>
-                    <div className="w-full h-2 rounded-full bg-white/[0.04] overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all duration-700"
-                        style={{
-                          width: `${val}%`,
-                          background: `linear-gradient(90deg, rgba(139,92,246,0.5), #8b5cf6)`,
-                        }}
+                })}
+                {RADAR_DIMS.map((_, i) => {
+                  const cx = 120;
+                  const cy = 110;
+                  const angle = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
+                  const ex = cx + 80 * Math.cos(angle);
+                  const ey = cy + 80 * Math.sin(angle);
+                  return (
+                    <line
+                      key={i}
+                      x1={cx}
+                      y1={cy}
+                      x2={ex}
+                      y2={ey}
+                      stroke="rgba(255,255,255,0.04)"
+                      strokeWidth="1"
+                    />
+                  );
+                })}
+                {radarPoints && (
+                  <polygon
+                    points={radarPoints}
+                    fill="rgba(139,92,246,0.15)"
+                    stroke="#8b5cf6"
+                    strokeWidth="2"
+                  />
+                )}
+                {radarPoints && (() => {
+                  const cx = 120;
+                  const cy = 110;
+                  const values = RADAR_DATA[topThreat.id] || [50, 50, 50, 50, 50];
+                  return values.map((v, i) => {
+                    const angle = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
+                    const r = (v / 100) * 80;
+                    return (
+                      <circle
+                        key={i}
+                        cx={cx + r * Math.cos(angle)}
+                        cy={cy + r * Math.sin(angle)}
+                        r="3"
+                        fill="#8b5cf6"
+                        stroke="#1a1a2e"
+                        strokeWidth="2"
                       />
+                    );
+                  });
+                })()}
+                {radarLabelPositions.map((lp, i) => (
+                  <text
+                    key={i}
+                    x={lp.x}
+                    y={lp.y}
+                    textAnchor={lp.anchor as "start" | "middle" | "end"}
+                    dominantBaseline="middle"
+                    className="fill-zinc-400"
+                    fontSize="8"
+                  >
+                    {lp.dim}
+                  </text>
+                ))}
+              </svg>
+
+              <div className="flex-1 space-y-2 w-full">
+                {RADAR_DIMS.map((dim, i) => {
+                  const val = (RADAR_DATA[topThreat.id] || [50, 50, 50, 50, 50])[i];
+                  return (
+                    <div key={i}>
+                      <div className="flex items-center justify-between mb-0.5">
+                        <span className="text-[10px] text-zinc-400">{dim}</span>
+                        <span className="text-[10px] font-medium text-purple-400">{val}%</span>
+                      </div>
+                      <div className="w-full h-1.5 rounded-full bg-white/[0.04] overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all duration-700"
+                          style={{
+                            width: `${val}%`,
+                            background: `linear-gradient(90deg, rgba(139,92,246,0.5), #8b5cf6)`,
+                          }}
+                        />
+                      </div>
                     </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          <div className="db-card p-3">
+            <div className="db-card-header">
+              <Zap size={13} className="text-violet-400" />
+              <span className="db-card-title">AI Predictions</span>
+            </div>
+            <div className="space-y-2">
+              {[
+                { label: 'Trend Direction', value: 'Upward', color: '#ef4444', detail: 'AI fraud increasing month-over-month' },
+                { label: 'Risk Assessment', value: 'Increasing', color: '#f59e0b', detail: 'New attack vectors being exploited' },
+                { label: 'Regional Impact', value: 'Expanding', color: '#8b5cf6', detail: 'Tier-2 cities now primary targets' },
+              ].map((item, i) => (
+                <div key={i} className="p-2 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+                  <div className="flex items-center justify-between mb-0.5">
+                    <span className="text-[9px] text-zinc-600 uppercase tracking-wider">{item.label}</span>
+                    <span className="text-[10px] font-semibold" style={{ color: item.color }}>{item.value}</span>
                   </div>
-                );
-              })}
+                  <p className="text-[10px] text-zinc-400">{item.detail}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>

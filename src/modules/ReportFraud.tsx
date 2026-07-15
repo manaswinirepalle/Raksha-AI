@@ -140,32 +140,34 @@ function generateReportId() {
 
 function SkeletonLoader() {
   return (
-    <div className="space-y-5 animate-fade-in">
-      <div className="glass-panel rounded-xl p-5 flex items-center gap-4">
-        <div className="w-10 h-10 rounded-lg bg-white/[0.04] animate-pulse" />
-        <div className="space-y-2">
-          <div className="h-5 w-40 rounded bg-white/[0.04] animate-pulse" />
-          <div className="h-3 w-64 rounded bg-white/[0.04] animate-pulse" />
+    <div className="db-page animate-fade-in">
+      <div className="db-card">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-white/[0.04] animate-pulse" />
+          <div className="space-y-1">
+            <div className="h-4 w-36 rounded bg-white/[0.04] animate-pulse" />
+            <div className="h-3 w-52 rounded bg-white/[0.04] animate-pulse" />
+          </div>
         </div>
       </div>
-      <div className="glass-panel rounded-xl p-6">
-        <div className="flex gap-4 mb-6">
+      <div className="db-card">
+        <div className="flex gap-3 mb-4">
           {[1, 2, 3, 4].map(i => (
             <div key={i} className="flex items-center gap-2 flex-1">
-              <div className="w-7 h-7 rounded-full bg-white/[0.04] animate-pulse" />
+              <div className="w-6 h-6 rounded-full bg-white/[0.04] animate-pulse" />
               <div className="flex-1 h-px bg-white/[0.04]" />
             </div>
           ))}
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {[1, 2, 3, 4, 5, 6].map(i => (
-            <div key={i} className="h-28 rounded-xl bg-white/[0.03] animate-pulse" />
+            <div key={i} className="h-24 rounded-xl bg-white/[0.03] animate-pulse" />
           ))}
         </div>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2 h-32 rounded-xl bg-white/[0.03] animate-pulse" />
-        <div className="h-32 rounded-xl bg-white/[0.03] animate-pulse" />
+      <div className="db-grid-2-1">
+        <div className="h-28 rounded-xl bg-white/[0.03] animate-pulse" />
+        <div className="h-28 rounded-xl bg-white/[0.03] animate-pulse" />
       </div>
     </div>
   );
@@ -374,34 +376,23 @@ export default function ReportFraud() {
 
   if (submitted) {
     return (
-      <div className="space-y-6 animate-fade-in">
-        <div className="glass-panel rounded-xl overflow-hidden">
-          <div
-            className="px-5 py-4 flex items-center gap-3"
-            style={{
-              background: 'linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(6,95,70,0.08) 50%, rgba(16,185,129,0.04) 100%)',
-            }}
-          >
-            <div
-              className="w-10 h-10 rounded-lg flex items-center justify-center"
-              style={{
-                background: 'linear-gradient(135deg, #10b981 0%, #065f46 100%)',
-                boxShadow: '0 0 20px rgba(16,185,129,0.25)',
-              }}
-            >
-              <Flag size={20} className="text-white" />
+      <div className="db-page animate-fade-in">
+        <div className="db-header">
+          <div className="db-header-left">
+            <div className="db-header-icon" style={{ background: 'linear-gradient(135deg, #10b981, #065f46)' }}>
+              <Flag size={16} className="text-white" />
             </div>
-            <div>
-              <h2 className="text-lg font-semibold text-zinc-100">Report Fraud</h2>
-              <p className="text-xs text-zinc-500 mt-0.5">File fraud reports, upload evidence, and track complaint status</p>
+            <div className="db-header-text">
+              <h2 className="db-title">Report Fraud</h2>
+              <p className="db-subtitle">File fraud reports, upload evidence, and track complaint status</p>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col items-center justify-center py-16 animate-fade-in">
-          <div className="relative mb-6">
-            <div className="w-24 h-24 rounded-full flex items-center justify-center" style={{ background: 'rgba(16,185,129,0.1)', boxShadow: '0 0 40px rgba(16,185,129,0.15)' }}>
-              <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+        <div className="flex flex-col items-center justify-center py-10 animate-fade-in">
+          <div className="relative mb-4">
+            <div className="w-20 h-20 rounded-full flex items-center justify-center" style={{ background: 'rgba(16,185,129,0.1)', boxShadow: '0 0 32px rgba(16,185,129,0.15)' }}>
+              <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
                 <circle cx="24" cy="24" r="20" stroke="#10b981" strokeWidth="2" strokeDasharray="126" strokeDashoffset="0" fill="none" opacity="0.3" />
                 <circle cx="24" cy="24" r="20" stroke="#10b981" strokeWidth="2.5" strokeDasharray="126" strokeDashoffset="126" fill="none">
                   <animate attributeName="stroke-dashoffset" from="126" to="0" dur="0.8s" fill="freeze" begin="0.2s" />
@@ -413,50 +404,49 @@ export default function ReportFraud() {
             </div>
           </div>
 
-          <h2 className="text-xl font-semibold text-zinc-100 mb-2">Report Submitted Successfully</h2>
-          <p className="text-sm text-zinc-400 mb-1">Your fraud report has been filed</p>
-          <p className="text-sm text-zinc-500 mb-6">
+          <h2 className="text-lg font-semibold text-zinc-100 mb-1">Report Submitted Successfully</h2>
+          <p className="text-xs text-zinc-400 mb-0.5">Your fraud report has been filed</p>
+          <p className="text-xs text-zinc-500 mb-4">
             Tracking ID: <span className="font-mono text-blue-400 font-semibold">{reportId}</span>
           </p>
 
-          <div className="glass-panel rounded-xl p-4 mb-6 max-w-md w-full">
-            <div className="flex items-center gap-2 mb-3">
-              <AlertTriangle size={14} className="text-amber-400" />
-              <span className="text-xs font-medium text-amber-400/80">What happens next?</span>
+          <div className="db-card p-3 mb-4 max-w-md w-full">
+            <div className="flex items-center gap-2 mb-2">
+              <AlertTriangle size={12} className="text-amber-400" />
+              <span className="text-[11px] font-medium text-amber-400/80">What happens next?</span>
             </div>
-            <ul className="space-y-2">
-              <li className="flex items-start gap-2 text-xs text-zinc-400">
-                <CheckCircle2 size={12} className="text-emerald-400 mt-0.5 flex-shrink-0" />
+            <ul className="space-y-1.5">
+              <li className="flex items-start gap-2 text-[11px] text-zinc-400">
+                <CheckCircle2 size={10} className="text-emerald-400 mt-0.5 flex-shrink-0" />
                 Your report will be reviewed by the Cyber Crime Division
               </li>
-              <li className="flex items-start gap-2 text-xs text-zinc-400">
-                <CheckCircle2 size={12} className="text-emerald-400 mt-0.5 flex-shrink-0" />
+              <li className="flex items-start gap-2 text-[11px] text-zinc-400">
+                <CheckCircle2 size={10} className="text-emerald-400 mt-0.5 flex-shrink-0" />
                 You will receive updates via SMS and email
               </li>
-              <li className="flex items-start gap-2 text-xs text-zinc-400">
-                <CheckCircle2 size={12} className="text-emerald-400 mt-0.5 flex-shrink-0" />
+              <li className="flex items-start gap-2 text-[11px] text-zinc-400">
+                <CheckCircle2 size={10} className="text-emerald-400 mt-0.5 flex-shrink-0" />
                 Average resolution time is 7-14 business days
               </li>
             </ul>
           </div>
 
-          <div className="flex items-center gap-3 flex-wrap justify-center">
+          <div className="flex items-center gap-2 flex-wrap justify-center">
             <button
               onClick={() => addToast('Opening report details...', 'info')}
-              className="btn-ripple flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-white transition-colors cursor-pointer"
-              style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1)' }}
+              className="db-btn db-btn-primary"
             >
-              <FileText size={14} /> View Report
+              <FileText size={12} /> View Report
             </button>
             <button
               onClick={handleDownloadPdf}
-              className="btn-ripple flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-zinc-300 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer border border-white/[0.08]"
+              className="db-btn"
             >
-              <Download size={14} /> Download PDF
+              <Download size={12} /> Download PDF
             </button>
             <button
               onClick={handleReset}
-              className="btn-ripple flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04] transition-colors cursor-pointer"
+              className="db-btn"
             >
               File Another Report
             </button>
@@ -470,40 +460,36 @@ export default function ReportFraud() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* Premium Header */}
-      <div className="glass-panel rounded-xl overflow-hidden">
-        <div
-          className="px-5 py-4 flex items-center gap-3"
-          style={{
-            background: 'linear-gradient(135deg, rgba(59,130,246,0.12) 0%, rgba(99,102,241,0.08) 50%, rgba(59,130,246,0.04) 100%)',
-          }}
-        >
-          <div
-            className="w-10 h-10 rounded-lg flex items-center justify-center"
-            style={{
-              background: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)',
-              boxShadow: '0 0 20px rgba(59,130,246,0.25)',
-            }}
+    <div className="db-page animate-fade-in">
+      <div className="db-header">
+        <div className="db-header-left">
+          <div className="db-header-icon" style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1)' }}>
+            <Flag size={16} className="text-white" />
+          </div>
+          <div className="db-header-text">
+            <h2 className="db-title">Report Fraud</h2>
+            <p className="db-subtitle">File fraud reports, upload evidence, and track complaint status</p>
+          </div>
+        </div>
+        <div className="db-header-actions">
+          <button
+            onClick={() => addToast('Opening complaint tracker...', 'info')}
+            className="db-btn"
           >
-            <Flag size={20} className="text-white" />
-          </div>
-          <div>
-            <h2 className="text-lg font-semibold text-zinc-100">Report Fraud</h2>
-            <p className="text-xs text-zinc-500 mt-0.5">File fraud reports, upload evidence, and track complaint status</p>
-          </div>
+            <CircleDot size={12} /> Track Complaints
+          </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_240px] gap-6">
-        <div className="space-y-6">
+      <div className="db-grid-2-1">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {/* Step Indicator */}
-          <div className="glass-panel rounded-xl p-4">
+          <div className="db-card p-3">
             <div className="flex items-center">
               {STEPS.map((s, i) => (
                 <div key={i} className="flex items-center flex-1 last:flex-initial">
-                  <div className="flex flex-col items-center gap-1.5">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold transition-all duration-300 ${
+                  <div className="flex flex-col items-center gap-1">
+                    <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-semibold transition-all duration-300 ${
                       i < step
                         ? 'text-white'
                         : i === step
@@ -512,19 +498,19 @@ export default function ReportFraud() {
                     }`}
                     style={
                       i < step
-                        ? { background: 'linear-gradient(135deg, #10b981, #059669)', boxShadow: '0 0 12px rgba(16,185,129,0.3)' }
+                        ? { background: 'linear-gradient(135deg, #10b981, #059669)', boxShadow: '0 0 10px rgba(16,185,129,0.3)' }
                         : i === step
-                          ? { background: 'linear-gradient(135deg, #3b82f6, #6366f1)', boxShadow: '0 0 12px rgba(59,130,246,0.3)' }
+                          ? { background: 'linear-gradient(135deg, #3b82f6, #6366f1)', boxShadow: '0 0 10px rgba(59,130,246,0.3)' }
                           : undefined
                     }>
-                      {i < step ? <Check size={14} /> : i + 1}
+                      {i < step ? <Check size={12} /> : i + 1}
                     </div>
-                    <span className={`text-[10px] font-medium hidden sm:block ${i === step ? 'text-blue-400' : i < step ? 'text-emerald-400' : 'text-zinc-600'}`}>
+                    <span className={`text-[9px] font-medium hidden sm:block ${i === step ? 'text-blue-400' : i < step ? 'text-emerald-400' : 'text-zinc-600'}`}>
                       {s.title}
                     </span>
                   </div>
                   {i < STEPS.length - 1 && (
-                    <div className={`flex-1 h-px mx-2 mb-5 transition-colors duration-300 ${i < step ? 'bg-emerald-500/40' : 'bg-white/[0.06]'}`} />
+                    <div className={`flex-1 h-px mx-2 mb-4 transition-colors duration-300 ${i < step ? 'bg-emerald-500/40' : 'bg-white/[0.06]'}`} />
                   )}
                 </div>
               ))}
@@ -532,36 +518,36 @@ export default function ReportFraud() {
           </div>
 
           {/* Step Content */}
-          <div className="glass-panel card-premium rounded-xl p-6 min-h-[320px]">
-            <h3 className="text-sm font-medium text-zinc-300 mb-1">{STEPS[step].title}</h3>
-            <p className="text-xs text-zinc-500 mb-5">{STEPS[step].description}</p>
+          <div className="db-card p-4" style={{ minHeight: '280px' }}>
+            <h3 className="text-xs font-medium text-zinc-300 mb-0.5">{STEPS[step].title}</h3>
+            <p className="text-[10px] text-zinc-500 mb-4">{STEPS[step].description}</p>
 
             {/* Step 1: Scam Type */}
             {step === 0 && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {SCAM_TYPES.map(type => (
                   <button
                     key={type.id}
                     onClick={() => setSelectedType(type.id)}
-                    className={`btn-ripple flex flex-col items-center gap-2.5 p-4 rounded-xl transition-all duration-200 cursor-pointer ${
+                    className={`btn-ripple flex flex-col items-center gap-2 p-3 rounded-xl transition-all duration-200 cursor-pointer ${
                       selectedType === type.id
                         ? 'border-2 border-blue-500/40 bg-blue-500/[0.08]'
                         : 'border border-white/[0.06] hover:border-white/[0.1] hover:bg-white/[0.02]'
                     }`}
                     style={
                       selectedType === type.id
-                        ? { boxShadow: `0 0 20px ${type.color}15, inset 0 0 20px ${type.color}08` }
+                        ? { boxShadow: `0 0 16px ${type.color}15, inset 0 0 16px ${type.color}08` }
                         : undefined
                     }
                   >
                     <div
-                      className="w-11 h-11 rounded-xl flex items-center justify-center"
+                      className="w-9 h-9 rounded-xl flex items-center justify-center"
                       style={{ background: `${type.color}12` }}
                     >
-                      <type.icon size={20} style={{ color: type.color }} strokeWidth={1.5} />
+                      <type.icon size={18} style={{ color: type.color }} strokeWidth={1.5} />
                     </div>
-                    <span className="text-xs font-semibold text-zinc-200">{type.label}</span>
-                    <span className="text-[10px] text-zinc-500 text-center leading-tight">{type.description}</span>
+                    <span className="text-[11px] font-semibold text-zinc-200">{type.label}</span>
+                    <span className="text-[9px] text-zinc-500 text-center leading-tight">{type.description}</span>
                   </button>
                 ))}
               </div>
@@ -569,39 +555,39 @@ export default function ReportFraud() {
 
             {/* Step 2: Details */}
             {step === 1 && (
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-3">
+                <div className="db-grid-2">
                   <div>
-                    <label className="text-xs text-zinc-500 mb-1.5 block font-medium">
+                    <label className="text-[11px] text-zinc-500 mb-1 block font-medium">
                       Date of Incident <span className="text-rose-400">*</span>
                     </label>
                     <div className="relative">
-                      <Calendar size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600" />
+                      <Calendar size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600" />
                       <input
                         type="date"
                         value={formData.date}
                         onChange={e => setFormData(p => ({ ...p, date: e.target.value }))}
                         onBlur={() => handleBlur('date')}
-                        className="w-full pl-9 pr-3 py-2.5 rounded-lg bg-white/[0.03] border text-sm text-zinc-200 focus:outline-none transition-colors"
+                        className="w-full pl-8 pr-3 py-2 rounded-lg bg-white/[0.03] border text-xs text-zinc-200 focus:outline-none transition-colors"
                         style={{
                           borderColor: errors.date ? 'rgba(239,68,68,0.4)' : 'rgba(255,255,255,0.06)',
                         }}
                       />
                     </div>
-                    {errors.date && <p className="text-[11px] text-rose-400 mt-1">{errors.date}</p>}
+                    {errors.date && <p className="text-[10px] text-rose-400 mt-1">{errors.date}</p>}
                   </div>
 
                   <div>
-                    <label className="text-xs text-zinc-500 mb-1.5 block font-medium">
+                    <label className="text-[11px] text-zinc-500 mb-1 block font-medium">
                       Region / State <span className="text-rose-400">*</span>
                     </label>
                     <div className="relative">
-                      <MapPin size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600" />
+                      <MapPin size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600" />
                       <select
                         value={formData.region}
                         onChange={e => setFormData(p => ({ ...p, region: e.target.value }))}
                         onBlur={() => handleBlur('region')}
-                        className="w-full pl-9 pr-3 py-2.5 rounded-lg bg-white/[0.03] border text-sm text-zinc-200 focus:outline-none transition-colors appearance-none"
+                        className="w-full pl-8 pr-3 py-2 rounded-lg bg-white/[0.03] border text-xs text-zinc-200 focus:outline-none transition-colors appearance-none"
                         style={{
                           borderColor: errors.region ? 'rgba(239,68,68,0.4)' : 'rgba(255,255,255,0.06)',
                         }}
@@ -612,13 +598,13 @@ export default function ReportFraud() {
                         ))}
                       </select>
                     </div>
-                    {errors.region && <p className="text-[11px] text-rose-400 mt-1">{errors.region}</p>}
+                    {errors.region && <p className="text-[10px] text-rose-400 mt-1">{errors.region}</p>}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="db-grid-2">
                   <div>
-                    <label className="text-xs text-zinc-500 mb-1.5 block font-medium">
+                    <label className="text-[11px] text-zinc-500 mb-1 block font-medium">
                       Scammer Contact Info <span className="text-rose-400">*</span>
                     </label>
                     <input
@@ -626,34 +612,34 @@ export default function ReportFraud() {
                       onChange={e => setFormData(p => ({ ...p, scammerContact: e.target.value }))}
                       onBlur={() => handleBlur('scammerContact')}
                       placeholder="Phone / UPI ID / Email"
-                      className="w-full px-3 py-2.5 rounded-lg bg-white/[0.03] border text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none transition-colors"
+                      className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border text-xs text-zinc-200 placeholder:text-zinc-600 focus:outline-none transition-colors"
                       style={{
                         borderColor: errors.scammerContact ? 'rgba(239,68,68,0.4)' : 'rgba(255,255,255,0.06)',
                       }}
                     />
-                    {errors.scammerContact && <p className="text-[11px] text-rose-400 mt-1">{errors.scammerContact}</p>}
+                    {errors.scammerContact && <p className="text-[10px] text-rose-400 mt-1">{errors.scammerContact}</p>}
                   </div>
 
                   <div>
-                    <label className="text-xs text-zinc-500 mb-1.5 block font-medium">
+                    <label className="text-[11px] text-zinc-500 mb-1 block font-medium">
                       Amount Lost
                     </label>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-500 font-medium">₹</span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-zinc-500 font-medium">₹</span>
                       <input
                         type="number"
                         value={formData.amount}
                         onChange={e => setFormData(p => ({ ...p, amount: e.target.value }))}
                         placeholder="0"
                         min="0"
-                        className="w-full pl-8 pr-3 py-2.5 rounded-lg bg-white/[0.03] border border-white/[0.06] text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-blue-500/30 transition-colors"
+                        className="w-full pl-7 pr-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-xs text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-blue-500/30 transition-colors"
                       />
                     </div>
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-xs text-zinc-500 mb-1.5 block font-medium">
+                  <label className="text-[11px] text-zinc-500 mb-1 block font-medium">
                     Description <span className="text-rose-400">*</span>
                   </label>
                   <textarea
@@ -661,19 +647,19 @@ export default function ReportFraud() {
                     onChange={e => setFormData(p => ({ ...p, description: e.target.value }))}
                     onBlur={() => handleBlur('description')}
                     placeholder="Describe the scam in detail — how it happened, what was said, any demands made..."
-                    rows={4}
-                    className="w-full px-3 py-2.5 rounded-lg bg-white/[0.03] border text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none transition-colors resize-none"
+                    rows={3}
+                    className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border text-xs text-zinc-200 placeholder:text-zinc-600 focus:outline-none transition-colors resize-none"
                     style={{
                       borderColor: errors.description ? 'rgba(239,68,68,0.4)' : 'rgba(255,255,255,0.06)',
                     }}
                   />
                   <div className="flex items-center justify-between mt-1">
                     {errors.description ? (
-                      <p className="text-[11px] text-rose-400">{errors.description}</p>
+                      <p className="text-[10px] text-rose-400">{errors.description}</p>
                     ) : (
                       <span />
                     )}
-                    <span className={`text-[10px] ${formData.description.length < 20 ? 'text-zinc-600' : 'text-emerald-400'}`}>
+                    <span className={`text-[9px] ${formData.description.length < 20 ? 'text-zinc-600' : 'text-emerald-400'}`}>
                       {formData.description.length}/500
                     </span>
                   </div>
@@ -683,40 +669,38 @@ export default function ReportFraud() {
 
             {/* Step 3: Evidence */}
             {step === 2 && (
-              <div className="space-y-5">
-                {/* File Upload Zone */}
+              <div className="space-y-3">
                 <div
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
-                  className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 cursor-pointer ${
+                  className={`border-2 border-dashed rounded-xl p-6 text-center transition-all duration-200 cursor-pointer ${
                     isDragging
                       ? 'border-blue-500/40 bg-blue-500/[0.06]'
                       : 'border-white/[0.08] hover:border-white/[0.14] hover:bg-white/[0.02]'
                   }`}
                   onClick={handleBrowseFiles}
                 >
-                  <Upload size={28} className={`mx-auto mb-3 ${isDragging ? 'text-blue-400' : 'text-zinc-600'}`} />
-                  <p className="text-sm text-zinc-400 mb-1">
+                  <Upload size={24} className={`mx-auto mb-2 ${isDragging ? 'text-blue-400' : 'text-zinc-600'}`} />
+                  <p className="text-xs text-zinc-400 mb-0.5">
                     {isDragging ? 'Drop files here' : 'Drag & drop files here'}
                   </p>
-                  <p className="text-xs text-zinc-500 mb-2">or</p>
+                  <p className="text-[10px] text-zinc-500 mb-1.5">or</p>
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); handleBrowseFiles(); }}
-                    className="btn-ripple text-sm text-blue-400 hover:text-blue-300 font-medium cursor-pointer"
+                    className="db-btn text-blue-400 hover:text-blue-300"
                   >
                     Browse files
                   </button>
-                  <p className="text-[10px] text-zinc-600 mt-3">
+                  <p className="text-[9px] text-zinc-600 mt-2">
                     Images, PDFs, Audio, Video — Max 10MB each, {MAX_FILES} files total
                   </p>
                 </div>
 
-                {/* Evidence Entries */}
                 {evidenceEntries.length > 0 && (
-                  <div className="space-y-2">
-                    <p className="text-xs font-medium text-zinc-400">
+                  <div className="space-y-1.5">
+                    <p className="text-[10px] font-medium text-zinc-400">
                       Attached Evidence ({evidenceEntries.length})
                     </p>
                     {evidenceEntries.map(entry => {
@@ -725,21 +709,21 @@ export default function ReportFraud() {
                         return (
                           <div
                             key={entry.id}
-                            className="flex items-center gap-3 p-3 rounded-lg border border-white/[0.06]"
+                            className="flex items-center gap-2 p-2 rounded-lg border border-white/[0.06]"
                             style={{ background: 'rgba(255,255,255,0.02)' }}
                           >
-                            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-500/10 flex-shrink-0">
-                              <FileIcon size={14} className="text-blue-400" />
+                            <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-blue-500/10 flex-shrink-0">
+                              <FileIcon size={12} className="text-blue-400" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm text-zinc-300 truncate">{entry.fileName}</p>
-                              <p className="text-[10px] text-zinc-600">{formatFileSize(entry.fileSize || 0)}</p>
+                              <p className="text-[11px] text-zinc-300 truncate">{entry.fileName}</p>
+                              <p className="text-[9px] text-zinc-600">{formatFileSize(entry.fileSize || 0)}</p>
                             </div>
                             <button
                               onClick={() => handleRemoveEvidence(entry.id)}
-                              className="btn-ripple p-1.5 rounded-lg text-zinc-600 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                              className="p-1 rounded-lg text-zinc-600 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
                             >
-                              <X size={14} />
+                              <X size={12} />
                             </button>
                           </div>
                         );
@@ -747,21 +731,21 @@ export default function ReportFraud() {
                       return (
                         <div
                           key={entry.id}
-                          className="flex items-start gap-3 p-3 rounded-lg border border-white/[0.06]"
+                          className="flex items-start gap-2 p-2 rounded-lg border border-white/[0.06]"
                           style={{ background: 'rgba(255,255,255,0.02)' }}
                         >
-                          <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-emerald-500/10 flex-shrink-0 mt-0.5">
-                            <FileText size={14} className="text-emerald-400" />
+                          <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-emerald-500/10 flex-shrink-0 mt-0.5">
+                            <FileText size={12} className="text-emerald-400" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-[10px] text-zinc-500 mb-1">Text Evidence</p>
-                            <p className="text-sm text-zinc-300 line-clamp-2">{entry.content}</p>
+                            <p className="text-[9px] text-zinc-500 mb-0.5">Text Evidence</p>
+                            <p className="text-[11px] text-zinc-300 line-clamp-2">{entry.content}</p>
                           </div>
                           <button
                             onClick={() => handleRemoveEvidence(entry.id)}
-                            className="btn-ripple p-1.5 rounded-lg text-zinc-600 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                            className="p-1 rounded-lg text-zinc-600 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
                           >
-                            <X size={14} />
+                            <X size={12} />
                           </button>
                         </div>
                       );
@@ -769,34 +753,33 @@ export default function ReportFraud() {
                   </div>
                 )}
 
-                {/* Text Evidence */}
                 <div>
-                  <label className="text-xs text-zinc-500 mb-1.5 block font-medium">
+                  <label className="text-[11px] text-zinc-500 mb-1 block font-medium">
                     Paste Text Evidence
                   </label>
                   <textarea
                     value={textEvidence}
                     onChange={e => setTextEvidence(e.target.value)}
                     placeholder="Paste chat screenshots text, email content, SMS text, or any other text evidence here..."
-                    rows={3}
-                    className="w-full px-3 py-2.5 rounded-lg bg-white/[0.03] border border-white/[0.06] text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-blue-500/30 transition-colors resize-none"
+                    rows={2}
+                    className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-xs text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-blue-500/30 transition-colors resize-none"
                   />
-                  <div className="flex items-center justify-between mt-1.5">
-                    <span className="text-[10px] text-zinc-600">
+                  <div className="flex items-center justify-between mt-1">
+                    <span className="text-[9px] text-zinc-600">
                       {fileEvidenceCount}/{MAX_FILES} files attached
                     </span>
                     <button
                       onClick={handleAddTextEvidence}
                       disabled={textEvidence.trim().length === 0}
-                      className="btn-ripple flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-blue-400 hover:bg-blue-500/10 transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                      className="db-btn text-blue-400 disabled:opacity-30 disabled:cursor-not-allowed"
                     >
-                      <Send size={11} /> Add Text Evidence
+                      <Send size={10} /> Add Text
                     </button>
                   </div>
                 </div>
 
-                <p className="text-xs text-zinc-500 flex items-center gap-1.5">
-                  <Shield size={12} className="text-emerald-500/60" />
+                <p className="text-[10px] text-zinc-500 flex items-center gap-1.5">
+                  <Shield size={10} className="text-emerald-500/60" />
                   Evidence strengthens your report and helps authorities take action faster.
                 </p>
               </div>
@@ -804,22 +787,20 @@ export default function ReportFraud() {
 
             {/* Step 4: Review */}
             {step === 3 && (
-              <div className="space-y-5">
-                {/* Scam Type Summary */}
+              <div className="space-y-3">
                 {selectedScamType && (
-                  <div className="flex items-center gap-3 p-3 rounded-xl border border-white/[0.06]" style={{ background: 'rgba(255,255,255,0.02)' }}>
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${selectedScamType.color}12` }}>
-                      <selectedScamType.icon size={18} style={{ color: selectedScamType.color }} strokeWidth={1.5} />
+                  <div className="flex items-center gap-2 p-2 rounded-lg border border-white/[0.06]" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${selectedScamType.color}12` }}>
+                      <selectedScamType.icon size={16} style={{ color: selectedScamType.color }} strokeWidth={1.5} />
                     </div>
                     <div>
-                      <p className="text-xs text-zinc-500">Scam Type</p>
-                      <p className="text-sm font-semibold text-zinc-200">{selectedScamType.label}</p>
+                      <p className="text-[9px] text-zinc-500">Scam Type</p>
+                      <p className="text-xs font-semibold text-zinc-200">{selectedScamType.label}</p>
                     </div>
                   </div>
                 )}
 
-                {/* Form Fields Summary */}
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {[
                     { label: 'Date of Incident', value: formData.date || 'Not specified', icon: Calendar },
                     { label: 'Region / State', value: formData.region || 'Not specified', icon: MapPin },
@@ -829,26 +810,25 @@ export default function ReportFraud() {
                   ].map((item, i) => (
                     <div
                       key={i}
-                      className="flex items-start gap-3 py-2.5"
+                      className="flex items-start gap-2 py-2"
                       style={{ borderBottom: i < 4 ? '1px solid rgba(255,255,255,0.03)' : 'none' }}
                     >
-                      <item.icon size={13} className="text-zinc-600 mt-0.5 flex-shrink-0" />
+                      <item.icon size={11} className="text-zinc-600 mt-0.5 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-[10px] text-zinc-600 uppercase tracking-wider">{item.label}</p>
-                        <p className="text-sm text-zinc-200 mt-0.5">{item.value}</p>
+                        <p className="text-[9px] text-zinc-600 uppercase tracking-wider">{item.label}</p>
+                        <p className="text-[11px] text-zinc-200 mt-0.5">{item.value}</p>
                       </div>
                     </div>
                   ))}
                 </div>
 
-                {/* Evidence Summary */}
-                <div className="flex items-center gap-3 p-3 rounded-xl border border-white/[0.06]" style={{ background: 'rgba(255,255,255,0.02)' }}>
-                  <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-blue-500/10">
-                    <FileText size={16} className="text-blue-400" />
+                <div className="flex items-center gap-2 p-2 rounded-lg border border-white/[0.06]" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-blue-500/10">
+                    <FileText size={14} className="text-blue-400" />
                   </div>
                   <div>
-                    <p className="text-xs text-zinc-500">Evidence</p>
-                    <p className="text-sm font-medium text-zinc-200">
+                    <p className="text-[9px] text-zinc-500">Evidence</p>
+                    <p className="text-[11px] font-medium text-zinc-200">
                       {evidenceEntries.length === 0
                         ? 'No evidence attached'
                         : `${evidenceEntries.length} item(s) — ${fileEvidenceCount} file(s), ${evidenceEntries.length - fileEvidenceCount} text`
@@ -857,26 +837,24 @@ export default function ReportFraud() {
                   </div>
                 </div>
 
-                {/* Warning Banner */}
-                <div className="flex items-start gap-3 p-4 rounded-xl bg-amber-500/[0.06] border border-amber-500/[0.12]">
-                  <AlertTriangle size={16} className="text-amber-400 flex-shrink-0 mt-0.5" />
+                <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-500/[0.06] border border-amber-500/[0.12]">
+                  <AlertTriangle size={14} className="text-amber-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-xs font-medium text-amber-400/90 mb-1">Official Submission</p>
-                    <p className="text-[11px] text-amber-400/60 leading-relaxed">
+                    <p className="text-[10px] font-medium text-amber-400/90 mb-0.5">Official Submission</p>
+                    <p className="text-[10px] text-amber-400/60 leading-relaxed">
                       Your report will be submitted to the National Cyber Crime Reporting Portal (cybercrime.gov.in) and the relevant law enforcement agencies in your jurisdiction.
                     </p>
                   </div>
                 </div>
 
-                {/* Confirmation Checkbox */}
-                <label className="flex items-start gap-3 p-3 rounded-xl border border-white/[0.06] hover:bg-white/[0.02] transition-colors cursor-pointer">
+                <label className="flex items-start gap-2 p-2 rounded-lg border border-white/[0.06] hover:bg-white/[0.02] transition-colors cursor-pointer">
                   <input
                     type="checkbox"
                     checked={confirmAccurate}
                     onChange={e => setConfirmAccurate(e.target.checked)}
-                    className="mt-0.5 w-4 h-4 rounded border-white/[0.15] bg-white/[0.03] text-blue-500 focus:ring-blue-500/30 cursor-pointer accent-blue-500"
+                    className="mt-0.5 w-3.5 h-3.5 rounded border-white/[0.15] bg-white/[0.03] text-blue-500 focus:ring-blue-500/30 cursor-pointer accent-blue-500"
                   />
-                  <span className="text-xs text-zinc-400 leading-relaxed">
+                  <span className="text-[10px] text-zinc-400 leading-relaxed">
                     I confirm that the information provided is accurate and truthful. I understand that filing a false report may result in legal consequences under Section 182 of the Indian Penal Code.
                   </span>
                 </label>
@@ -889,33 +867,32 @@ export default function ReportFraud() {
             <button
               onClick={() => setStep(s => Math.max(0, s - 1))}
               disabled={step === 0}
-              className="btn-ripple flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04] transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+              className="db-btn disabled:opacity-30 disabled:cursor-not-allowed"
             >
-              <ChevronLeft size={14} /> Back
+              <ChevronLeft size={12} /> Back
             </button>
 
             {step < STEPS.length - 1 ? (
               <button
                 onClick={handleNext}
                 disabled={!canProceed()}
-                className="btn-ripple flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium bg-blue-500/15 text-blue-400 hover:bg-blue-500/25 transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                className="db-btn db-btn-primary disabled:opacity-30 disabled:cursor-not-allowed"
               >
-                Next <ChevronRight size={14} />
+                Next <ChevronRight size={12} />
               </button>
             ) : (
               <button
                 onClick={handleSubmit}
                 disabled={submitting || !confirmAccurate || !isStep1Valid || !isStep2Valid}
-                className="btn-ripple flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-medium text-white transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1)' }}
+                className="db-btn db-btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {submitting ? (
                   <>
-                    <Loader2 size={14} className="animate-spin" /> Submitting...
+                    <Loader2 size={12} className="animate-spin" /> Submitting...
                   </>
                 ) : (
                   <>
-                    <Send size={14} /> Submit Report
+                    <Send size={12} /> Submit Report
                   </>
                 )}
               </button>
@@ -923,11 +900,9 @@ export default function ReportFraud() {
           </div>
         </div>
 
-        {/* Emergency Contacts Sidebar */}
         <EmergencyContactsSidebar />
       </div>
 
-      {/* Complaint Tracking */}
       <TrackedComplaintsSection />
     </div>
   );
@@ -940,36 +915,35 @@ function EmergencyContactsSidebar() {
   };
 
   return (
-    <div className="glass-panel rounded-xl p-4 space-y-3">
+    <div className="db-card p-3 space-y-2">
       <div className="flex items-center gap-2">
-        <Phone size={14} className="text-rose-400" />
-        <span className="text-xs font-semibold text-zinc-300">Emergency Contacts</span>
+        <Phone size={12} className="text-rose-400" />
+        <span className="text-[11px] font-semibold text-zinc-300">Emergency Contacts</span>
       </div>
-      <p className="text-[10px] text-zinc-600 leading-relaxed">
+      <p className="text-[9px] text-zinc-600 leading-relaxed">
         If you are in immediate danger, call these numbers directly.
       </p>
       {EMERGENCY_CONTACTS.map(contact => (
         <button
           key={contact.number}
           onClick={() => handleCall(contact.number, contact.label)}
-          className="btn-ripple w-full flex items-center gap-3 p-3 rounded-xl border border-white/[0.06] hover:border-white/[0.1] transition-all cursor-pointer"
-          style={{ background: 'rgba(255,255,255,0.02)' }}
+          className="db-btn w-full justify-start p-2"
         >
           <div
-            className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+            className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
             style={{ background: `${contact.color}12` }}
           >
-            <Phone size={15} style={{ color: contact.color }} />
+            <Phone size={12} style={{ color: contact.color }} />
           </div>
           <div className="text-left flex-1">
-            <p className="text-[11px] font-medium text-zinc-300">{contact.label}</p>
-            <p className="text-sm font-bold text-zinc-100 font-mono">{contact.number}</p>
+            <p className="text-[9px] font-medium text-zinc-300">{contact.label}</p>
+            <p className="text-[11px] font-bold text-zinc-100 font-mono">{contact.number}</p>
           </div>
-          <ExternalLink size={12} className="text-zinc-600" />
+          <ExternalLink size={10} className="text-zinc-600" />
         </button>
       ))}
       <div className="pt-2 border-t border-white/[0.04]">
-        <p className="text-[10px] text-zinc-600 leading-relaxed">
+        <p className="text-[9px] text-zinc-600 leading-relaxed">
           Cyber Crime Portal: <span className="text-blue-400">cybercrime.gov.in</span>
         </p>
       </div>
@@ -979,23 +953,25 @@ function EmergencyContactsSidebar() {
 
 function TrackedComplaintsSection() {
   return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-2">
-        <CircleDot size={16} className="text-blue-400" />
-        <h3 className="text-sm font-semibold text-zinc-200">Track Existing Complaints</h3>
+    <div className="db-section">
+      <div className="db-section-header">
+        <span className="db-section-title">
+          <CircleDot size={12} className="text-blue-400" />
+          Tracked Complaints
+        </span>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="db-grid-3">
         {TRACKED_COMPLAINTS.map(complaint => {
           const statusStyle = STATUS_COLORS[complaint.status];
           return (
             <div
               key={complaint.id}
-              className="glass-panel card-premium rounded-xl p-4 transition-all hover:border-white/[0.08]"
+              className="db-card transition-all hover:border-white/[0.08]"
             >
-              <div className="flex items-center justify-between mb-3">
-                <span className="font-mono text-xs font-bold text-zinc-300">{complaint.reportId}</span>
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-mono text-[10px] font-bold text-zinc-300">{complaint.reportId}</span>
                 <span
-                  className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold"
+                  className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[8px] font-semibold"
                   style={{
                     background: statusStyle.bg,
                     color: statusStyle.text,
@@ -1005,11 +981,11 @@ function TrackedComplaintsSection() {
                   {complaint.status}
                 </span>
               </div>
-              <p className="text-xs text-zinc-500 mb-1">{complaint.scamType}</p>
-              <p className="text-[10px] text-zinc-600 mb-3 flex items-center gap-1">
-                <Clock size={10} /> Filed: {complaint.date}
+              <p className="text-[10px] text-zinc-500 mb-0.5">{complaint.scamType}</p>
+              <p className="text-[9px] text-zinc-600 mb-2 flex items-center gap-1">
+                <Clock size={8} /> Filed: {complaint.date}
               </p>
-              <div className="w-full h-1.5 rounded-full bg-white/[0.04] overflow-hidden">
+              <div className="w-full h-1 rounded-full bg-white/[0.04] overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all duration-500"
                   style={{
@@ -1018,7 +994,7 @@ function TrackedComplaintsSection() {
                   }}
                 />
               </div>
-              <p className="text-[10px] text-zinc-600 mt-1.5 text-right">{complaint.progress}% complete</p>
+              <p className="text-[8px] text-zinc-600 mt-1 text-right">{complaint.progress}% complete</p>
             </div>
           );
         })}
@@ -1031,27 +1007,29 @@ function EmergencyContactsSection() {
   const { addToast } = useToast();
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-2">
-        <Phone size={16} className="text-rose-400" />
-        <h3 className="text-sm font-semibold text-zinc-200">Emergency Contacts</h3>
+    <div className="db-section">
+      <div className="db-section-header">
+        <span className="db-section-title">
+          <Phone size={12} className="text-rose-400" />
+          Emergency Contacts
+        </span>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="db-grid-3">
         {EMERGENCY_CONTACTS.map(contact => (
           <button
             key={contact.number}
             onClick={() => addToast(`Calling ${contact.label}`, 'info')}
-            className="btn-ripple glass-panel rounded-xl p-4 flex items-center gap-3 transition-all hover:border-white/[0.08] cursor-pointer"
+            className="db-card flex items-center gap-2 transition-all hover:border-white/[0.08] cursor-pointer text-left"
           >
             <div
-              className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+              className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
               style={{ background: `${contact.color}12` }}
             >
-              <Phone size={18} style={{ color: contact.color }} />
+              <Phone size={14} style={{ color: contact.color }} />
             </div>
-            <div className="text-left">
-              <p className="text-xs font-medium text-zinc-300">{contact.label}</p>
-              <p className="text-base font-bold text-zinc-100 font-mono">{contact.number}</p>
+            <div>
+              <p className="text-[10px] font-medium text-zinc-300">{contact.label}</p>
+              <p className="text-xs font-bold text-zinc-100 font-mono">{contact.number}</p>
             </div>
           </button>
         ))}
@@ -1059,5 +1037,3 @@ function EmergencyContactsSection() {
     </div>
   );
 }
-
-

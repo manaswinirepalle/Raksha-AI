@@ -130,23 +130,23 @@ export default function ScamTrends() {
 
   if (loading) {
     return (
-      <div className="space-y-5 animate-fade-in">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl" style={{ background: 'rgba(255,255,255,0.04)' }} />
-          <div className="space-y-1.5">
-            <div className="h-5 w-40 rounded-lg" style={{ background: 'rgba(255,255,255,0.04)' }} />
-            <div className="h-3 w-64 rounded-lg" style={{ background: 'rgba(255,255,255,0.03)' }} />
+      <div className="db-page animate-fade-in">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg" style={{ background: 'rgba(255,255,255,0.04)' }} />
+          <div className="space-y-1">
+            <div className="h-4 w-36 rounded-lg" style={{ background: 'rgba(255,255,255,0.04)' }} />
+            <div className="h-3 w-52 rounded-lg" style={{ background: 'rgba(255,255,255,0.03)' }} />
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="db-stats">
           {[1, 2, 3].map(i => (
-            <div key={i} className="h-28 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }} />
+            <div key={i} className="h-16 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }} />
           ))}
         </div>
-        <div className="h-64 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }} />
-        <div className="space-y-3">
+        <div className="h-52 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }} />
+        <div className="db-grid-2">
           {[1, 2, 3].map(i => (
-            <div key={i} className="h-24 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }} />
+            <div key={i} className="h-20 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }} />
           ))}
         </div>
       </div>
@@ -176,58 +176,56 @@ export default function ScamTrends() {
   const monthlyPathD = monthlyPoints.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ');
 
   return (
-    <div className="space-y-5 animate-fade-in">
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #059669, #10b981)' }}>
-            <TrendingUp size={18} className="text-white" />
+    <div className="db-page animate-fade-in">
+      <div className="db-header">
+        <div className="db-header-left">
+          <div className="db-header-icon" style={{ background: 'linear-gradient(135deg, #059669, #10b981)' }}>
+            <TrendingUp size={16} className="text-white" />
+          </div>
+          <div className="db-header-text">
+            <h2 className="db-title">Scam Trends</h2>
+            <p className="db-subtitle">Emerging scam patterns, regional data, and AI predictions</p>
+          </div>
+        </div>
+        <div className="db-header-actions">
+          <button onClick={handleRefresh} disabled={refreshing} className="db-btn">
+            {refreshing ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />} Refresh
+          </button>
+        </div>
+      </div>
+
+      <div className="db-stats">
+        <div className="db-stat">
+          <div className="db-stat-icon" style={{ background: 'rgba(59,130,246,0.12)' }}>
+            <BarChart3 size={13} className="text-blue-400" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-zinc-100">Scam Trends</h2>
-            <p className="text-xs text-zinc-500 mt-0.5">Emerging scam patterns, regional data, and AI predictions</p>
+            <span className="db-stat-value">{totalReports.toLocaleString()}</span>
+            <span className="db-stat-label">Total Reports</span>
           </div>
         </div>
-        <button onClick={handleRefresh} disabled={refreshing}
-          className="btn-ripple flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.03] transition-colors cursor-pointer disabled:opacity-50">
-          {refreshing ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />} Refresh
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div className="glass-panel rounded-xl p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-500/10">
-              <BarChart3 size={14} className="text-blue-400" />
-            </div>
-            <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Total Reports This Month</span>
+        <div className="db-stat">
+          <div className="db-stat-icon" style={{ background: 'rgba(245,158,11,0.12)' }}>
+            <AlertTriangle size={13} className="text-amber-400" />
           </div>
-          <span className="text-2xl font-bold text-zinc-100 block">{totalReports.toLocaleString()}</span>
-          <span className="text-[10px] text-emerald-400 mt-1 block">↑ 23% vs previous period</span>
+          <div>
+            <span className="db-stat-value">{topCategory.category}</span>
+            <span className="db-stat-label">Top Category</span>
+          </div>
         </div>
-        <div className="glass-panel rounded-xl p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-amber-500/10">
-              <AlertTriangle size={14} className="text-amber-400" />
-            </div>
-            <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Most Reported Category</span>
+        <div className="db-stat">
+          <div className="db-stat-icon" style={{ background: 'rgba(244,63,94,0.12)' }}>
+            <TrendingUp size={13} className="text-rose-400" />
           </div>
-          <span className="text-lg font-bold text-zinc-100 block">{topCategory.category}</span>
-          <span className="text-[10px] text-zinc-500 mt-1 block">{topCategory.reports.toLocaleString()} reports</span>
-        </div>
-        <div className="glass-panel rounded-xl p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-rose-500/10">
-              <TrendingUp size={14} className="text-rose-400" />
-            </div>
-            <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Fastest Growing</span>
+          <div>
+            <span className="db-stat-value">{fastestGrowing.category}</span>
+            <span className="db-stat-label">Fastest Growing ↑{fastestGrowing.change}%</span>
           </div>
-          <span className="text-lg font-bold text-zinc-100 block">{fastestGrowing.category}</span>
-          <span className="text-[10px] text-rose-400 mt-1 block">↑ {fastestGrowing.change}% increase</span>
         </div>
       </div>
 
-      <div className="glass-panel rounded-xl p-4 overflow-x-auto">
-        <h3 className="text-sm font-medium text-zinc-300 mb-3">Category Reports Distribution</h3>
+      <div className="db-card p-3 overflow-x-auto">
+        <h3 className="text-xs font-medium text-zinc-300 mb-2">Category Reports Distribution</h3>
         <svg width={chartWidth} height={chartHeight + 50} viewBox={`0 0 ${chartWidth} ${chartHeight + 50}`} className="w-full" style={{ minWidth: chartWidth }}>
           {TRENDS.map((trend, i) => {
             const barHeight = (trend.reports / maxReports) * chartHeight;
@@ -282,58 +280,59 @@ export default function ScamTrends() {
         </svg>
       </div>
 
-      <div className="flex items-center gap-3 flex-wrap">
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-          {TIMEFRAMES.map(tf => (
-            <button key={tf} onClick={() => setTimeframe(tf)}
-              className={`btn-ripple flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
-                timeframe === tf ? 'bg-blue-500/15 text-blue-400 border border-blue-500/20' : 'text-zinc-500 hover:text-zinc-300 border border-transparent'
-              }`}>
-              {tf}
+      <div className="db-section">
+        <div className="db-section-header">
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+            {TIMEFRAMES.map(tf => (
+              <button key={tf} onClick={() => setTimeframe(tf)}
+                className={`db-btn flex-shrink-0 ${
+                  timeframe === tf ? '!bg-blue-500/15 !text-blue-400 !border-blue-500/20' : ''
+                }`}>
+                {tf}
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center gap-1">
+            <button onClick={() => setSortBy('change')}
+              className={`db-btn ${sortBy === 'change' ? '!bg-white/[0.05] !text-zinc-200 !border-white/[0.08]' : ''}`}>
+              Sort by Change
             </button>
-          ))}
-        </div>
-        <div className="flex-1" />
-        <div className="flex items-center gap-1.5">
-          <button onClick={() => setSortBy('change')}
-            className={`btn-ripple px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
-              sortBy === 'change' ? 'bg-white/[0.05] text-zinc-200 border border-white/[0.08]' : 'text-zinc-600 hover:text-zinc-400 border border-transparent'
-            }`}>Sort by Change</button>
-          <button onClick={() => setSortBy('reports')}
-            className={`btn-ripple px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
-              sortBy === 'reports' ? 'bg-white/[0.05] text-zinc-200 border border-white/[0.08]' : 'text-zinc-600 hover:text-zinc-400 border border-transparent'
-            }`}>Sort by Reports</button>
+            <button onClick={() => setSortBy('reports')}
+              className={`db-btn ${sortBy === 'reports' ? '!bg-white/[0.05] !text-zinc-200 !border-white/[0.08]' : ''}`}>
+              Sort by Reports
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="space-y-3">
+      <div className="db-section">
         {sortedTrends.map(trend => (
-          <div key={trend.id} className="glass-panel card-premium rounded-xl p-4 hover:border-white/[0.08] transition-all">
-            <div className="flex items-start gap-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${trend.change > 0 ? 'bg-rose-500/10' : 'bg-emerald-500/10'}`}>
-                {trend.change > 0 ? <ArrowUpRight size={18} className="text-rose-400" /> : <ArrowDownRight size={18} className="text-emerald-400" />}
+          <div key={trend.id} className="db-card hover:border-white/[0.08] transition-all">
+            <div className="flex items-start gap-2">
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${trend.change > 0 ? 'bg-rose-500/10' : 'bg-emerald-500/10'}`}>
+                {trend.change > 0 ? <ArrowUpRight size={14} className="text-rose-400" /> : <ArrowDownRight size={14} className="text-emerald-400" />}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-zinc-200">{trend.category}</span>
-                  <span className={`text-sm font-bold ${trend.change > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                  <span className="text-xs font-medium text-zinc-200">{trend.category}</span>
+                  <span className={`text-xs font-bold ${trend.change > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
                     {trend.change > 0 ? '+' : ''}{trend.change}%
                   </span>
                 </div>
-                <p className="text-xs text-zinc-400 mt-1 leading-relaxed">{trend.description}</p>
-                <div className="flex items-center justify-between mt-2">
-                  <div className="flex items-center gap-4">
-                    <span className="text-[10px] text-zinc-500 flex items-center gap-1">
-                      <BarChart3 size={10} /> {trend.reports.toLocaleString()} reports
+                <p className="text-[10px] text-zinc-400 mt-0.5 leading-relaxed">{trend.description}</p>
+                <div className="flex items-center justify-between mt-1.5">
+                  <div className="flex items-center gap-3">
+                    <span className="text-[9px] text-zinc-500 flex items-center gap-0.5">
+                      <BarChart3 size={8} /> {trend.reports.toLocaleString()} reports
                     </span>
-                    <span className="text-[10px] text-zinc-500 flex items-center gap-1">
-                      <MapPin size={10} /> {trend.topRegion}
+                    <span className="text-[9px] text-zinc-500 flex items-center gap-0.5">
+                      <MapPin size={8} /> {trend.topRegion}
                     </span>
-                    <span className="text-[10px] text-zinc-600 flex items-center gap-1">
-                      <Calendar size={10} /> {trend.timeframe}
+                    <span className="text-[9px] text-zinc-600 flex items-center gap-0.5">
+                      <Calendar size={8} /> {trend.timeframe}
                     </span>
                   </div>
-                  <svg width="50" height="16" viewBox="0 0 50 16" className="flex-shrink-0 opacity-60">
+                  <svg width="42" height="14" viewBox="0 0 50 16" className="flex-shrink-0 opacity-60">
                     <path
                       d={SPARKLINE_PATHS[trend.id] || 'M0 8 Q5 8, 10 8 T20 8 T30 8'}
                       fill="none"
@@ -350,63 +349,71 @@ export default function ScamTrends() {
         ))}
       </div>
 
-      <div className="glass-panel rounded-xl p-4">
-        <h3 className="text-sm font-medium text-zinc-300 mb-4">Top Affected States</h3>
-        <div className="space-y-2">
-          {STATES.map((s) => {
-            const barWidth = (s.complaints / maxStateComplaints) * 100;
-            return (
-              <div key={s.state} className="flex items-center gap-3">
-                <span className="text-[10px] text-zinc-400 w-28 text-right flex-shrink-0 truncate">{s.state}</span>
-                <div className="flex-1 h-6 rounded-md overflow-hidden" style={{ background: 'rgba(255,255,255,0.04)' }}>
-                  <div
-                    className="h-full rounded-md transition-all duration-500"
-                    style={{ width: `${barWidth}%`, background: 'linear-gradient(90deg, rgba(59,130,246,0.3), rgba(59,130,246,0.6))' }}
-                  />
-                </div>
-                <span className="text-[10px] text-zinc-500 w-16 flex-shrink-0">{s.complaints.toLocaleString()}</span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="glass-panel rounded-xl p-4">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-violet-500/10">
-            <Brain size={14} className="text-violet-400" />
+      <div className="db-grid-2">
+        <div className="db-card p-3">
+          <div className="db-card-header">
+            <MapPin size={13} className="text-blue-400" />
+            <span className="db-card-title">Top Affected States</span>
           </div>
-          <h3 className="text-sm font-medium text-zinc-300">AI Trend Predictions</h3>
-        </div>
-        <div className="space-y-3">
-          {PREDICTIONS.map((pred, i) => (
-            <div key={i} className="flex items-start gap-3 p-3 rounded-lg" style={{ background: 'rgba(255,255,255,0.02)' }}>
-              <div className={`w-2 h-2 rounded-full flex-shrink-0 mt-1.5 ${
-                pred.color === 'rose' ? 'bg-rose-400' : pred.color === 'amber' ? 'bg-amber-400' : 'bg-violet-400'
-              }`} />
-              <div className="flex-1">
-                <p className="text-xs text-zinc-300 leading-relaxed">{pred.text}</p>
-                <div className="flex items-center gap-2 mt-1.5">
-                  <span className="text-[10px] text-zinc-500">Confidence</span>
-                  <div className="w-16 h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+          <div className="space-y-1.5">
+            {STATES.map((s) => {
+              const barWidth = (s.complaints / maxStateComplaints) * 100;
+              return (
+                <div key={s.state} className="flex items-center gap-2">
+                  <span className="text-[9px] text-zinc-400 w-24 text-right flex-shrink-0 truncate">{s.state}</span>
+                  <div className="flex-1 h-4 rounded-md overflow-hidden" style={{ background: 'rgba(255,255,255,0.04)' }}>
                     <div
-                      className="h-full rounded-full"
-                      style={{
-                        width: `${pred.confidence}%`,
-                        background: pred.color === 'rose' ? '#f43f5e' : pred.color === 'amber' ? '#f59e0b' : '#8b5cf6',
-                      }}
+                      className="h-full rounded-md transition-all duration-500"
+                      style={{ width: `${barWidth}%`, background: 'linear-gradient(90deg, rgba(59,130,246,0.3), rgba(59,130,246,0.6))' }}
                     />
                   </div>
-                  <span className="text-[10px] text-zinc-400 font-medium">{pred.confidence}%</span>
+                  <span className="text-[9px] text-zinc-500 w-12 flex-shrink-0">{s.complaints.toLocaleString()}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="db-card p-3">
+          <div className="db-card-header">
+            <Brain size={13} className="text-violet-400" />
+            <span className="db-card-title">AI Trend Predictions</span>
+          </div>
+          <div className="space-y-2">
+            {PREDICTIONS.map((pred, i) => (
+              <div key={i} className="p-2 rounded-lg" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                <div className="flex items-start gap-2">
+                  <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 mt-1 ${
+                    pred.color === 'rose' ? 'bg-rose-400' : pred.color === 'amber' ? 'bg-amber-400' : 'bg-violet-400'
+                  }`} />
+                  <div className="flex-1">
+                    <p className="text-[10px] text-zinc-300 leading-relaxed">{pred.text}</p>
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <span className="text-[9px] text-zinc-500">Confidence</span>
+                      <div className="w-14 h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                        <div
+                          className="h-full rounded-full"
+                          style={{
+                            width: `${pred.confidence}%`,
+                            background: pred.color === 'rose' ? '#f43f5e' : pred.color === 'amber' ? '#f59e0b' : '#8b5cf6',
+                          }}
+                        />
+                      </div>
+                      <span className="text-[9px] text-zinc-400 font-medium">{pred.confidence}%</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className="glass-panel rounded-xl p-4">
-        <h3 className="text-sm font-medium text-zinc-300 mb-3">Monthly Overview - {topCategory.category}</h3>
+      <div className="db-card p-3">
+        <div className="db-card-header">
+          <Calendar size={13} className="text-emerald-400" />
+          <span className="db-card-title">Monthly Overview — {topCategory.category}</span>
+        </div>
         <svg width="100%" height={monthlyChartHeight + monthlyPaddingBottom} viewBox={`0 0 ${monthlyChartWidth} ${monthlyChartHeight + monthlyPaddingBottom}`} preserveAspectRatio="xMidYMid meet">
           {[0, 0.25, 0.5, 0.75, 1].map((frac, i) => {
             const val = minMonthly + frac * (maxMonthly - minMonthly);

@@ -534,7 +534,7 @@ export default function ScamDetector() {
 
   return (
     <div className="scam-detector" aria-busy={isAnalyzing}>
-      <div className="sd-header">
+      <div className="sd-header" style={{ marginBottom: '10px' }}>
         <div className="sd-header-left">
           <div className="sd-header-icon"><AlertTriangle size={16} strokeWidth={1.5} /></div>
           <div className="sd-header-text">
@@ -552,7 +552,7 @@ export default function ScamDetector() {
         </div>
       </div>
 
-      <div className="sd-scenario-trigger">
+      <div className="sd-scenario-trigger" style={{ marginBottom: '8px' }}>
         <button onClick={openModal} className="sd-trigger-btn btn-premium btn-ripple" aria-haspopup="dialog" aria-label="Select a transcript scenario to analyze" disabled={isAnalyzing} style={{ opacity: isAnalyzing ? 0.5 : 1, pointerEvents: isAnalyzing ? 'none' : 'auto' }}>
           <div className="sd-trigger-left">
             <FileText size={15} strokeWidth={1.5} />
@@ -563,7 +563,7 @@ export default function ScamDetector() {
       </div>
 
       {/* Tab Navigation */}
-      <div className="sd-tabs" role="tablist">
+      <div className="sd-tabs" role="tablist" style={{ marginBottom: '8px' }}>
         {TABS.map((tab) => {
           const Icon = tab.icon;
           return (
@@ -582,7 +582,7 @@ export default function ScamDetector() {
       </div>
 
       {/* Tab Content */}
-      <div className="sd-tab-panel">
+      <div className="sd-tab-panel" style={{ marginTop: 0 }}>
         {activeTab === 'analysis' && renderAnalysisTab()}
         {activeTab === 'insights' && renderInsightsTab()}
         {activeTab === 'safety' && renderSafetyTab()}

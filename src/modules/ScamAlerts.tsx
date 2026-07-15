@@ -225,25 +225,6 @@ const SEVERITY_ORDER: Record<string, number> = {
   low: 3,
 };
 
-function SkeletonCard() {
-  return (
-    <div className="glass-panel rounded-xl p-4 animate-pulse">
-      <div className="flex items-start gap-3">
-        <div className="w-9 h-9 rounded-lg bg-white/[0.04]" />
-        <div className="flex-1 space-y-2">
-          <div className="h-4 w-3/4 rounded bg-white/[0.04]" />
-          <div className="flex gap-2">
-            <div className="h-3 w-16 rounded-full bg-white/[0.04]" />
-            <div className="h-3 w-12 rounded-full bg-white/[0.04]" />
-          </div>
-          <div className="h-3 w-full rounded bg-white/[0.04]" />
-          <div className="h-3 w-2/3 rounded bg-white/[0.04]" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function SeverityBarChart({ alerts }: { alerts: ScamAlert[] }) {
   const counts = useMemo(() => {
     const map: Record<string, number> = { critical: 0, high: 0, medium: 0, low: 0 };
@@ -262,12 +243,12 @@ function SeverityBarChart({ alerts }: { alerts: ScamAlert[] }) {
   ];
 
   return (
-    <div className="glass-panel rounded-xl p-4">
-      <div className="flex items-center gap-2 mb-3">
-        <BarChart3 size={14} className="text-zinc-400" />
-        <span className="text-xs font-medium text-zinc-400">Alerts by Severity</span>
+    <div className="glass-panel rounded-xl p-3">
+      <div className="db-card-header">
+        <BarChart3 size={13} className="text-zinc-400" />
+        <span className="db-card-title">Severity Chart</span>
       </div>
-      <svg viewBox="0 0 200 80" className="w-full h-auto" style={{ maxHeight: 120 }}>
+      <svg viewBox="0 0 200 80" className="w-full h-auto" style={{ maxHeight: 100 }}>
         {bars.map((bar, i) => {
           const count = counts[bar.key] || 0;
           const barHeight = (count / max) * 45;
@@ -275,32 +256,11 @@ function SeverityBarChart({ alerts }: { alerts: ScamAlert[] }) {
           const y = 60 - barHeight;
           return (
             <g key={bar.key}>
-              <rect
-                x={x}
-                y={y}
-                width={30}
-                height={barHeight}
-                rx={4}
-                fill={bar.color}
-                opacity={0.85}
-              />
-              <text
-                x={x + 15}
-                y={y - 4}
-                textAnchor="middle"
-                fill="#d4d4d8"
-                fontSize={9}
-                fontWeight={600}
-              >
+              <rect x={x} y={y} width={30} height={barHeight} rx={4} fill={bar.color} opacity={0.85} />
+              <text x={x + 15} y={y - 4} textAnchor="middle" fill="#d4d4d8" fontSize={9} fontWeight={600}>
                 {count}
               </text>
-              <text
-                x={x + 15}
-                y={74}
-                textAnchor="middle"
-                fill="#71717a"
-                fontSize={7}
-              >
+              <text x={x + 15} y={74} textAnchor="middle" fill="#71717a" fontSize={7}>
                 {bar.label}
               </text>
             </g>
@@ -337,9 +297,9 @@ export default function ScamAlerts() {
   const stats = useMemo(() => {
     const critical = alerts.filter((a) => a.severity === 'critical').length;
     const high = alerts.filter((a) => a.severity === 'high').length;
-    const activeRegions = new Set(alerts.map((a) => a.region)).size;
-    const totalAffected = alerts.reduce((sum, a) => sum + a.affected, 0);
-    return { critical, high, activeRegions, totalAffected };
+    const medium = alerts.filter((a) => a.severity === 'medium').length;
+    const low = alerts.filter((a) => a.severity === 'low').length;
+    return { critical, high, medium, low };
   }, [alerts]);
 
   const filteredAlerts = useMemo(() => {
@@ -391,35 +351,48 @@ export default function ScamAlerts() {
 
   if (loading) {
     return (
-      <div className="space-y-5 animate-fade-in">
-        <div className="glass-panel rounded-xl p-5 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-lg bg-white/[0.04] animate-pulse" />
-          <div className="space-y-2">
-            <div className="h-5 w-40 rounded bg-white/[0.04] animate-pulse" />
-            <div className="h-3 w-64 rounded bg-white/[0.04] animate-pulse" />
+      <div className="db-page">
+        <div className="glass-panel rounded-xl p-3 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="db-header-icon animate-pulse" style={{ background: 'rgba(255,255,255,0.04)' }} />
+            <div className="space-y-1.5">
+              <div className="h-3.5 w-32 rounded animate-pulse" style={{ background: 'rgba(255,255,255,0.04)' }} />
+              <div className="h-2.5 w-48 rounded animate-pulse" style={{ background: 'rgba(255,255,255,0.03)' }} />
+            </div>
           </div>
+          <div className="h-7 w-20 rounded-lg animate-pulse" style={{ background: 'rgba(255,255,255,0.04)' }} />
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="db-stats">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="glass-panel rounded-xl p-4 animate-pulse">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-white/[0.04]" />
-                <div className="space-y-1.5">
-                  <div className="h-4 w-12 rounded bg-white/[0.04]" />
-                  <div className="h-2.5 w-20 rounded bg-white/[0.04]" />
-                </div>
+            <div key={i} className="db-stat animate-pulse">
+              <div className="db-stat-icon" style={{ background: 'rgba(255,255,255,0.04)' }} />
+              <div className="space-y-1">
+                <div className="h-4 w-8 rounded" style={{ background: 'rgba(255,255,255,0.04)' }} />
+                <div className="h-2.5 w-16 rounded" style={{ background: 'rgba(255,255,255,0.03)' }} />
               </div>
             </div>
           ))}
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-1.5">
           {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="h-7 w-20 rounded-lg bg-white/[0.04] animate-pulse" />
+            <div key={i} className="h-6 w-16 rounded-md animate-pulse" style={{ background: 'rgba(255,255,255,0.04)' }} />
           ))}
         </div>
-        <div className="space-y-3">
+        <div className="space-y-2">
           {[1, 2, 3].map((i) => (
-            <SkeletonCard key={i} />
+            <div key={i} className="glass-panel rounded-xl p-3 animate-pulse">
+              <div className="flex items-start gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-white/[0.04]" />
+                <div className="flex-1 space-y-1.5">
+                  <div className="h-3.5 w-3/4 rounded bg-white/[0.04]" />
+                  <div className="flex gap-1.5">
+                    <div className="h-2.5 w-14 rounded-full bg-white/[0.04]" />
+                    <div className="h-2.5 w-10 rounded-full bg-white/[0.04]" />
+                  </div>
+                  <div className="h-2.5 w-full rounded bg-white/[0.04]" />
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       </div>
@@ -427,97 +400,90 @@ export default function ScamAlerts() {
   }
 
   return (
-    <div className="space-y-5 animate-fade-in">
-      {/* Premium Header */}
-      <div className="glass-panel rounded-xl overflow-hidden">
-        <div
-          className="px-5 py-4 flex items-center justify-between flex-wrap gap-3"
-          style={{
-            background: 'linear-gradient(135deg, rgba(239,68,68,0.12) 0%, rgba(185,28,28,0.08) 50%, rgba(239,68,68,0.04) 100%)',
-          }}
-        >
-          <div className="flex items-center gap-3">
+    <div className="db-page">
+      {/* ─── Header ─── */}
+      <div className="glass-panel rounded-xl p-3">
+        <div className="db-header">
+          <div className="db-header-left">
             <div
-              className="w-10 h-10 rounded-lg flex items-center justify-center"
+              className="db-header-icon"
               style={{
-                background: 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)',
-                boxShadow: '0 0 20px rgba(239,68,68,0.25)',
+                background: 'linear-gradient(135deg, #ef4444, #b91c1c)',
+                boxShadow: '0 0 12px rgba(239,68,68,0.2)',
               }}
             >
-              <AlertTriangle size={20} className="text-white" />
+              <AlertTriangle size={16} className="text-white" />
             </div>
-            <div>
-              <h2 className="text-lg font-semibold text-zinc-100">Scam Alerts</h2>
-              <p className="text-xs text-zinc-500 mt-0.5">
-                Live trending scam alerts and threat warnings from across India
-              </p>
+            <div className="db-header-text">
+              <h2 className="db-title">Scam Alerts</h2>
+              <p className="db-subtitle">Live trending scam alerts from across India</p>
             </div>
           </div>
-          <button
-            onClick={handleRefresh}
-            disabled={refreshing}
-            className="btn-ripple flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.06] transition-all cursor-pointer disabled:opacity-50 border border-white/[0.06] hover:border-white/[0.1]"
-          >
-            {refreshing ? (
-              <Loader2 size={14} className="animate-spin" />
-            ) : (
-              <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} />
-            )}
-            Refresh
-          </button>
-        </div>
-      </div>
-
-      {/* Alert Statistics Bar */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <div className="glass-panel rounded-xl p-4 flex items-center gap-3 transition-all hover:border-white/[0.08]">
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-red-500/10">
-            <ShieldAlert size={18} className="text-red-400" />
-          </div>
-          <div>
-            <p className="text-lg font-bold text-zinc-100 leading-tight">{stats.critical}</p>
-            <p className="text-[11px] text-zinc-500">Critical Alerts</p>
-          </div>
-        </div>
-        <div className="glass-panel rounded-xl p-4 flex items-center gap-3 transition-all hover:border-white/[0.08]">
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-orange-500/10">
-            <AlertTriangle size={18} className="text-orange-400" />
-          </div>
-          <div>
-            <p className="text-lg font-bold text-zinc-100 leading-tight">{stats.high}</p>
-            <p className="text-[11px] text-zinc-500">High Priority</p>
-          </div>
-        </div>
-        <div className="glass-panel rounded-xl p-4 flex items-center gap-3 transition-all hover:border-white/[0.08]">
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-blue-500/10">
-            <MapPin size={18} className="text-blue-400" />
-          </div>
-          <div>
-            <p className="text-lg font-bold text-zinc-100 leading-tight">{stats.activeRegions}</p>
-            <p className="text-[11px] text-zinc-500">Active Regions</p>
-          </div>
-        </div>
-        <div className="glass-panel rounded-xl p-4 flex items-center gap-3 transition-all hover:border-white/[0.08]">
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-purple-500/10">
-            <Users size={18} className="text-purple-400" />
-          </div>
-          <div>
-            <p className="text-lg font-bold text-zinc-100 leading-tight">
-              {stats.totalAffected.toLocaleString()}
-            </p>
-            <p className="text-[11px] text-zinc-500">People Affected</p>
+          <div className="db-header-actions">
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="db-btn"
+            >
+              {refreshing ? (
+                <Loader2 size={12} className="animate-spin" />
+              ) : (
+                <RefreshCw size={12} />
+              )}
+              Refresh
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Filter System */}
-      <div className="glass-panel rounded-xl p-4 space-y-3">
+      {/* ─── Stats Row ─── */}
+      <div className="db-stats">
+        <div className="db-stat">
+          <div className="db-stat-icon" style={{ background: 'rgba(239,68,68,0.1)' }}>
+            <ShieldAlert size={14} className="text-red-400" />
+          </div>
+          <div>
+            <p className="db-stat-value">{stats.critical}</p>
+            <p className="db-stat-label">Critical</p>
+          </div>
+        </div>
+        <div className="db-stat">
+          <div className="db-stat-icon" style={{ background: 'rgba(245,158,11,0.1)' }}>
+            <AlertTriangle size={14} className="text-orange-400" />
+          </div>
+          <div>
+            <p className="db-stat-value">{stats.high}</p>
+            <p className="db-stat-label">High Priority</p>
+          </div>
+        </div>
+        <div className="db-stat">
+          <div className="db-stat-icon" style={{ background: 'rgba(59,130,246,0.1)' }}>
+            <MapPin size={14} className="text-blue-400" />
+          </div>
+          <div>
+            <p className="db-stat-value">{stats.medium}</p>
+            <p className="db-stat-label">Medium</p>
+          </div>
+        </div>
+        <div className="db-stat">
+          <div className="db-stat-icon" style={{ background: 'rgba(16,185,129,0.1)' }}>
+            <Users size={14} className="text-emerald-400" />
+          </div>
+          <div>
+            <p className="db-stat-value">{stats.low}</p>
+            <p className="db-stat-label">Low</p>
+          </div>
+        </div>
+      </div>
+
+      {/* ─── Filter Bar ─── */}
+      <div className="glass-panel rounded-xl p-3 space-y-2">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Search size={14} className="text-zinc-500" />
-            <span className="text-xs font-medium text-zinc-400">Filters</span>
+          <div className="flex items-center gap-1.5">
+            <Search size={12} className="text-zinc-500" />
+            <span className="text-[10px] font-medium text-zinc-400">Filters</span>
             {activeFilterCount > 0 && (
-              <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold bg-blue-500/20 text-blue-400 border border-blue-500/20">
+              <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-[8px] font-bold bg-blue-500/20 text-blue-400">
                 {activeFilterCount}
               </span>
             )}
@@ -525,7 +491,7 @@ export default function ScamAlerts() {
           {activeFilterCount > 0 && (
             <button
               onClick={clearFilters}
-              className="btn-ripple text-[11px] text-zinc-500 hover:text-zinc-300 cursor-pointer transition-colors"
+              className="btn-ripple text-[10px] text-zinc-500 hover:text-zinc-300 cursor-pointer transition-colors"
             >
               Clear all
             </button>
@@ -533,16 +499,14 @@ export default function ScamAlerts() {
         </div>
 
         {/* Category Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
-          <span className="text-[10px] text-zinc-600 uppercase tracking-wider flex-shrink-0 font-medium">
-            Category
-          </span>
-          <div className="w-px h-3 bg-zinc-800 flex-shrink-0" />
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+          <span className="text-[9px] text-zinc-600 uppercase tracking-wider flex-shrink-0 font-medium">Category</span>
+          <div className="w-px h-2.5 bg-zinc-800 flex-shrink-0" />
           {CATEGORIES.map((cat) => (
             <button
               key={cat}
               onClick={() => setCategoryFilter(cat)}
-              className={`btn-ripple flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer border ${
+              className={`btn-ripple flex-shrink-0 px-2.5 py-1 rounded-md text-[10px] font-medium transition-all cursor-pointer border ${
                 categoryFilter === cat
                   ? 'bg-blue-500/15 text-blue-400 border-blue-500/20'
                   : 'text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.03] border-transparent'
@@ -554,11 +518,9 @@ export default function ScamAlerts() {
         </div>
 
         {/* Severity Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
-          <span className="text-[10px] text-zinc-600 uppercase tracking-wider flex-shrink-0 font-medium">
-            Severity
-          </span>
-          <div className="w-px h-3 bg-zinc-800 flex-shrink-0" />
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+          <span className="text-[9px] text-zinc-600 uppercase tracking-wider flex-shrink-0 font-medium">Severity</span>
+          <div className="w-px h-2.5 bg-zinc-800 flex-shrink-0" />
           {SEVERITIES.map((sev) => {
             const isActive = severityFilter === sev;
             const color = sev === 'all' ? '#a1a1aa' : SEVERITY_COLORS[sev];
@@ -566,14 +528,10 @@ export default function ScamAlerts() {
               <button
                 key={sev}
                 onClick={() => setSeverityFilter(sev)}
-                className={`btn-ripple flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer border ${
+                className={`btn-ripple flex-shrink-0 px-2.5 py-1 rounded-md text-[10px] font-medium transition-all cursor-pointer border ${
                   isActive ? 'border-white/[0.1]' : 'text-zinc-600 hover:text-zinc-400 border-transparent'
                 }`}
-                style={
-                  isActive
-                    ? { background: `${color}15`, color }
-                    : undefined
-                }
+                style={isActive ? { background: `${color}15`, color } : undefined}
               >
                 {sev === 'all' ? 'All' : sev.charAt(0).toUpperCase() + sev.slice(1)}
               </button>
@@ -582,16 +540,14 @@ export default function ScamAlerts() {
         </div>
 
         {/* Region Filter */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
-          <span className="text-[10px] text-zinc-600 uppercase tracking-wider flex-shrink-0 font-medium">
-            Region
-          </span>
-          <div className="w-px h-3 bg-zinc-800 flex-shrink-0" />
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+          <span className="text-[9px] text-zinc-600 uppercase tracking-wider flex-shrink-0 font-medium">Region</span>
+          <div className="w-px h-2.5 bg-zinc-800 flex-shrink-0" />
           {REGIONS.map((region) => (
             <button
               key={region}
               onClick={() => setRegionFilter(region)}
-              className={`btn-ripple flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer border ${
+              className={`btn-ripple flex-shrink-0 px-2.5 py-1 rounded-md text-[10px] font-medium transition-all cursor-pointer border ${
                 regionFilter === region
                   ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20'
                   : 'text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.03] border-transparent'
@@ -603,20 +559,20 @@ export default function ScamAlerts() {
         </div>
       </div>
 
-      {/* Main Content: Alert Feed + Chart */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_220px] gap-5">
+      {/* ─── Alert Feed + Sidebar ─── */}
+      <div className="db-grid-2-1">
         {/* Alert Feed */}
-        <div className="space-y-3">
+        <div className="space-y-2">
           {filteredAlerts.length === 0 ? (
-            <div className="glass-panel rounded-xl flex flex-col items-center justify-center py-16 gap-3">
-              <div className="w-14 h-14 rounded-full flex items-center justify-center bg-zinc-800/60">
-                <AlertTriangle size={28} className="text-zinc-600" />
+            <div className="glass-panel rounded-xl flex flex-col items-center justify-center py-12 gap-2">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center bg-zinc-800/60">
+                <AlertTriangle size={20} className="text-zinc-600" />
               </div>
-              <p className="text-sm text-zinc-400 font-medium">No alerts match your filters</p>
-              <p className="text-xs text-zinc-600">Try adjusting your filters or clear them to see all alerts</p>
+              <p className="text-xs text-zinc-400 font-medium">No alerts match your filters</p>
+              <p className="text-[10px] text-zinc-600">Try adjusting your filters</p>
               <button
                 onClick={clearFilters}
-                className="btn-ripple mt-1 text-xs text-blue-400 hover:text-blue-300 cursor-pointer transition-colors"
+                className="btn-ripple text-[10px] text-blue-400 hover:text-blue-300 cursor-pointer transition-colors"
               >
                 Clear all filters
               </button>
@@ -628,60 +584,62 @@ export default function ScamAlerts() {
               return (
                 <div
                   key={alert.id}
-                  className="glass-panel card-premium rounded-xl overflow-hidden transition-all duration-200 hover:border-white/[0.08]"
+                  className="glass-panel rounded-xl overflow-hidden transition-all duration-200 hover:border-white/[0.08]"
                   style={{ borderLeft: `3px solid ${borderColor}` }}
                 >
                   {/* Collapsed Header */}
                   <button
                     onClick={() => setExpandedId(isExpanded ? null : alert.id)}
-                    className="w-full p-4 text-left cursor-pointer flex items-start gap-3"
+                    className="w-full p-3 text-left cursor-pointer flex items-start gap-2.5"
                   >
                     <div
-                      className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                      className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
                       style={{ background: `${borderColor}12` }}
                     >
-                      <AlertTriangle size={16} style={{ color: borderColor }} />
+                      <AlertTriangle size={14} style={{ color: borderColor }} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-sm font-semibold text-zinc-100">{alert.title}</span>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-xs font-semibold text-zinc-100">{alert.title}</span>
                         {alert.trending && (
-                          <span className="inline-flex items-center gap-1 text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/15 animate-pulse"
-                            style={{ animationDuration: '2s' }}>
-                            <Flame size={9} />
+                          <span
+                            className="inline-flex items-center gap-0.5 text-[8px] font-semibold px-1.5 py-px rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/15 animate-pulse"
+                            style={{ animationDuration: '2s' }}
+                          >
+                            <Flame size={8} />
                             Trending
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                      <div className="flex items-center gap-1 mt-1 flex-wrap">
                         <span
-                          className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium"
+                          className="inline-flex items-center px-1.5 py-px rounded-full text-[9px] font-medium"
                           style={{ background: `${borderColor}15`, color: borderColor }}
                         >
                           {alert.category}
                         </span>
                         <span
-                          className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium capitalize"
+                          className="inline-flex items-center px-1.5 py-px rounded-full text-[9px] font-medium capitalize"
                           style={{ background: `${borderColor}15`, color: borderColor }}
                         >
                           {alert.severity}
                         </span>
-                        <span className="text-[10px] text-zinc-600">·</span>
-                        <span className="text-[10px] text-zinc-500 flex items-center gap-1">
-                          <MapPin size={9} /> {alert.region}
+                        <span className="text-[9px] text-zinc-600">·</span>
+                        <span className="text-[9px] text-zinc-500 flex items-center gap-0.5">
+                          <MapPin size={8} /> {alert.region}
                         </span>
-                        <span className="text-[10px] text-zinc-600">·</span>
-                        <span className="text-[10px] text-zinc-500 flex items-center gap-1">
-                          <Clock size={9} /> {alert.timestamp}
+                        <span className="text-[9px] text-zinc-600">·</span>
+                        <span className="text-[9px] text-zinc-500 flex items-center gap-0.5">
+                          <Clock size={8} /> {alert.timestamp}
                         </span>
-                        <span className="text-[10px] text-zinc-600">·</span>
-                        <span className="text-[10px] text-zinc-500 flex items-center gap-1">
-                          <Users size={9} /> {alert.affected.toLocaleString()} affected
+                        <span className="text-[9px] text-zinc-600">·</span>
+                        <span className="text-[9px] text-zinc-500 flex items-center gap-0.5">
+                          <Users size={8} /> {alert.affected.toLocaleString()}
                         </span>
                       </div>
                     </div>
                     <ChevronDown
-                      size={14}
+                      size={12}
                       className={`text-zinc-600 flex-shrink-0 mt-2 transition-transform duration-200 ${
                         isExpanded ? 'rotate-180' : ''
                       }`}
@@ -690,65 +648,56 @@ export default function ScamAlerts() {
 
                   {/* Expanded Details */}
                   {isExpanded && (
-                    <div className="px-4 pb-4 pt-0 space-y-3">
-                      <p className="text-sm text-zinc-400 leading-relaxed">{alert.description}</p>
+                    <div className="px-3 pb-3 pt-0 space-y-2">
+                      <p className="text-[11px] text-zinc-400 leading-relaxed">{alert.description}</p>
 
-                      <div className="flex items-center gap-3 text-[11px] text-zinc-500">
-                        <span className="flex items-center gap-1">
-                          <ShieldAlert size={11} />
+                      <div className="flex items-center gap-2 text-[10px] text-zinc-500">
+                        <span className="flex items-center gap-0.5">
+                          <ShieldAlert size={9} />
                           Source: <span className="text-zinc-300 font-medium">{alert.source}</span>
                         </span>
                         <span className="text-zinc-700">|</span>
-                        <span className="flex items-center gap-1">
-                          <MapPin size={11} /> {alert.region}
+                        <span className="flex items-center gap-0.5">
+                          <MapPin size={9} /> {alert.region}
                         </span>
                         <span className="text-zinc-700">|</span>
-                        <span className="flex items-center gap-1">
-                          <Users size={11} /> {alert.affected.toLocaleString()} people affected
+                        <span className="flex items-center gap-0.5">
+                          <Users size={9} /> {alert.affected.toLocaleString()} affected
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-2 pt-1 flex-wrap">
+                      <div className="flex items-center gap-1.5 pt-0.5 flex-wrap">
                         <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleBookmark(alert.id);
-                          }}
-                          className={`btn-ripple flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                          onClick={(e) => { e.stopPropagation(); handleBookmark(alert.id); }}
+                          className={`btn-ripple flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium transition-colors cursor-pointer ${
                             alert.isBookmarked
                               ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
                               : 'text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.03] border border-transparent'
                           }`}
                         >
-                          <Bookmark size={12} fill={alert.isBookmarked ? 'currentColor' : 'none'} />
+                          <Bookmark size={10} fill={alert.isBookmarked ? 'currentColor' : 'none'} />
                           {alert.isBookmarked ? 'Saved' : 'Bookmark'}
                         </button>
                         <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleShare(alert);
-                          }}
-                          className="btn-ripple flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.03] transition-colors cursor-pointer border border-transparent"
+                          onClick={(e) => { e.stopPropagation(); handleShare(alert); }}
+                          className="btn-ripple flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.03] transition-colors cursor-pointer border border-transparent"
                         >
-                          <Share2 size={12} /> Share
+                          <Share2 size={10} /> Share
                         </button>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             addToast(`Opening details for "${alert.title}"`, 'info');
                           }}
-                          className="btn-ripple flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.03] transition-colors cursor-pointer border border-transparent"
+                          className="btn-ripple flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.03] transition-colors cursor-pointer border border-transparent"
                         >
-                          <ExternalLink size={12} /> View Details
+                          <ExternalLink size={10} /> View
                         </button>
                         <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleReport(alert);
-                          }}
-                          className="btn-ripple flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-red-400/70 hover:text-red-400 hover:bg-red-500/5 transition-colors cursor-pointer border border-transparent"
+                          onClick={(e) => { e.stopPropagation(); handleReport(alert); }}
+                          className="btn-ripple flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium text-red-400/70 hover:text-red-400 hover:bg-red-500/5 transition-colors cursor-pointer border border-transparent"
                         >
-                          <Flag size={12} /> Report
+                          <Flag size={10} /> Report
                         </button>
                       </div>
                     </div>
@@ -759,16 +708,16 @@ export default function ScamAlerts() {
           )}
         </div>
 
-        {/* Sidebar: Mini Chart */}
-        <div className="space-y-3">
-          <SeverityBarChart alerts={filteredAlerts} />
-          <div className="glass-panel rounded-xl p-4 space-y-2">
-            <div className="flex items-center gap-2">
-              <Flame size={14} className="text-amber-400" />
-              <span className="text-xs font-medium text-zinc-400">Trending Now</span>
+        {/* Sidebar */}
+        <div className="space-y-2">
+          {/* Trending Now */}
+          <div className="glass-panel rounded-xl p-3 space-y-1.5">
+            <div className="db-card-header">
+              <Flame size={13} className="text-amber-400" />
+              <span className="db-card-title">Trending Now</span>
             </div>
             {filteredAlerts.filter((a) => a.trending).length === 0 ? (
-              <p className="text-[11px] text-zinc-600">No trending alerts in current filters</p>
+              <p className="text-[10px] text-zinc-600">No trending alerts in current filters</p>
             ) : (
               filteredAlerts
                 .filter((a) => a.trending)
@@ -778,14 +727,17 @@ export default function ScamAlerts() {
                     onClick={() => setExpandedId(a.id)}
                     className="w-full text-left p-2 rounded-lg hover:bg-white/[0.03] transition-colors cursor-pointer"
                   >
-                    <p className="text-[11px] font-medium text-zinc-300 line-clamp-1">{a.title}</p>
-                    <p className="text-[10px] text-zinc-600 mt-0.5">
+                    <p className="text-[10px] font-medium text-zinc-300 line-clamp-1">{a.title}</p>
+                    <p className="text-[9px] text-zinc-600 mt-0.5">
                       {a.affected.toLocaleString()} affected · {a.timestamp}
                     </p>
                   </button>
                 ))
             )}
           </div>
+
+          {/* Severity Chart */}
+          <SeverityBarChart alerts={filteredAlerts} />
         </div>
       </div>
     </div>

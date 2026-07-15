@@ -143,27 +143,27 @@ export default function CitizenShield() {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="flex items-start sm:items-center justify-between gap-3 mb-4 sm:mb-5 animate-fade-slide-up">
+      <div className="flex items-start sm:items-center justify-between gap-2.5 mb-3 animate-fade-slide-up">
         <div className="min-w-0">
-          <h2 className="text-base sm:text-lg lg:text-xl font-semibold text-zinc-100 flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(59,130,246,0.1)' }}>
-              <MessageSquare size={16} className="text-blue-400" strokeWidth={1.5} />
+          <h2 className="text-base sm:text-lg font-semibold text-zinc-100 flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(59,130,246,0.1)' }}>
+              <MessageSquare size={14} className="text-blue-400" strokeWidth={1.5} />
             </div>
             <span className="truncate">Citizen Fraud Shield</span>
           </h2>
-          <p className="text-zinc-500 text-[10px] sm:text-xs mt-1 hidden sm:block">Instant scam detection with guided NCRB reporting</p>
+          <p className="text-zinc-500 text-[10px] mt-0.5 hidden sm:block">Instant scam detection with guided NCRB reporting</p>
         </div>
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-1.5 flex-shrink-0">
           <button onClick={handleClearChat}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg glass-subtle text-[10px] sm:text-[11px] text-zinc-500 hover:text-zinc-200 transition-all duration-300 cursor-pointer touch-target btn-ripple relative overflow-hidden"
+            className="flex items-center gap-1 px-2 py-1.5 rounded-lg glass-subtle text-[10px] text-zinc-500 hover:text-zinc-200 transition-all duration-300 cursor-pointer touch-target btn-ripple relative overflow-hidden"
             aria-label="Clear conversation">
-            <RotateCcw size={12} strokeWidth={1.5} />
+            <RotateCcw size={10} strokeWidth={1.5} />
             <span className="hidden sm:inline">Clear</span>
           </button>
-          <div className="flex items-center gap-0.5 sm:gap-1 p-0.5 sm:p-1 rounded-lg glass-subtle">
+          <div className="flex items-center gap-0.5 p-0.5 rounded-lg glass-subtle">
             {(['en', 'hi', 'te'] as const).map(l => (
               <button key={l} onClick={() => setLang(l)}
-                className={`touch-target px-1.5 sm:px-2 py-1 rounded text-[10px] sm:text-[11px] font-mono cursor-pointer transition-all duration-300 ${
+                className={`touch-target px-1.5 py-1 rounded text-[10px] font-mono cursor-pointer transition-all duration-300 ${
                   lang === l ? 'bg-blue-500/10 text-blue-400' : 'text-zinc-500 hover:text-zinc-200'
                 }`}
                 aria-label={`Switch to ${l === 'en' ? 'English' : l === 'hi' ? 'Hindi' : 'Telugu'}`}
@@ -178,12 +178,12 @@ export default function CitizenShield() {
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col lg:flex-row gap-4 sm:gap-5 lg:gap-6 min-h-0 animate-fade-slide-up stagger-1" style={{ animationFillMode: 'both' }}>
+      <div className="flex-1 flex flex-col lg:flex-row gap-3 sm:gap-4 lg:gap-5 min-h-0 animate-fade-slide-up stagger-1" style={{ animationFillMode: 'both' }}>
         <div className="flex-1 flex flex-col glass-panel card-hover rounded-xl sm:rounded-2xl overflow-hidden min-h-0">
-          <div className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-5 space-y-2.5 sm:space-y-3 mobile-scroll" role="log" aria-label="Chat messages" aria-live="polite">
+          <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-2 sm:space-y-2.5 mobile-scroll" role="log" aria-label="Chat messages" aria-live="polite">
             {messages.map(msg => (
               <div key={msg.id} className={`animate-fade-slide-up flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`} style={{ animationFillMode: 'both' }}>
-                <div className={`max-w-[85%] sm:max-w-[80%] px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl text-xs sm:text-sm whitespace-pre-line ${
+                <div className={`max-w-[85%] sm:max-w-[80%] px-3 sm:px-3.5 py-2 rounded-2xl text-xs sm:text-[11px] whitespace-pre-line ${
                   msg.sender === 'user'
                     ? 'text-zinc-200 rounded-br-md'
                     : msg.isVerdict
@@ -210,11 +210,11 @@ export default function CitizenShield() {
             ))}
             {isAnalyzing && (
               <div className="flex justify-start animate-fade-slide-up" style={{ animationFillMode: 'both' }}>
-                <div className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl rounded-bl-md glass-subtle">
+                <div className="px-3 sm:px-3.5 py-2 rounded-2xl rounded-bl-md glass-subtle">
                   <div className="flex gap-1.5">
-                    <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '0ms' }} />
-                    <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '150ms' }} />
-                    <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '300ms' }} />
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '300ms' }} />
                   </div>
                 </div>
               </div>
@@ -222,11 +222,11 @@ export default function CitizenShield() {
             <div ref={chatEndRef} />
           </div>
 
-          <div className="px-3 sm:px-4 pb-1.5 sm:pb-2" style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-            <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-1.5 sm:pb-2 no-scrollbar" role="group" aria-label="Sample scam messages">
+          <div className="px-3 sm:px-4 pb-1.5" style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+            <div className="flex gap-1.5 overflow-x-auto pb-1.5 no-scrollbar" role="group" aria-label="Sample scam messages">
               {SAMPLE_MESSAGES.map((sample, i) => (
                 <button key={i} onClick={() => handleSend(sample.text)} disabled={isAnalyzing}
-                  className="flex-shrink-0 px-2.5 sm:px-3 py-1.5 rounded-full glass-subtle text-[9px] sm:text-[10px] text-zinc-500 hover:text-zinc-200 transition-all cursor-pointer whitespace-nowrap disabled:opacity-50 touch-target btn-ripple relative overflow-hidden"
+                  className="flex-shrink-0 px-2.5 py-1 rounded-full glass-subtle text-[9px] text-zinc-500 hover:text-zinc-200 transition-all cursor-pointer whitespace-nowrap disabled:opacity-50 touch-target btn-ripple relative overflow-hidden"
                   aria-label={`Try sample: ${sample.label}`}
                   title={sample.text}>
                   {sample.label}
@@ -235,50 +235,50 @@ export default function CitizenShield() {
             </div>
           </div>
 
-          <div className="px-3 sm:px-4 pb-3 sm:pb-4">
+          <div className="px-3 sm:px-4 pb-3">
             <div className="flex gap-2">
               <input ref={inputRef} type="text" value={input} onChange={e => setInput(e.target.value)} onKeyDown={handleKeyDown}
                 placeholder={t.prompt} disabled={isAnalyzing}
                 maxLength={500}
-                className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl glass-subtle text-zinc-200 text-xs sm:text-sm placeholder-zinc-600 focus:outline-none transition-all duration-300 disabled:opacity-50 min-h-[44px] input-premium"
+                className="flex-1 px-3 py-2 rounded-xl glass-subtle text-zinc-200 text-xs sm:text-[11px] placeholder-zinc-600 focus:outline-none transition-all duration-300 disabled:opacity-50 min-h-[36px] input-premium"
                 aria-label={t.prompt} />
-              <div className="flex items-end gap-1.5">
-                <span className={`text-[9px] font-mono self-center ${input.length > 450 ? 'text-amber-400' : 'text-zinc-600'} ${input.length === 0 ? 'hidden' : ''}`} aria-live="polite">
+              <div className="flex items-end gap-1">
+                <span className={`text-[8px] font-mono self-center ${input.length > 450 ? 'text-amber-400' : 'text-zinc-600'} ${input.length === 0 ? 'hidden' : ''}`} aria-live="polite">
                   {input.length}/500
                 </span>
                 <button onClick={() => handleSend()} disabled={!input.trim() || isAnalyzing}
-                  className="touch-target px-3.5 sm:px-4 py-2.5 rounded-xl btn-premium btn-ripple cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center min-w-[44px] relative overflow-hidden"
+                  className="touch-target px-3 py-2 rounded-xl btn-premium btn-ripple cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center min-w-[36px] relative overflow-hidden"
                   style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.12), rgba(139,92,246,0.08))', color: '#3b82f6', border: '1px solid rgba(59,130,246,0.2)' }}
                   aria-label="Send message">
-                  <Send size={16} />
+                  <Send size={14} />
                 </button>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="w-full lg:w-72 flex flex-col gap-4 sm:gap-5 lg:gap-6 flex-shrink-0 lg:min-h-0">
-          <div className="glass-panel card-hover rounded-xl sm:rounded-2xl p-4 sm:p-5">
-            <h3 className="font-mono text-[10px] sm:text-[11px] text-zinc-500 uppercase tracking-wider mb-2.5 sm:mb-3">Quick Actions</h3>
-            <div className="space-y-1.5 sm:space-y-2">
+        <div className="w-full lg:w-64 flex flex-col gap-3 sm:gap-4 lg:gap-5 flex-shrink-0 lg:min-h-0">
+          <div className="glass-panel card-hover rounded-xl sm:rounded-2xl p-3 sm:p-4">
+            <h3 className="font-mono text-[10px] text-zinc-500 uppercase tracking-wider mb-2">Quick Actions</h3>
+            <div className="space-y-1.5">
               <a href="https://cybercrime.gov.in" target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-2 px-3 py-2.5 sm:py-2 rounded-xl glass-subtle hover:border-blue-500/20 transition-all duration-300 text-xs sm:text-sm text-zinc-200 touch-target">
-                <ExternalLink size={12} className="text-blue-400 flex-shrink-0" />
+                className="flex items-center gap-2 px-2.5 py-2 rounded-xl glass-subtle hover:border-blue-500/20 transition-all duration-300 text-[10px] sm:text-[11px] text-zinc-200 touch-target">
+                <ExternalLink size={10} className="text-blue-400 flex-shrink-0" />
                 <span className="truncate">File Cybercrime Complaint</span>
               </a>
-              <div className="flex items-center gap-2 px-3 py-2.5 sm:py-2 rounded-xl glass-subtle text-xs sm:text-sm text-zinc-200">
-                <Shield size={12} className="text-rose-400 flex-shrink-0" />
+              <div className="flex items-center gap-2 px-2.5 py-2 rounded-xl glass-subtle text-[10px] sm:text-[11px] text-zinc-200">
+                <Shield size={10} className="text-rose-400 flex-shrink-0" />
                 Helpline: 1930
               </div>
-              <div className="flex items-center gap-2 px-3 py-2.5 sm:py-2 rounded-xl glass-subtle text-xs sm:text-sm text-zinc-200">
-                <CheckCircle size={12} className="text-emerald-400 flex-shrink-0" />
+              <div className="flex items-center gap-2 px-2.5 py-2 rounded-xl glass-subtle text-[10px] sm:text-[11px] text-zinc-200">
+                <CheckCircle size={10} className="text-emerald-400 flex-shrink-0" />
                 WhatsApp: 9013151515
               </div>
             </div>
           </div>
-          <div className="glass-panel card-hover rounded-xl sm:rounded-2xl p-4 sm:p-5 flex-1">
-            <h3 className="font-mono text-[10px] sm:text-[11px] text-zinc-500 uppercase tracking-wider mb-2.5 sm:mb-3">Statistics</h3>
-            <div className="space-y-2.5 sm:space-y-3">
+          <div className="glass-panel card-hover rounded-xl sm:rounded-2xl p-3 sm:p-4 flex-1">
+            <h3 className="font-mono text-[10px] text-zinc-500 uppercase tracking-wider mb-2">Statistics</h3>
+            <div className="space-y-2">
               {[
                 { label: 'Messages Analyzed', value: '847,293', color: '#3b82f6' },
                 { label: 'Frauds Detected', value: '124,847', color: '#f43f5e' },
@@ -286,8 +286,8 @@ export default function CitizenShield() {
                 { label: 'Languages Supported', value: '22', color: '#8b5cf6' },
               ].map((stat, i) => (
                 <div key={i} className="flex items-center justify-between gap-2">
-                  <span className="text-[10px] sm:text-xs text-zinc-500 truncate">{stat.label}</span>
-                  <span className="font-mono text-xs sm:text-sm font-semibold flex-shrink-0" style={{ color: stat.color }}>{stat.value}</span>
+                  <span className="text-[9px] sm:text-[10px] text-zinc-500 truncate">{stat.label}</span>
+                  <span className="font-mono text-[10px] sm:text-[11px] font-semibold flex-shrink-0" style={{ color: stat.color }}>{stat.value}</span>
                 </div>
               ))}
             </div>

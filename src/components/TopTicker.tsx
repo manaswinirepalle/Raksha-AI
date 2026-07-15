@@ -64,7 +64,7 @@ export default function TopTicker({ activeView }: { activeView: ModuleId }) {
 
   return (
     <header
-      className="hidden lg:flex h-14 items-center gap-0 flex-1 min-w-0 flex-shrink-0"
+      className="hidden lg:flex h-11 items-center gap-0 flex-1 min-w-0 flex-shrink-0"
       style={{
         background: 'rgba(9,9,11,0.6)',
         backdropFilter: 'blur(16px)',
@@ -72,7 +72,7 @@ export default function TopTicker({ activeView }: { activeView: ModuleId }) {
       }}
     >
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 px-5 h-full flex-shrink-0" style={{ borderRight: '1px solid rgba(255,255,255,0.04)' }}>
+      <div className="flex items-center gap-2 px-4 h-full flex-shrink-0" style={{ borderRight: '1px solid rgba(255,255,255,0.04)' }}>
         <span className="text-[12px] text-zinc-600 font-medium">Dashboard</span>
         <ChevronRight size={12} className="text-zinc-700" />
         <span
@@ -88,7 +88,7 @@ export default function TopTicker({ activeView }: { activeView: ModuleId }) {
       </div>
 
       {/* Live stats */}
-      <div className="flex items-center gap-4 xl:gap-5 px-5 h-full overflow-x-auto no-scrollbar flex-1 min-w-0">
+      <div className="flex items-center gap-3 xl:gap-4 px-4 h-full overflow-x-auto no-scrollbar flex-1 min-w-0">
         {stats.map((stat, i) => {
           const Icon = stat.icon;
           const isFlashing = flashIndex === i;

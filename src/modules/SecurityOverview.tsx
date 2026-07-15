@@ -74,73 +74,97 @@ export default function SecurityOverview() {
 
   if (loading) {
     return (
-    <div className="space-y-5 animate-fade-in">
-        <div className="h-32 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }} />
-        {[1, 2, 3].map(i => <div key={i} className="h-16 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }} />)}
+    <div className="db-page animate-fade-in">
+        <div className="h-28 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }} />
+        {[1, 2, 3].map(i => <div key={i} className="h-14 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }} />)}
       </div>
     );
   }
 
   return (
-    <div className="space-y-5 animate-fade-in">
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h2 className="text-lg font-semibold text-zinc-100">Security Overview</h2>
-          <p className="text-xs text-zinc-500 mt-0.5">{checks.filter(c => c.status === 'passed').length}/{checks.length} checks passed</p>
-        </div>
-        <button onClick={handleScan} disabled={scanning}
-          className="btn-ripple flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.03] transition-colors cursor-pointer disabled:opacity-50">
-          {scanning ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />} Full Scan
-        </button>
-      </div>
-
-      <div className="glass-panel card-premium rounded-xl p-6 flex items-center gap-6">
-        <div className="relative w-24 h-24 flex-shrink-0">
-          <svg className="w-24 h-24 -rotate-90" viewBox="0 0 96 96">
-            <circle cx="48" cy="48" r="40" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="7" />
-            <circle cx="48" cy="48" r="40" fill="none"
-              stroke={score >= 80 ? '#10b981' : score >= 50 ? '#f59e0b' : '#ef4444'}
-              strokeWidth="7" strokeLinecap="round"
-              strokeDasharray={`${(score / 100) * 251.3} 251.3`} />
-          </svg>
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-2xl font-bold" style={{ color: score >= 80 ? '#10b981' : score >= 50 ? '#f59e0b' : '#ef4444' }}>{score}</span>
-            <span className="text-[9px] text-zinc-500">/ 100</span>
+    <div className="db-page animate-fade-in">
+      {/* Header */}
+      <div className="db-header">
+        <div className="db-header-left">
+          <div className="db-header-icon bg-emerald-500/10">
+            <ShieldCheck size={16} className="text-emerald-400" />
+          </div>
+          <div className="db-header-text">
+            <h2 className="db-title">Security Overview</h2>
+            <p className="db-subtitle">{checks.filter(c => c.status === 'passed').length}/{checks.length} checks passed</p>
           </div>
         </div>
-        <div>
-          <h3 className="text-lg font-semibold text-zinc-100">
-            {score >= 80 ? 'Excellent Security' : score >= 50 ? 'Good — Room to Improve' : 'Action Needed'}
-          </h3>
-          <p className="text-sm text-zinc-400 mt-1">
-            {checks.filter(c => c.status === 'failed').length} issues need attention, {checks.filter(c => c.status === 'warning').length} warnings
-          </p>
+        <div className="db-header-actions">
+          <button onClick={handleScan} disabled={scanning} className="db-btn">
+            {scanning ? <Loader2 size={11} className="animate-spin" /> : <RefreshCw size={11} />} Full Scan
+          </button>
         </div>
       </div>
 
-      <div className="space-y-4">
-        {categories.map(cat => (
-          <div key={cat.name} className="glass-panel card-premium rounded-xl p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-medium text-zinc-300">{cat.name}</h3>
-              <span className="text-[10px] text-zinc-500">{cat.passed}/{cat.total} passed</span>
+      {/* Score + Summary */}
+      <div className="db-grid-2-1">
+        <div className="db-card flex items-center gap-4">
+          <div className="relative w-20 h-20 flex-shrink-0">
+            <svg className="w-20 h-20 -rotate-90" viewBox="0 0 96 96">
+              <circle cx="48" cy="48" r="40" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="7" />
+              <circle cx="48" cy="48" r="40" fill="none"
+                stroke={score >= 80 ? '#10b981' : score >= 50 ? '#f59e0b' : '#ef4444'}
+                strokeWidth="7" strokeLinecap="round"
+                strokeDasharray={`${(score / 100) * 251.3} 251.3`} />
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <span className="text-lg font-bold" style={{ color: score >= 80 ? '#10b981' : score >= 50 ? '#f59e0b' : '#ef4444' }}>{score}</span>
+              <span className="text-[8px] text-zinc-500">/ 100</span>
             </div>
-            <div className="space-y-2">
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-zinc-100">
+              {score >= 80 ? 'Excellent Security' : score >= 50 ? 'Good — Room to Improve' : 'Action Needed'}
+            </h3>
+            <p className="text-[10px] text-zinc-400 mt-0.5">
+              {checks.filter(c => c.status === 'failed').length} issues need attention, {checks.filter(c => c.status === 'warning').length} warnings
+            </p>
+          </div>
+        </div>
+        <div className="db-card">
+          <div className="db-section">
+            <span className="db-section-title text-[10px]">Category Summary</span>
+            <div className="space-y-1.5">
+              {categories.map(cat => (
+                <div key={cat.name} className="flex items-center justify-between">
+                  <span className="text-[10px] text-zinc-400">{cat.name}</span>
+                  <span className="text-[9px] font-mono text-zinc-500">{cat.passed}/{cat.total}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Category Sections */}
+      <div className="space-y-2">
+        {categories.map(cat => (
+          <div key={cat.name} className="db-card">
+            <div className="db-card-header">
+              <span className="db-card-title">{cat.name}</span>
+              <span className="text-[9px] text-zinc-500">{cat.passed}/{cat.total} passed</span>
+            </div>
+            <div className="space-y-1.5">
               {cat.checks.map(check => {
                 const StatusIcon = check.status === 'passed' ? CheckCircle2 : check.status === 'warning' ? AlertTriangle : XCircle;
                 return (
-                  <div key={check.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-white/[0.02] transition-colors">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                  <div key={check.id} className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white/[0.02] transition-colors">
+                    <div className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0"
                       style={{ background: `${check.color}10` }}>
-                      <StatusIcon size={14} style={{ color: check.color }} />
+                      <StatusIcon size={11} style={{ color: check.color }} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <span className="text-sm font-medium text-zinc-200 block">{check.name}</span>
-                      <span className="text-xs text-zinc-500 block">{check.description}</span>
+                      <span className="text-[11px] font-medium text-zinc-200 block">{check.name}</span>
+                      <span className="text-[9px] text-zinc-500 block">{check.description}</span>
                     </div>
                     {check.status !== 'passed' && (
                       <button onClick={() => handleFix(check)}
-                        className="btn-ripple flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition-colors cursor-pointer">
+                        className="db-btn flex-shrink-0">
                         Fix
                       </button>
                     )}

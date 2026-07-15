@@ -49,82 +49,92 @@ export default function HelpCenter() {
 
   if (loading) {
     return (
-      <div className="space-y-5 animate-fade-in">
-        <div className="h-10 w-48 rounded-lg" style={{ background: 'rgba(255,255,255,0.04)' }} />
-        <div className="h-12 rounded-lg" style={{ background: 'rgba(255,255,255,0.03)' }} />
-        {[1, 2, 3].map(i => <div key={i} className="h-16 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }} />)}
+      <div className="db-page animate-fade-in max-w-3xl">
+        <div className="h-8 w-32 rounded-lg" style={{ background: 'rgba(255,255,255,0.04)' }} />
+        <div className="h-9 rounded-lg" style={{ background: 'rgba(255,255,255,0.03)' }} />
+        {[1, 2, 3].map(i => <div key={i} className="h-12 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }} />)}
       </div>
     );
   }
 
   return (
-    <div className="space-y-5 animate-fade-in max-w-3xl">
-      <div>
-        <h2 className="text-lg font-semibold text-zinc-100">Help Center</h2>
-        <p className="text-xs text-zinc-500 mt-0.5">Find answers to common questions</p>
+    <div className="db-page animate-fade-in max-w-3xl">
+      {/* Header */}
+      <div className="db-header">
+        <div className="db-header-left">
+          <div className="db-header-icon bg-violet-500/10">
+            <HelpCircle size={16} className="text-violet-400" />
+          </div>
+          <div className="db-header-text">
+            <h2 className="db-title">Help Center</h2>
+            <p className="db-subtitle">Find answers to common questions</p>
+          </div>
+        </div>
       </div>
 
+      {/* Search */}
       <div className="relative">
-        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600" />
+        <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600" />
         <input value={search} onChange={e => setSearch(e.target.value)}
           placeholder="Search help articles..."
-          className="w-full pl-9 pr-3 py-2.5 rounded-lg bg-white/[0.03] border border-white/[0.06] text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-blue-500/30 transition-colors" />
+          className="w-full pl-8 pr-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-xs text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-blue-500/30 transition-colors" />
       </div>
 
-      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+      {/* Category Pills */}
+      <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
         {CATEGORIES.map(c => (
           <button key={c} onClick={() => setCategory(c)}
-            className={`btn-ripple flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
-              category === c ? 'bg-blue-500/15 text-blue-400 border border-blue-500/20' : 'text-zinc-500 hover:text-zinc-300 border border-transparent'
-            }`}>
+            className={`db-btn flex-shrink-0 ${category === c ? 'db-btn-primary' : ''}`}>
             {c}
           </button>
         ))}
       </div>
 
-      <div className="space-y-2">
+      {/* FAQ List */}
+      <div className="space-y-1.5">
         {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 gap-3">
-            <HelpCircle size={32} className="text-zinc-700" />
-            <p className="text-sm text-zinc-500">No articles match your search</p>
+          <div className="flex flex-col items-center justify-center py-12 gap-2">
+            <HelpCircle size={24} className="text-zinc-700" />
+            <p className="text-[11px] text-zinc-500">No articles match your search</p>
             <button onClick={() => { setSearch(''); setCategory('All'); }}
-              className="btn-ripple text-xs text-blue-400 hover:text-blue-300 cursor-pointer">Clear search</button>
+              className="text-[10px] text-blue-400 hover:text-blue-300 cursor-pointer">Clear search</button>
           </div>
         ) : filtered.map(faq => (
-          <div key={faq.id} className="glass-panel card-premium rounded-xl overflow-hidden">
+          <div key={faq.id} className="db-card overflow-hidden">
             <button onClick={() => setExpandedId(expandedId === faq.id ? null : faq.id)}
-              className="w-full p-4 text-left cursor-pointer flex items-center gap-3 hover:bg-white/[0.01] transition-colors">
+              className="w-full p-3 text-left cursor-pointer flex items-center gap-2.5 hover:bg-white/[0.01] transition-colors">
               <div className="flex-1">
-                <span className="text-sm font-medium text-zinc-200 block">{faq.question}</span>
-                <span className="text-[10px] text-zinc-600 mt-0.5 block">{faq.category}</span>
+                <span className="text-[11px] font-medium text-zinc-200 block">{faq.question}</span>
+                <span className="text-[9px] text-zinc-600 block">{faq.category}</span>
               </div>
-              <ChevronDown size={14} className={`text-zinc-600 flex-shrink-0 transition-transform ${expandedId === faq.id ? 'rotate-180' : ''}`} />
+              <ChevronDown size={12} className={`text-zinc-600 flex-shrink-0 transition-transform ${expandedId === faq.id ? 'rotate-180' : ''}`} />
             </button>
             {expandedId === faq.id && (
-              <div className="px-4 pb-4">
-                <p className="text-sm text-zinc-400 leading-relaxed pl-8">{faq.answer}</p>
+              <div className="px-3 pb-3">
+                <p className="text-[10px] text-zinc-400 leading-relaxed pl-6">{faq.answer}</p>
               </div>
             )}
           </div>
         ))}
       </div>
 
-      <div className="glass-panel rounded-xl p-5">
-        <h3 className="text-sm font-medium text-zinc-300 mb-3">Still need help?</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      {/* Still Need Help */}
+      <div className="db-card">
+        <h3 className="db-card-title mb-2">Still need help?</h3>
+        <div className="db-grid-2">
           {[
             { icon: Mail, label: 'Email Support', desc: 'support@raksha.ai', color: '#3b82f6' },
             { icon: MessageSquare, label: 'Live Chat', desc: 'Available 9am–6pm IST', color: '#10b981' },
           ].map((item, i) => (
             <button key={i}
               onClick={() => addToast(`Opening ${item.desc}`, 'info')}
-              className="btn-ripple flex items-center gap-3 p-3 rounded-lg hover:bg-white/[0.03] transition-colors cursor-pointer text-left">
-              <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: `${item.color}10` }}>
-                <item.icon size={16} style={{ color: item.color }} />
+              className="db-card flex items-center gap-2.5 text-left cursor-pointer">
+              <div className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0" style={{ background: `${item.color}10` }}>
+                <item.icon size={12} style={{ color: item.color }} />
               </div>
               <div>
-                <span className="text-sm font-medium text-zinc-200 block">{item.label}</span>
-                <span className="text-[10px] text-zinc-500">{item.desc}</span>
+                <span className="text-[11px] font-medium text-zinc-200 block">{item.label}</span>
+                <span className="text-[9px] text-zinc-500">{item.desc}</span>
               </div>
             </button>
           ))}
