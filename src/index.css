@@ -803,6 +803,24 @@
   50% { opacity: 0.7; filter: blur(80px); }
 }
 
+/* ── Shield pulse — subtle scale + glow on the hero shield ── */
+@keyframes shieldPulse {
+  0%, 100% {
+    box-shadow: 0 0 40px rgba(59,130,246,0.12), 0 0 80px rgba(59,130,246,0.06), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  50% {
+    box-shadow: 0 0 50px rgba(59,130,246,0.18), 0 0 100px rgba(59,130,246,0.1), inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+}
+
+/* ── Particle drift — subtle floating motion for background particles ── */
+@keyframes particleDrift {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  25% { transform: translateY(-15px) translateX(8px); }
+  50% { transform: translateY(-5px) translateX(-5px); }
+  75% { transform: translateY(-20px) translateX(3px); }
+}
+
 /* ══════════════════════════════════════
    ANIMATION CLASSES
    ══════════════════════════════════════ */
