@@ -64,11 +64,12 @@ export default function TopTicker({ activeView }: { activeView: ModuleId }) {
 
   return (
     <header
-      className="hidden lg:flex h-11 items-center gap-0 flex-1 min-w-0 flex-shrink-0"
+      className="hidden lg:flex h-11 items-center gap-0 flex-shrink-0 sticky top-0 z-20"
       style={{
-        background: 'rgba(9,9,11,0.6)',
+        background: 'rgba(9,9,11,0.7)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
+        borderBottom: '1px solid rgba(255,255,255,0.04)',
       }}
     >
       {/* Breadcrumb */}

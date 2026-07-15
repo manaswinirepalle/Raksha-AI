@@ -1,4 +1,4 @@
-import { useState, useCallback, lazy, Suspense } from 'react';
+import { useState, useCallback, useRef, useEffect, lazy, Suspense } from 'react';
 import RadarBackground from './components/RadarBackground';
 import Sidebar, { type ModuleId } from './components/Sidebar';
 import MobileNav from './components/MobileNav';
@@ -54,6 +54,7 @@ function PageLoader() {
 export default function App() {
   const [currentView, setCurrentView] = useState<ModuleId>('landing');
   const [pageKey, setPageKey] = useState(0);
+  const scrollPositions = useRef<Map<string, number>>(new Map());
 
   const handleEnter = useCallback(() => {
     setCurrentView('scam-scanner');
@@ -61,9 +62,19 @@ export default function App() {
   }, []);
 
   const handleModuleSelect = useCallback((id: ModuleId) => {
+    scrollPositions.current.set(currentView, window.scrollY);
     setCurrentView(id);
     setPageKey(k => k + 1);
-  }, []);
+  }, [currentView]);
+
+  useEffect(() => {
+    if (currentView === 'landing') return;
+    const raf = requestAnimationFrame(() => {
+      const pos = scrollPositions.current.get(currentView);
+      window.scrollTo(0, pos ?? 0);
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [currentView]);
 
   if (currentView === 'landing') {
     return (
@@ -80,12 +91,18 @@ export default function App() {
 
   return (
     <ToastProvider>
-      <div className="w-full h-full flex" style={{ background: '#09090b' }}>
+      <div className="min-h-screen relative" style={{ background: '#09090b' }}>
         <RadarBackground />
         <Sidebar active={currentView} onSelect={handleModuleSelect} />
-        <div className="flex-1 flex flex-col min-w-0 relative z-10 min-h-0">
+        <div
+          className="flex flex-col min-w-0 relative z-10 overflow-x-hidden"
+          style={{
+            marginLeft: 'var(--sidebar-width, 0px)',
+            transition: 'margin-left 300ms cubic-bezier(0.16, 1, 0.3, 1)',
+          }}
+        >
           <TopTicker activeView={currentView} />
-          <div className="flex lg:hidden h-11 items-center px-4 safe-top flex-shrink-0"
+          <div className="flex lg:hidden h-11 items-center px-4 safe-top flex-shrink-0 sticky top-0 z-20"
             style={{
               background: 'rgba(9,9,11,0.9)',
               backdropFilter: 'blur(20px)',
@@ -106,8 +123,8 @@ export default function App() {
               </span>
             </div>
           </div>
-          <div className="flex-1 p-3 sm:p-4 lg:p-5 xl:p-6 2xl:p-6 overflow-y-auto overflow-x-hidden relative pb-16 lg:pb-4 mobile-scroll min-h-0">
-            <div key={pageKey} className="h-full animate-page-enter">
+          <div className="p-3 sm:p-4 lg:p-5 xl:p-6 2xl:p-6 relative pb-20 lg:pb-6">
+            <div key={pageKey} className="animate-page-enter">
               {ActiveComponent && (
                 <Suspense fallback={<PageLoader />}>
                   <ActiveComponent />

@@ -8,7 +8,7 @@ const COLLAPSE_WIDTH = 68;
 const EXPAND_WIDTH = 232;
 
 export default function Sidebar({ active, onSelect }: { active: ModuleId; onSelect: (id: ModuleId) => void }) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => window.innerWidth < 1400);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   useEffect(() => {
@@ -21,7 +21,13 @@ export default function Sidebar({ active, onSelect }: { active: ModuleId; onSele
     if (windowWidth < 1400 && !collapsed) {
       setCollapsed(true);
     }
-  }, [windowWidth]);
+  }, [windowWidth, collapsed]);
+
+  useEffect(() => {
+    const width = windowWidth >= 1024 ? (collapsed ? COLLAPSE_WIDTH : EXPAND_WIDTH) : 0;
+    document.documentElement.style.setProperty('--sidebar-width', `${width}px`);
+    return () => { document.documentElement.style.setProperty('--sidebar-width', '0px'); };
+  }, [collapsed, windowWidth]);
 
   const toggleCollapse = useCallback(() => {
     setCollapsed(c => !c);
@@ -29,8 +35,13 @@ export default function Sidebar({ active, onSelect }: { active: ModuleId; onSele
 
   return (
     <aside
-      className="hidden lg:flex flex-col h-full"
+      className="hidden lg:flex flex-col"
       style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        height: '100dvh',
+        zIndex: 30,
         width: collapsed ? COLLAPSE_WIDTH : EXPAND_WIDTH,
         minWidth: collapsed ? COLLAPSE_WIDTH : EXPAND_WIDTH,
         background: 'rgba(255,255,255,0.015)',

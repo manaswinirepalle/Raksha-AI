@@ -25,8 +25,8 @@
     -webkit-tap-highlight-color: transparent;
   }
   html {
-    overflow: hidden;
     overscroll-behavior: none;
+    --sidebar-width: 0px;
   }
   body {
     margin: 0;
@@ -36,13 +36,12 @@
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow: hidden;
     -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
   }
   #root {
     width: 100vw;
-    height: 100dvh;
-    overflow: hidden;
+    min-height: 100dvh;
   }
   ::-webkit-scrollbar {
     width: 5px;
