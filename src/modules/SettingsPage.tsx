@@ -5,7 +5,7 @@ import {
   Trash2, Download, Lock, Eye,
 } from 'lucide-react';
 import { useToast } from '../components/Toast';
-import useViewportAnimation from '../hooks/useViewportAnimation';
+
 
 interface SettingSection {
   id: string;
@@ -22,8 +22,6 @@ const SECTIONS: SettingSection[] = [
 ];
 
 export default function SettingsPage() {
-  const headerVP = useViewportAnimation();
-  const contentVP = useViewportAnimation({ threshold: 0.1 });
   const { addToast } = useToast();
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState('profile');
@@ -84,11 +82,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="space-y-5 animate-fade-in" style={{
-        opacity: headerVP.isVisible ? 1 : 0,
-        transform: headerVP.isVisible ? 'translateY(0)' : 'translateY(20px)',
-        transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1), transform 600ms cubic-bezier(0.16, 1, 0.3, 1)',
-      }}>
+    <div className="space-y-5 animate-fade-in">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <h2 className="text-lg font-semibold text-zinc-100">Settings</h2>
         <button onClick={handleSave} disabled={saving}
@@ -99,11 +93,7 @@ export default function SettingsPage() {
       </div>
 
       <div className="flex flex-col lg:flex-row gap-5">
-        <div className="lg:w-52 flex-shrink-0" ref={headerVP.ref} style={{
-              opacity: headerVP.isVisible ? 1 : 0,
-              transform: headerVP.isVisible ? 'translateY(0)' : 'translateY(20px)',
-              transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1), transform 600ms cubic-bezier(0.16, 1, 0.3, 1)',
-            }}>
+        <div className="lg:w-52 flex-shrink-0">
           <div className="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-x-visible no-scrollbar">
             {SECTIONS.map(s => {
               const Icon = s.icon;
@@ -119,11 +109,7 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        <div className="flex-1 glass-panel rounded-xl p-5" ref={contentVP.ref} style={{
-              opacity: contentVP.isVisible ? 1 : 0,
-              transform: contentVP.isVisible ? 'translateY(0)' : 'translateY(20px)',
-              transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 100ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 100ms',
-            }}>
+        <div className="flex-1 glass-panel rounded-xl p-5">
           {activeSection === 'profile' && (
             <div className="space-y-5">
               <h3 className="text-sm font-medium text-zinc-300">Profile Settings</h3>

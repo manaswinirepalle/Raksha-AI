@@ -5,7 +5,6 @@ import {
   Phone, MessageCircle, CreditCard, Globe,
 } from 'lucide-react';
 import { useToast } from '../components/Toast';
-import useViewportAnimation from '../hooks/useViewportAnimation';
 
 interface ReportStep {
   title: string;
@@ -39,11 +38,6 @@ export default function ReportFraud() {
   const [evidenceFiles, setEvidenceFiles] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-
-  const vpWrapper = useViewportAnimation();
-  const vpTitle = useViewportAnimation();
-  const vpStepIndicator = useViewportAnimation();
-  const vpStepContent = useViewportAnimation();
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 800);
@@ -102,26 +96,11 @@ export default function ReportFraud() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in max-w-3xl" ref={vpWrapper.ref}
-      style={{
-        opacity: vpWrapper.isVisible ? 1 : 0,
-        transform: vpWrapper.isVisible ? 'translateY(0)' : 'translateY(20px)',
-        transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1), transform 600ms cubic-bezier(0.16, 1, 0.3, 1)',
-      }}>
-      <h2 className="text-lg font-semibold text-zinc-100" ref={vpTitle.ref}
-        style={{
-          opacity: vpTitle.isVisible ? 1 : 0,
-          transform: vpTitle.isVisible ? 'translateY(0)' : 'translateY(20px)',
-          transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1), transform 600ms cubic-bezier(0.16, 1, 0.3, 1)',
-        }}>Report Fraud</h2>
+    <div className="space-y-6 animate-fade-in max-w-3xl">
+      <h2 className="text-lg font-semibold text-zinc-100">Report Fraud</h2>
 
       {/* Step indicator */}
-      <div className="flex items-center gap-2" ref={vpStepIndicator.ref}
-        style={{
-          opacity: vpStepIndicator.isVisible ? 1 : 0,
-          transform: vpStepIndicator.isVisible ? 'translateY(0)' : 'translateY(20px)',
-          transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 100ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 100ms',
-        }}>
+      <div className="flex items-center gap-2">
         {STEPS.map((_s, i) => (
           <div key={i} className="flex items-center gap-2 flex-1">
             <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-semibold transition-all ${
@@ -135,12 +114,7 @@ export default function ReportFraud() {
       </div>
 
       {/* Step content */}
-      <div className="glass-panel card-premium rounded-xl p-6 min-h-[300px]" ref={vpStepContent.ref}
-        style={{
-          opacity: vpStepContent.isVisible ? 1 : 0,
-          transform: vpStepContent.isVisible ? 'translateY(0)' : 'translateY(20px)',
-          transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 200ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 200ms',
-        }}>
+      <div className="glass-panel card-premium rounded-xl p-6 min-h-[300px]">
         <h3 className="text-sm font-medium text-zinc-300 mb-1">{STEPS[step].title}</h3>
         <p className="text-xs text-zinc-500 mb-5">{STEPS[step].description}</p>
 

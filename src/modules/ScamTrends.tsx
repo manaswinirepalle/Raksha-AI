@@ -3,7 +3,6 @@ import {
   MapPin, RefreshCw, Loader2, BarChart3, ArrowUpRight, ArrowDownRight,
 } from 'lucide-react';
 import { useToast } from '../components/Toast';
-import useViewportAnimation from '../hooks/useViewportAnimation';
 
 interface Trend {
   id: string;
@@ -34,11 +33,6 @@ export default function ScamTrends() {
   const [timeframe, setTimeframe] = useState('Last 30 days');
   const [sortBy, setSortBy] = useState<'change' | 'reports'>('change');
   const [refreshing, setRefreshing] = useState(false);
-
-  const vpWrapper = useViewportAnimation();
-  const vpHeader = useViewportAnimation();
-  const vpStats = useViewportAnimation();
-  const vpList = useViewportAnimation();
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 800);
@@ -71,18 +65,8 @@ export default function ScamTrends() {
   }
 
   return (
-    <div className="space-y-5 animate-fade-in" ref={vpWrapper.ref}
-      style={{
-        opacity: vpWrapper.isVisible ? 1 : 0,
-        transform: vpWrapper.isVisible ? 'translateY(0)' : 'translateY(20px)',
-        transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1), transform 600ms cubic-bezier(0.16, 1, 0.3, 1)',
-      }}>
-      <div className="flex items-center justify-between flex-wrap gap-3" ref={vpHeader.ref}
-        style={{
-          opacity: vpHeader.isVisible ? 1 : 0,
-          transform: vpHeader.isVisible ? 'translateY(0)' : 'translateY(20px)',
-          transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1), transform 600ms cubic-bezier(0.16, 1, 0.3, 1)',
-        }}>
+    <div className="space-y-5 animate-fade-in">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-lg font-semibold text-zinc-100">Scam Trends</h2>
           <p className="text-xs text-zinc-500 mt-0.5">Emerging patterns and regional analysis</p>
@@ -93,12 +77,7 @@ export default function ScamTrends() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3" ref={vpStats.ref}
-        style={{
-          opacity: vpStats.isVisible ? 1 : 0,
-          transform: vpStats.isVisible ? 'translateY(0)' : 'translateY(20px)',
-          transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 100ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 100ms',
-        }}>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="glass-panel rounded-xl p-4">
           <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Total Reports</span>
           <span className="text-2xl font-bold text-zinc-100 block mt-1">{totalReports.toLocaleString()}</span>
@@ -140,12 +119,7 @@ export default function ScamTrends() {
         </div>
       </div>
 
-      <div className="space-y-3" ref={vpList.ref}
-        style={{
-          opacity: vpList.isVisible ? 1 : 0,
-          transform: vpList.isVisible ? 'translateY(0)' : 'translateY(20px)',
-          transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 200ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 200ms',
-        }}>
+      <div className="space-y-3">
         {sortedTrends.map(trend => (
           <div key={trend.id} className="glass-panel card-premium rounded-xl p-4 hover:border-white/[0.08] transition-all">
             <div className="flex items-start gap-3">

@@ -4,7 +4,7 @@ import {
   Clock, AlertTriangle, Paperclip, ChevronDown,
 } from 'lucide-react';
 import { useToast } from '../components/Toast';
-import useViewportAnimation from '../hooks/useViewportAnimation';
+
 
 interface Ticket {
   id: string;
@@ -30,10 +30,6 @@ const STATUS_MAP = {
 };
 
 export default function ContactSupport() {
-  const headerVP = useViewportAnimation();
-  const methodsVP = useViewportAnimation({ threshold: 0.1 });
-  const formVP = useViewportAnimation({ threshold: 0.05 });
-  const ticketsVP = useViewportAnimation({ threshold: 0.1 });
   const { addToast } = useToast();
   const [loading, setLoading] = useState(true);
   const [subject, setSubject] = useState('');
@@ -90,21 +86,13 @@ export default function ContactSupport() {
   }
 
   return (
-    <div className="space-y-5 animate-fade-in max-w-3xl" ref={headerVP.ref} style={{
-      opacity: headerVP.isVisible ? 1 : 0,
-      transform: headerVP.isVisible ? 'translateY(0)' : 'translateY(20px)',
-      transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1), transform 600ms cubic-bezier(0.16, 1, 0.3, 1)',
-    }}>
+    <div className="space-y-5 animate-fade-in max-w-3xl">
       <div>
         <h2 className="text-lg font-semibold text-zinc-100">Contact Support</h2>
         <p className="text-xs text-zinc-500 mt-0.5">Get help from our support team</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3" ref={methodsVP.ref} style={{
-        opacity: methodsVP.isVisible ? 1 : 0,
-        transform: methodsVP.isVisible ? 'translateY(0)' : 'translateY(20px)',
-        transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 80ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 80ms',
-      }}>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {[
           { icon: Mail, label: 'Email', value: 'support@raksha.ai', color: '#3b82f6' },
           { icon: MessageSquare, label: 'Live Chat', value: '9am — 6pm IST', color: '#10b981' },
@@ -124,11 +112,7 @@ export default function ContactSupport() {
         ))}
       </div>
 
-      <div className="glass-panel rounded-xl p-5" ref={formVP.ref} style={{
-        opacity: formVP.isVisible ? 1 : 0,
-        transform: formVP.isVisible ? 'translateY(0)' : 'translateY(20px)',
-        transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 160ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 160ms',
-      }}>
+      <div className="glass-panel rounded-xl p-5">
         <h3 className="text-sm font-medium text-zinc-300 mb-4">Submit a Ticket</h3>
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
@@ -174,11 +158,7 @@ export default function ContactSupport() {
         </div>
       </div>
 
-      <div className="glass-panel rounded-xl p-5" ref={ticketsVP.ref} style={{
-        opacity: ticketsVP.isVisible ? 1 : 0,
-        transform: ticketsVP.isVisible ? 'translateY(0)' : 'translateY(20px)',
-        transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 240ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 240ms',
-      }}>
+      <div className="glass-panel rounded-xl p-5">
         <button onClick={() => setShowTickets(!showTickets)}
           className="flex items-center justify-between w-full cursor-pointer">
           <h3 className="text-sm font-medium text-zinc-300">Your Tickets</h3>

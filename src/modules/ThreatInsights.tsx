@@ -5,7 +5,6 @@ import {
   Share2, Bookmark, ChevronDown,
 } from 'lucide-react';
 import { useToast } from '../components/Toast';
-import useViewportAnimation from '../hooks/useViewportAnimation';
 
 interface Threat {
   id: string;
@@ -40,12 +39,6 @@ export default function ThreatInsights() {
   const [search, setSearch] = useState('');
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
-
-  const vpWrapper = useViewportAnimation();
-  const vpHeader = useViewportAnimation();
-  const vpStats = useViewportAnimation();
-  const vpSearch = useViewportAnimation();
-  const vpList = useViewportAnimation();
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 800);
@@ -92,18 +85,8 @@ export default function ThreatInsights() {
   }
 
   return (
-    <div className="space-y-5 animate-fade-in" ref={vpWrapper.ref}
-      style={{
-        opacity: vpWrapper.isVisible ? 1 : 0,
-        transform: vpWrapper.isVisible ? 'translateY(0)' : 'translateY(20px)',
-        transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1), transform 600ms cubic-bezier(0.16, 1, 0.3, 1)',
-      }}>
-      <div className="flex items-center justify-between flex-wrap gap-3" ref={vpHeader.ref}
-        style={{
-          opacity: vpHeader.isVisible ? 1 : 0,
-          transform: vpHeader.isVisible ? 'translateY(0)' : 'translateY(20px)',
-          transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1), transform 600ms cubic-bezier(0.16, 1, 0.3, 1)',
-        }}>
+    <div className="space-y-5 animate-fade-in">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-lg font-semibold text-zinc-100">Threat Insights</h2>
           <p className="text-xs text-zinc-500 mt-0.5">AI-powered threat intelligence</p>
@@ -115,12 +98,7 @@ export default function ThreatInsights() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3" ref={vpStats.ref}
-        style={{
-          opacity: vpStats.isVisible ? 1 : 0,
-          transform: vpStats.isVisible ? 'translateY(0)' : 'translateY(20px)',
-          transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 100ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 100ms',
-        }}>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {[
           { label: 'Active Threats', value: stats.total, icon: Brain, color: '#8b5cf6' },
           { label: 'Critical', value: stats.critical, icon: AlertTriangle, color: '#ef4444' },
@@ -140,12 +118,7 @@ export default function ThreatInsights() {
       </div>
 
       {/* Search + Filters */}
-      <div className="flex items-center gap-3 flex-wrap" ref={vpSearch.ref}
-        style={{
-          opacity: vpSearch.isVisible ? 1 : 0,
-          transform: vpSearch.isVisible ? 'translateY(0)' : 'translateY(20px)',
-          transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 200ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 200ms',
-        }}>
+      <div className="flex items-center gap-3 flex-wrap">
         <div className="relative flex-1 min-w-[200px]">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600" />
           <input value={search} onChange={e => setSearch(e.target.value)}
@@ -165,12 +138,7 @@ export default function ThreatInsights() {
       </div>
 
       {/* Threat List */}
-      <div className="space-y-3" ref={vpList.ref}
-        style={{
-          opacity: vpList.isVisible ? 1 : 0,
-          transform: vpList.isVisible ? 'translateY(0)' : 'translateY(20px)',
-          transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 300ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 300ms',
-        }}>
+      <div className="space-y-3">
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-3">
             <Brain size={32} className="text-zinc-700" />

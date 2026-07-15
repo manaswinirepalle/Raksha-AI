@@ -4,7 +4,6 @@ import {
   ShieldCheck, AlertTriangle, Loader2, RefreshCw, Star, Heart, Siren,
 } from 'lucide-react';
 import { useToast } from '../components/Toast';
-import useViewportAnimation from '../hooks/useViewportAnimation';
 
 interface EmergencyContact {
   id: string;
@@ -41,11 +40,6 @@ export default function SafetyCenter() {
   const [newContact, setNewContact] = useState({ name: '', phone: '', relation: '' });
   const [savingContact, setSavingContact] = useState(false);
   const [scoring, setScoring] = useState(false);
-
-  const vpWrapper = useViewportAnimation();
-  const vpScore = useViewportAnimation();
-  const vpContacts = useViewportAnimation();
-  const vpActions = useViewportAnimation();
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 800);
@@ -121,12 +115,7 @@ export default function SafetyCenter() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in" ref={vpWrapper.ref}
-      style={{
-        opacity: vpWrapper.isVisible ? 1 : 0,
-        transform: vpWrapper.isVisible ? 'translateY(0)' : 'translateY(20px)',
-        transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1), transform 600ms cubic-bezier(0.16, 1, 0.3, 1)',
-      }}>
+    <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <h2 className="text-lg font-semibold text-zinc-100">Safety Center</h2>
         <button onClick={handleTestEmergency}
@@ -136,12 +125,7 @@ export default function SafetyCenter() {
       </div>
 
       {/* Safety Score */}
-      <div className="glass-panel card-premium rounded-xl p-5 sm:p-6" ref={vpScore.ref}
-        style={{
-          opacity: vpScore.isVisible ? 1 : 0,
-          transform: vpScore.isVisible ? 'translateY(0)' : 'translateY(20px)',
-          transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1), transform 600ms cubic-bezier(0.16, 1, 0.3, 1)',
-        }}>
+      <div className="glass-panel card-premium rounded-xl p-5 sm:p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-medium text-zinc-300">Safety Score</h3>
           <button onClick={handleRecalcScore} disabled={scoring}
@@ -176,12 +160,7 @@ export default function SafetyCenter() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4" ref={vpContacts.ref}
-        style={{
-          opacity: vpContacts.isVisible ? 1 : 0,
-          transform: vpContacts.isVisible ? 'translateY(0)' : 'translateY(20px)',
-          transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 100ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 100ms',
-        }}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Emergency Contacts */}
         <div className="glass-panel card-premium rounded-xl p-5">
           <div className="flex items-center justify-between mb-4">
@@ -256,12 +235,7 @@ export default function SafetyCenter() {
       </div>
 
       {/* Quick Actions */}
-      <div className="glass-panel rounded-xl p-5" ref={vpActions.ref}
-        style={{
-          opacity: vpActions.isVisible ? 1 : 0,
-          transform: vpActions.isVisible ? 'translateY(0)' : 'translateY(20px)',
-          transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 200ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 200ms',
-        }}>
+      <div className="glass-panel rounded-xl p-5">
         <h3 className="text-sm font-medium text-zinc-300 mb-4">Quick Actions</h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[

@@ -4,7 +4,6 @@ import {
   Share2, Bookmark, ExternalLink,
 } from 'lucide-react';
 import { useToast } from '../components/Toast';
-import useViewportAnimation from '../hooks/useViewportAnimation';
 
 interface ScamAlert {
   id: string;
@@ -40,11 +39,6 @@ export default function ScamAlerts() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [severityFilter, setSeverityFilter] = useState<string>('all');
-
-  const vpWrapper = useViewportAnimation();
-  const vpHeader = useViewportAnimation();
-  const vpFilters = useViewportAnimation();
-  const vpAlerts = useViewportAnimation();
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 800);
@@ -90,18 +84,8 @@ export default function ScamAlerts() {
   }
 
   return (
-    <div className="space-y-5 animate-fade-in" ref={vpWrapper.ref}
-      style={{
-        opacity: vpWrapper.isVisible ? 1 : 0,
-        transform: vpWrapper.isVisible ? 'translateY(0)' : 'translateY(20px)',
-        transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1), transform 600ms cubic-bezier(0.16, 1, 0.3, 1)',
-      }}>
-      <div className="flex items-center justify-between flex-wrap gap-3" ref={vpHeader.ref}
-        style={{
-          opacity: vpHeader.isVisible ? 1 : 0,
-          transform: vpHeader.isVisible ? 'translateY(0)' : 'translateY(20px)',
-          transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1), transform 600ms cubic-bezier(0.16, 1, 0.3, 1)',
-        }}>
+    <div className="space-y-5 animate-fade-in">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-lg font-semibold text-zinc-100">Scam Alerts</h2>
           <p className="text-xs text-zinc-500 mt-0.5">{filteredAlerts.length} active alerts</p>
@@ -114,12 +98,7 @@ export default function ScamAlerts() {
       </div>
 
       {/* Filters */}
-      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1" ref={vpFilters.ref}
-        style={{
-          opacity: vpFilters.isVisible ? 1 : 0,
-          transform: vpFilters.isVisible ? 'translateY(0)' : 'translateY(20px)',
-          transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 100ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 100ms',
-        }}>
+      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
         {CATEGORIES.map(cat => (
           <button key={cat} onClick={() => setFilter(cat)}
             className={`btn-ripple flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
@@ -141,12 +120,7 @@ export default function ScamAlerts() {
       </div>
 
       {/* Alert List */}
-      <div className="space-y-3" ref={vpAlerts.ref}
-        style={{
-          opacity: vpAlerts.isVisible ? 1 : 0,
-          transform: vpAlerts.isVisible ? 'translateY(0)' : 'translateY(20px)',
-          transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 200ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 200ms',
-        }}>
+      <div className="space-y-3">
         {filteredAlerts.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-3">
             <AlertTriangle size={32} className="text-zinc-700" />

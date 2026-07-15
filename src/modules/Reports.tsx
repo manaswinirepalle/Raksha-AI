@@ -5,7 +5,7 @@ import {
   Plus,
 } from 'lucide-react';
 import { useToast } from '../components/Toast';
-import useViewportAnimation from '../hooks/useViewportAnimation';
+
 
 interface ReportItem {
   id: string;
@@ -30,9 +30,6 @@ const TYPES = ['All', 'Security', 'Analysis', 'Activity', 'Intelligence', 'Geosp
 const STATUS_MAP = { completed: { color: '#10b981', icon: CheckCircle2, label: 'Completed' }, processing: { color: '#f59e0b', icon: Clock, label: 'Processing' }, failed: { color: '#ef4444', icon: AlertTriangle, label: 'Failed' } };
 
 export default function Reports() {
-  const headerVP = useViewportAnimation();
-  const filtersVP = useViewportAnimation({ threshold: 0.1 });
-  const listVP = useViewportAnimation({ threshold: 0.05 });
   const { addToast } = useToast();
   const [loading, setLoading] = useState(true);
   const [reports, setReports] = useState(REPORTS);
@@ -82,11 +79,7 @@ export default function Reports() {
 
   if (loading) {
     return (
-    <div className="space-y-5 animate-fade-in" ref={headerVP.ref} style={{
-      opacity: headerVP.isVisible ? 1 : 0,
-      transform: headerVP.isVisible ? 'translateY(0)' : 'translateY(20px)',
-      transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1), transform 600ms cubic-bezier(0.16, 1, 0.3, 1)',
-    }}>
+    <div className="space-y-5 animate-fade-in">
         <div className="h-10 w-48 rounded-lg" style={{ background: 'rgba(255,255,255,0.04)' }} />
         {[1, 2, 3].map(i => <div key={i} className="h-28 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }} />)}
       </div>
@@ -107,11 +100,7 @@ export default function Reports() {
         </button>
       </div>
 
-      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar" ref={filtersVP.ref} style={{
-        opacity: filtersVP.isVisible ? 1 : 0,
-        transform: filtersVP.isVisible ? 'translateY(0)' : 'translateY(20px)',
-        transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 80ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 80ms',
-      }}>
+      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
         {TYPES.map(t => (
           <button key={t} onClick={() => setTypeFilter(t)}
             className={`btn-ripple flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
@@ -122,11 +111,7 @@ export default function Reports() {
         ))}
       </div>
 
-      <div className="space-y-3" ref={listVP.ref} style={{
-        opacity: listVP.isVisible ? 1 : 0,
-        transform: listVP.isVisible ? 'translateY(0)' : 'translateY(20px)',
-        transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 160ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 160ms',
-      }}>
+      <div className="space-y-3">
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-3">
             <FileText size={32} className="text-zinc-700" />

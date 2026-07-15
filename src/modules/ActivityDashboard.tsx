@@ -5,7 +5,7 @@ import {
   Eye,
 } from 'lucide-react';
 import { useToast } from '../components/Toast';
-import useViewportAnimation from '../hooks/useViewportAnimation';
+
 
 interface ActivityItem {
   id: string;
@@ -33,10 +33,6 @@ const TYPE_ICONS: Record<string, typeof Shield> = { scan: Eye, alert: AlertTrian
 const STATUS_COLORS: Record<string, string> = { success: '#10b981', warning: '#f59e0b', error: '#ef4444', info: '#3b82f6' };
 
 export default function ActivityDashboard() {
-  const headerVP = useViewportAnimation();
-  const statsVP = useViewportAnimation({ threshold: 0.1 });
-  const filterVP = useViewportAnimation({ threshold: 0.1 });
-  const listVP = useViewportAnimation({ threshold: 0.05 });
   const { addToast } = useToast();
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>('all');
@@ -70,11 +66,7 @@ export default function ActivityDashboard() {
   if (loading) {
     return (
       <div className="space-y-5 animate-fade-in">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3" ref={statsVP.ref} style={{
-        opacity: statsVP.isVisible ? 1 : 0,
-        transform: statsVP.isVisible ? 'translateY(0)' : 'translateY(20px)',
-        transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 80ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 80ms',
-      }}>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {[1, 2, 3, 4].map(i => <div key={i} className="h-24 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }} />)}
         </div>
         {[1, 2, 3].map(i => <div key={i} className="h-20 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }} />)}
@@ -83,11 +75,7 @@ export default function ActivityDashboard() {
   }
 
   return (
-    <div className="space-y-5 animate-fade-in" ref={headerVP.ref} style={{
-      opacity: headerVP.isVisible ? 1 : 0,
-      transform: headerVP.isVisible ? 'translateY(0)' : 'translateY(20px)',
-      transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1), transform 600ms cubic-bezier(0.16, 1, 0.3, 1)',
-    }}>
+    <div className="space-y-5 animate-fade-in">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-lg font-semibold text-zinc-100">Activity Dashboard</h2>
@@ -119,11 +107,7 @@ export default function ActivityDashboard() {
         ))}
       </div>
 
-      <div className="flex items-center gap-2" ref={filterVP.ref} style={{
-        opacity: filterVP.isVisible ? 1 : 0,
-        transform: filterVP.isVisible ? 'translateY(0)' : 'translateY(20px)',
-        transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 160ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 160ms',
-      }}>
+      <div className="flex items-center gap-2">
         {[
           { key: 'all', label: 'All Activity' },
           { key: 'scan', label: 'Scans' },
@@ -140,11 +124,7 @@ export default function ActivityDashboard() {
         ))}
       </div>
 
-      <div className="space-y-2" ref={listVP.ref} style={{
-        opacity: listVP.isVisible ? 1 : 0,
-        transform: listVP.isVisible ? 'translateY(0)' : 'translateY(20px)',
-        transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 240ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 240ms',
-      }}>
+      <div className="space-y-2">
         {filtered.map(item => {
           const Icon = TYPE_ICONS[item.type] || Shield;
           const color = STATUS_COLORS[item.status];
