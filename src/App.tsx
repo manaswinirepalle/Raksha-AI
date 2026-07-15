@@ -2,10 +2,9 @@ import { useState, useCallback, useRef, useEffect, lazy, Suspense } from 'react'
 import RadarBackground from './components/RadarBackground';
 import Sidebar, { type ModuleId } from './components/Sidebar';
 import MobileNav from './components/MobileNav';
-import TopTicker from './components/TopTicker';
 import Landing from './components/Landing';
 import { ToastProvider } from './components/Toast';
-import { Shield, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 const ScamDetector = lazy(() => import('./modules/ScamDetector'));
 const MessageChecker = lazy(() => import('./modules/CitizenShield'));
@@ -101,29 +100,7 @@ export default function App() {
             transition: 'margin-left 300ms cubic-bezier(0.16, 1, 0.3, 1)',
           }}
         >
-          <TopTicker activeView={currentView} />
-          <div className="flex lg:hidden h-11 items-center px-4 safe-top flex-shrink-0 sticky top-0 z-20"
-            style={{
-              background: 'rgba(9,9,11,0.9)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              borderBottom: '1px solid rgba(255,255,255,0.06)',
-            }}>
-            <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center"
-                style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.15), rgba(139,92,246,0.1))' }}>
-                <Shield size={14} className="text-blue-400" strokeWidth={1.5} />
-              </div>
-              <span className="text-[13px] font-semibold text-zinc-200 tracking-wide">RAKSHA AI</span>
-            </div>
-            <div className="ml-auto">
-              <span className="text-[10px] text-blue-400/80 font-medium px-2.5 py-1 rounded-full truncate max-w-[140px] block"
-                style={{ background: 'rgba(59,130,246,0.08)' }}>
-                {currentView.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
-              </span>
-            </div>
-          </div>
-          <div className="p-3 sm:p-4 lg:p-5 xl:p-6 2xl:p-6 relative pb-20 lg:pb-6">
+          <div className="p-2 sm:p-3 lg:p-4 xl:p-5 2xl:p-5 relative pb-20 lg:pb-6">
             <div key={pageKey} className="animate-page-enter">
               {ActiveComponent && (
                 <Suspense fallback={<PageLoader />}>
