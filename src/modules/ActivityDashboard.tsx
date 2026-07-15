@@ -116,7 +116,7 @@ export default function ActivityDashboard() {
       </div>
 
       {/* Filter Bar */}
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
         {[
           { key: 'all', label: 'All Activity' },
           { key: 'scan', label: 'Scans' },

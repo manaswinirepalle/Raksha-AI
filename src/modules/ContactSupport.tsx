@@ -129,14 +129,14 @@ export default function ContactSupport() {
             <div>
               <label className="text-[10px] text-zinc-500 mb-1 block">Category</label>
               <select value={category} onChange={e => setCategory(e.target.value)}
-                className="w-full px-2.5 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-[11px] text-zinc-200 focus:outline-none focus:border-blue-500/30 transition-colors appearance-none">
+                className="input-premium w-full px-2.5 py-2 rounded-lg text-[11px] text-zinc-200 appearance-none">
                 {CATEGORY_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
             <div>
               <label className="text-[10px] text-zinc-500 mb-1 block">Priority</label>
               <select value={priority} onChange={e => setPriority(e.target.value)}
-                className="w-full px-2.5 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-[11px] text-zinc-200 focus:outline-none focus:border-blue-500/30 transition-colors appearance-none">
+                className="input-premium w-full px-2.5 py-2 rounded-lg text-[11px] text-zinc-200 appearance-none">
                 {PRIORITY_OPTIONS.map(p => <option key={p} value={p}>{p}</option>)}
               </select>
             </div>
@@ -145,14 +145,14 @@ export default function ContactSupport() {
             <label className="text-[10px] text-zinc-500 mb-1 block">Subject *</label>
             <input value={subject} onChange={e => setSubject(e.target.value)}
               placeholder="Brief description of your issue"
-              className="w-full px-2.5 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-[11px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-blue-500/30 transition-colors" />
+              className="input-premium w-full px-2.5 py-2 rounded-lg text-[11px] text-zinc-200 placeholder:text-zinc-600" />
           </div>
           <div>
             <label className="text-[10px] text-zinc-500 mb-1 block">Message *</label>
             <textarea value={message} onChange={e => setMessage(e.target.value)}
               placeholder="Describe your issue in detail..."
               rows={4}
-              className="w-full px-2.5 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-[11px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-blue-500/30 transition-colors resize-none" />
+              className="input-premium w-full px-2.5 py-2 rounded-lg text-[11px] text-zinc-200 placeholder:text-zinc-600 resize-none" />
           </div>
           <div className="flex items-center justify-between">
             <button onClick={() => addToast('File upload coming soon', 'info')}

@@ -106,7 +106,7 @@ export default function App() {
               </span>
             </div>
           </div>
-          <div className="flex-1 p-3 sm:p-4 lg:p-5 xl:p-6 2xl:p-8 overflow-y-auto overflow-x-hidden relative pb-20 lg:pb-5 mobile-scroll min-h-0">
+          <div className="flex-1 p-3 sm:p-4 lg:p-5 xl:p-6 2xl:p-6 overflow-y-auto overflow-x-hidden relative pb-16 lg:pb-4 mobile-scroll min-h-0">
             <div key={pageKey} className="h-full animate-page-enter">
               {ActiveComponent && (
                 <Suspense fallback={<PageLoader />}>

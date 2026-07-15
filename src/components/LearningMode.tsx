@@ -185,10 +185,10 @@ export default function LearningMode() {
           <span className="text-[10px] text-zinc-400">Overall Progress</span>
           <span className="text-[10px] font-mono text-blue-400">{progress}%</span>
         </div>
-        <div className="w-full h-1.5 rounded-full bg-zinc-800 overflow-hidden">
+        <div className="progress-premium w-full" style={{ height: 6 }}>
           <div
-            className="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-400 transition-all duration-500"
-            style={{ width: `${progress}%` }}
+            className="progress-fill"
+            style={{ width: `${progress}%`, background: 'linear-gradient(90deg, #3b82f6, #60a5fa)' }}
           />
         </div>
         <p className="text-[9px] text-zinc-600 mt-1">{readCards.size} of {LEARNING_CARDS.length} lessons completed</p>
@@ -230,8 +230,7 @@ export default function LearningMode() {
           return (
             <div
               key={card.id}
-              className={`db-card ${isRead ? 'border-green-500/20 bg-green-500/[0.03]' : ''}`}
-              style={{ animation: 'fadeSlideUp 500ms cubic-bezier(0.16, 1, 0.3, 1) both' }}
+              className={`db-card animate-fade-slide-up ${isRead ? 'border-green-500/20 bg-green-500/[0.03]' : ''}`}
             >
               <div className="flex items-center justify-between gap-2 mb-1.5">
                 <div className="flex items-center gap-1.5 min-w-0">
@@ -336,7 +335,7 @@ export default function LearningMode() {
                 />
               </button>
               {expandedFaq === i && (
-                <div className="px-3 pb-3 border-t border-white/[0.04]">
+                <div className="px-3 pb-3 border-t border-white/[0.04] animate-content-reveal">
                   <p className="text-[10px] text-zinc-400 leading-relaxed pt-2">{item.a}</p>
                 </div>
               )}

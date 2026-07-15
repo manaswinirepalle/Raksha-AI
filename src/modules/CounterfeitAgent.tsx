@@ -166,7 +166,7 @@ export default function CounterfeitAgent() {
                       aria-pressed={isSelected}
                       aria-label={`${feature.name} — ${feature.description}`}
                     >
-                      <div className={`w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-md flex items-center justify-center flex-shrink-0 border ${
+                      <div className={`w-[18px] h-[18px] sm:w-5 sm:h-5 rounded-md flex items-center justify-center flex-shrink-0 border ${
                         isSelected
                           ? 'bg-amber-500/20 border-amber-500/40 text-amber-400'
                           : 'bg-white/[0.04] border-white/[0.08] text-transparent'

@@ -72,7 +72,7 @@ export default function TopTicker({ activeView }: { activeView: ModuleId }) {
       }}
     >
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 px-4 h-full flex-shrink-0" style={{ borderRight: '1px solid rgba(255,255,255,0.04)' }}>
+      <div className="flex items-center gap-2 px-4 h-full flex-shrink-0" style={{ borderRight: '1px solid rgba(255,255,255,0.03)' }}>
         <span className="text-[12px] text-zinc-600 font-medium">Dashboard</span>
         <ChevronRight size={12} className="text-zinc-700" />
         <span
@@ -132,7 +132,7 @@ export default function TopTicker({ activeView }: { activeView: ModuleId }) {
       </div>
 
       {/* Right actions */}
-      <div className="flex items-center gap-1 px-3 h-full flex-shrink-0" style={{ borderLeft: '1px solid rgba(255,255,255,0.04)' }}>
+      <div className="flex items-center gap-1 px-3 h-full flex-shrink-0" style={{ borderLeft: '1px solid rgba(255,255,255,0.03)' }}>
         <button
           className="w-9 h-9 rounded-lg flex items-center justify-center text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.04] transition-all duration-200 cursor-pointer btn-ripple relative overflow-hidden"
           aria-label="Search"

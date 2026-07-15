@@ -136,7 +136,7 @@ export default function Sidebar({ active, onSelect }: { active: ModuleId; onSele
                         {m.label}
                       </span>
                       {collapsed && (
-                        <div className="absolute left-full ml-2 px-2.5 py-1.5 rounded-lg text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-50 glass-panel-strong text-zinc-200 font-medium shadow-xl shadow-black/30">
+                        <div className="absolute right-full mr-2 px-2.5 py-1.5 rounded-lg text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-50 glass-panel-strong text-zinc-200 font-medium shadow-xl shadow-black/30 top-1/2 -translate-y-1/2">
                           {m.label}
                         </div>
                       )}

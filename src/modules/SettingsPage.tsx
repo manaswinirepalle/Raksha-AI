@@ -63,12 +63,8 @@ export default function SettingsPage() {
 
   const ToggleSwitch = ({ enabled, onToggle }: { enabled: boolean; onToggle: () => void }) => (
     <button onClick={onToggle}
-      className={`relative w-9 h-5 rounded-full transition-colors duration-200 cursor-pointer ${
-        enabled ? 'bg-blue-500/30' : 'bg-white/[0.06]'
-      }`}>
-      <div className={`absolute top-0.5 w-4 h-4 rounded-full transition-all duration-200 ${
-        enabled ? 'left-[18px] bg-blue-400' : 'left-0.5 bg-zinc-500'
-      }`} style={{ boxShadow: enabled ? '0 0 8px rgba(59,130,246,0.3)' : 'none' }} />
+      className={`toggle-track ${enabled ? 'active' : ''}`}>
+      <div className="toggle-thumb" />
     </button>
   );
 
@@ -120,7 +116,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Content */}
-        <div className="db-card">
+        <div className="db-card mobile-scroll" style={{ maxHeight: 'calc(100dvh - 140px)' }}>
           {activeSection === 'profile' && (
             <div className="db-section">
               <span className="db-section-title"><User size={11} /> Profile Settings</span>
@@ -139,17 +135,17 @@ export default function SettingsPage() {
                 <div>
                   <label className="text-[10px] text-zinc-500 mb-1 block">Full Name</label>
                   <input value={name} onChange={e => setName(e.target.value)}
-                    className="w-full px-2.5 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-[11px] text-zinc-200 focus:outline-none focus:border-blue-500/30 transition-colors" />
+                    className="input-premium w-full px-2.5 py-2 rounded-lg text-[11px] text-zinc-200" />
                 </div>
                 <div>
                   <label className="text-[10px] text-zinc-500 mb-1 block">Email</label>
                   <input value={email} onChange={e => setEmail(e.target.value)}
-                    className="w-full px-2.5 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-[11px] text-zinc-200 focus:outline-none focus:border-blue-500/30 transition-colors" />
+                    className="input-premium w-full px-2.5 py-2 rounded-lg text-[11px] text-zinc-200" />
                 </div>
                 <div>
                   <label className="text-[10px] text-zinc-500 mb-1 block">Phone</label>
                   <input value={phone} onChange={e => setPhone(e.target.value)}
-                    className="w-full px-2.5 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-[11px] text-zinc-200 focus:outline-none focus:border-blue-500/30 transition-colors" />
+                    className="input-premium w-full px-2.5 py-2 rounded-lg text-[11px] text-zinc-200" />
                 </div>
               </div>
               <div className="db-divider" />
@@ -200,7 +196,7 @@ export default function SettingsPage() {
               <div>
                 <label className="text-[10px] text-zinc-500 mb-1 block">Session Timeout (minutes)</label>
                 <select value={sessionTimeout} onChange={e => setSessionTimeout(e.target.value)}
-                  className="w-full px-2.5 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-[11px] text-zinc-200 focus:outline-none focus:border-blue-500/30 transition-colors appearance-none">
+                  className="input-premium w-full px-2.5 py-2 rounded-lg text-[11px] text-zinc-200 appearance-none">
                   <option value="15">15 minutes</option>
                   <option value="30">30 minutes</option>
                   <option value="60">1 hour</option>
@@ -238,7 +234,7 @@ export default function SettingsPage() {
               <div>
                 <label className="text-[10px] text-zinc-500 mb-1 block">Language</label>
                 <select value={language} onChange={e => setLanguage(e.target.value)}
-                  className="w-full px-2.5 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-[11px] text-zinc-200 focus:outline-none focus:border-blue-500/30 transition-colors appearance-none">
+                  className="input-premium w-full px-2.5 py-2 rounded-lg text-[11px] text-zinc-200 appearance-none">
                   <option value="en">English</option>
                   <option value="hi">हिन्दी</option>
                   <option value="bn">বাংলা</option>
@@ -277,7 +273,7 @@ export default function SettingsPage() {
               <div>
                 <label className="text-[10px] text-zinc-500 mb-1 block">Profile Visibility</label>
                 <select value={profileVisibility} onChange={e => setProfileVisibility(e.target.value)}
-                  className="w-full px-2.5 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-[11px] text-zinc-200 focus:outline-none focus:border-blue-500/30 transition-colors appearance-none">
+                  className="input-premium w-full px-2.5 py-2 rounded-lg text-[11px] text-zinc-200 appearance-none">
                   <option value="private">Private</option>
                   <option value="contacts">Contacts Only</option>
                   <option value="public">Public</option>

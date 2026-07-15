@@ -77,7 +77,7 @@ export default function HelpCenter() {
         <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600" />
         <input value={search} onChange={e => setSearch(e.target.value)}
           placeholder="Search help articles..."
-          className="w-full pl-8 pr-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-xs text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-blue-500/30 transition-colors" />
+          className="input-premium w-full pl-8 pr-3 py-2 rounded-lg text-xs text-zinc-200" />
       </div>
 
       {/* Category Pills */}
@@ -110,7 +110,7 @@ export default function HelpCenter() {
               <ChevronDown size={12} className={`text-zinc-600 flex-shrink-0 transition-transform ${expandedId === faq.id ? 'rotate-180' : ''}`} />
             </button>
             {expandedId === faq.id && (
-              <div className="px-3 pb-3">
+              <div className="px-3 pb-3 animate-content-reveal">
                 <p className="text-[10px] text-zinc-400 leading-relaxed pl-6">{faq.answer}</p>
               </div>
             )}
@@ -119,8 +119,8 @@ export default function HelpCenter() {
       </div>
 
       {/* Still Need Help */}
-      <div className="db-card">
-        <h3 className="db-card-title mb-2">Still need help?</h3>
+      <div className="db-section">
+        <h3 className="db-card-title">Still need help?</h3>
         <div className="db-grid-2">
           {[
             { icon: Mail, label: 'Email Support', desc: 'support@raksha.ai', color: '#3b82f6' },
