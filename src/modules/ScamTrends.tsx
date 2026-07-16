@@ -1,475 +1,612 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import {
-  TrendingUp, RefreshCw, Loader2, BarChart3, ArrowUpRight, ArrowDownRight,
-  AlertTriangle, Brain, MapPin, Calendar,
+  TrendingUp,
+  BarChart3,
+  ArrowUpRight,
+  ArrowDownRight,
+  Brain,
+  MapPin,
+  Activity,
+  Shield,
 } from 'lucide-react';
-import { useToast } from '../components/Toast';
 
-interface Trend {
-  id: string;
-  category: string;
+type Period = '7D' | '30D' | '90D' | '1Y';
+
+interface ScamType {
+  name: string;
+  color: string;
+  data: number[];
+}
+
+interface Category {
+  name: string;
+  pct: number;
   change: number;
-  reports: number;
-  topRegion: string;
-  description: string;
-  timeframe: string;
-}
-
-interface StateData {
-  state: string;
-  complaints: number;
-}
-
-interface Prediction {
-  text: string;
-  confidence: number;
   color: string;
 }
 
-interface MonthlyPoint {
-  month: string;
-  value: number;
+interface StateRow {
+  rank: number;
+  state: string;
+  complaints: number;
+  amount: string;
 }
 
-const TRENDS: Trend[] = [
-  { id: '1', category: 'UPI Fraud', change: 34, reports: 8420, topRegion: 'Maharashtra', description: 'Payment request scams via fake UPI IDs. Scammers claim to have sent money and request return.', timeframe: 'Last 30 days' },
-  { id: '2', category: 'Job Scams', change: 28, reports: 5640, topRegion: 'Karnataka', description: 'Work-from-home job offers requiring upfront registration fees. Mostly via WhatsApp groups.', timeframe: 'Last 30 days' },
-  { id: '3', category: 'Digital Arrest', change: -12, reports: 3200, topRegion: 'Delhi NCR', description: 'Impersonation of law enforcement via video call. Awareness campaigns reducing success rate.', timeframe: 'Last 30 days' },
-  { id: '4', category: 'Phishing Links', change: 45, reports: 12300, topRegion: 'All India', description: 'SMS and email phishing with fake bank/IRCTC/Amazon links. Record increase this quarter.', timeframe: 'Last 30 days' },
-  { id: '5', category: 'Loan App Fraud', change: 18, reports: 6780, topRegion: 'Tamil Nadu', description: 'Predatory loan apps with hidden charges and threatening recovery practices.', timeframe: 'Last 30 days' },
-  { id: '6', category: 'Crypto Scams', change: 52, reports: 4100, topRegion: 'Gujarat', description: 'Ponzi-style crypto investment schemes. Fastest growing scam category this quarter.', timeframe: 'Last 30 days' },
-  { id: '7', category: 'E-commerce Fraud', change: -5, reports: 2890, topRegion: 'West Bengal', description: 'Fake e-commerce sites and social media sellers taking payment without delivery.', timeframe: 'Last 30 days' },
-  { id: '8', category: 'Insurance Fraud', change: 15, reports: 1890, topRegion: 'Rajasthan', description: 'Fake insurance policies sold via cold calls. Not registered with IRDAI.', timeframe: 'Last 30 days' },
+interface Prediction {
+  scamType: string;
+  confidence: number;
+  window: string;
+  risk: 'high' | 'medium' | 'low';
+}
+
+interface MonthlyComparison {
+  category: string;
+  thisMonth: number;
+  lastMonth: number;
+}
+
+const SCAM_TYPES: ScamType[] = [
+  {
+    name: 'Phishing',
+    color: '#60a5fa',
+    data: [1800, 2100, 1950, 2400, 2800, 3200, 3100, 3500, 3800, 4200, 4600, 5100],
+  },
+  {
+    name: 'UPI Fraud',
+    color: '#a78bfa',
+    data: [1200, 1400, 1350, 1600, 1900, 2100, 2050, 2300, 2500, 2700, 2900, 3200],
+  },
+  {
+    name: 'Job Scam',
+    color: '#34d399',
+    data: [800, 900, 850, 1100, 1300, 1500, 1450, 1700, 1900, 2100, 2300, 2600],
+  },
+  {
+    name: 'Loan App',
+    color: '#fb923c',
+    data: [600, 700, 680, 800, 950, 1100, 1050, 1200, 1350, 1500, 1650, 1800],
+  },
+  {
+    name: 'Crypto',
+    color: '#f472b6',
+    data: [300, 350, 400, 500, 650, 800, 900, 1100, 1300, 1600, 1900, 2300],
+  },
 ];
 
-const TIMEFRAMES = ['Last 7 days', 'Last 30 days', 'Last quarter', 'This year'];
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-const STATES: StateData[] = [
-  { state: 'Maharashtra', complaints: 14200 },
-  { state: 'Delhi', complaints: 11800 },
-  { state: 'Karnataka', complaints: 9600 },
-  { state: 'Tamil Nadu', complaints: 8400 },
-  { state: 'Gujarat', complaints: 7100 },
-  { state: 'Rajasthan', complaints: 5800 },
-  { state: 'West Bengal', complaints: 4900 },
-  { state: 'Uttar Pradesh', complaints: 4200 },
+const CATEGORIES: Category[] = [
+  { name: 'Phishing', pct: 34, change: 8.2, color: '#60a5fa' },
+  { name: 'UPI Fraud', pct: 26, change: 12.5, color: '#a78bfa' },
+  { name: 'Job Scams', pct: 18, change: 5.1, color: '#34d399' },
+  { name: 'Loan App', pct: 12, change: -3.4, color: '#fb923c' },
+  { name: 'Crypto', pct: 7, change: 22.1, color: '#f472b6' },
+  { name: 'Other', pct: 3, change: -1.8, color: '#71717a' },
+];
+
+const TOP_STATES: StateRow[] = [
+  { rank: 1, state: 'Delhi', complaints: 11800, amount: '₹42.3 Cr' },
+  { rank: 2, state: 'Maharashtra', complaints: 10400, amount: '₹38.7 Cr' },
+  { rank: 3, state: 'Karnataka', complaints: 8200, amount: '₹29.1 Cr' },
+  { rank: 4, state: 'Tamil Nadu', complaints: 7600, amount: '₹26.8 Cr' },
+  { rank: 5, state: 'Gujarat', complaints: 6100, amount: '₹21.4 Cr' },
+  { rank: 6, state: 'Rajasthan', complaints: 5400, amount: '₹18.9 Cr' },
+  { rank: 7, state: 'Uttar Pradesh', complaints: 4900, amount: '₹16.2 Cr' },
+  { rank: 8, state: 'West Bengal', complaints: 3800, amount: '₹12.6 Cr' },
 ];
 
 const PREDICTIONS: Prediction[] = [
-  { text: 'Phishing links expected to surge 40% next month', confidence: 87, color: 'rose' },
-  { text: 'Crypto scams targeting tier-2 cities', confidence: 73, color: 'amber' },
-  { text: 'Job scams shifting to Telegram groups', confidence: 81, color: 'violet' },
+  {
+    scamType: 'Phishing Surge',
+    confidence: 91,
+    window: 'Next 14 days',
+    risk: 'high',
+  },
+  {
+    scamType: 'UPI Fraud Spike',
+    confidence: 78,
+    window: 'Next 30 days',
+    risk: 'high',
+  },
+  {
+    scamType: 'Crypto Ponzi',
+    confidence: 65,
+    window: 'Next 60 days',
+    risk: 'medium',
+  },
 ];
 
-const MONTHLY_DATA: MonthlyPoint[] = [
-  { month: 'Jan', value: 8200 },
-  { month: 'Feb', value: 9100 },
-  { month: 'Mar', value: 10400 },
-  { month: 'Apr', value: 11200 },
-  { month: 'May', value: 11800 },
-  { month: 'Jun', value: 12300 },
+const MONTHLY_COMPARISON: MonthlyComparison[] = [
+  { category: 'Phishing', thisMonth: 5100, lastMonth: 4600 },
+  { category: 'UPI Fraud', thisMonth: 3200, lastMonth: 2900 },
+  { category: 'Job Scam', thisMonth: 2600, lastMonth: 2300 },
+  { category: 'Loan App', thisMonth: 1800, lastMonth: 1650 },
+  { category: 'Crypto', thisMonth: 2300, lastMonth: 1900 },
+  { category: 'E-comm', thisMonth: 1200, lastMonth: 1400 },
 ];
 
-const SPARKLINE_PATHS: Record<string, string> = {
-  '1': 'M0 8 Q5 6, 10 7 T20 4 T30 5',
-  '2': 'M0 9 Q5 8, 10 6 T20 5 T30 3',
-  '3': 'M0 3 Q5 4, 10 5 T20 7 T30 8',
-  '4': 'M0 10 Q5 8, 10 7 T20 5 T30 2',
-  '5': 'M0 7 Q5 6, 10 5 T20 5 T30 4',
-  '6': 'M0 9 Q5 7, 10 6 T20 4 T30 1',
-  '7': 'M0 5 Q5 5, 10 6 T20 7 T30 7',
-  '8': 'M0 8 Q5 7, 10 6 T20 5 T30 5',
-};
+const CHART_W = 800;
+const CHART_H = 320;
+const PAD = { top: 30, right: 30, bottom: 40, left: 60 };
+const PLOT_W = CHART_W - PAD.left - PAD.right;
+const PLOT_H = CHART_H - PAD.top - PAD.bottom;
 
-function getBarColor(change: number): string {
-  return change > 0 ? '#f43f5e' : '#10b981';
+const ALL_VALUES = SCAM_TYPES.flatMap((t) => t.data);
+const Y_MIN = 0;
+const Y_MAX = Math.ceil(Math.max(...ALL_VALUES) / 1000) * 1000;
+
+function getX(i: number): number {
+  return PAD.left + (i / (MONTHS.length - 1)) * PLOT_W;
 }
 
-export default function ScamTrends() {
-  const { addToast } = useToast();
-  const [loading, setLoading] = useState(true);
-  const [timeframe, setTimeframe] = useState('Last 30 days');
-  const [sortBy, setSortBy] = useState<'change' | 'reports'>('change');
-  const [refreshing, setRefreshing] = useState(false);
+function getY(v: number): number {
+  return PAD.top + PLOT_H - ((v - Y_MIN) / (Y_MAX - Y_MIN)) * PLOT_H;
+}
 
-  useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 800);
-    return () => clearTimeout(t);
-  }, []);
+function buildSmoothPath(data: number[]): string {
+  return data
+    .map((v, i) => {
+      const x = getX(i);
+      const y = getY(v);
+      if (i === 0) return `M ${x} ${y}`;
+      const px = getX(i - 1);
+      const py = getY(data[i - 1]);
+      const cpx1 = px + (x - px) * 0.4;
+      const cpx2 = x - (x - px) * 0.4;
+      return `C ${cpx1} ${py}, ${cpx2} ${y}, ${x} ${y}`;
+    })
+    .join(' ');
+}
 
-  const sortedTrends = useMemo(() => {
-    return [...TRENDS].sort((a, b) =>
-      sortBy === 'change' ? Math.abs(b.change) - Math.abs(a.change) : b.reports - a.reports
-    );
-  }, [sortBy]);
+function buildAreaPath(data: number[]): string {
+  const line = buildSmoothPath(data);
+  const lastX = getX(data.length - 1);
+  const firstX = getX(0);
+  const bottom = PAD.top + PLOT_H;
+  return `${line} L ${lastX} ${bottom} L ${firstX} ${bottom} Z`;
+}
 
-  const totalReports = useMemo(() => TRENDS.reduce((a, t) => a + t.reports, 0), []);
+function GradientDefs() {
+  return (
+    <defs>
+      {SCAM_TYPES.map((t) => (
+        <linearGradient key={t.name} id={`grad-${t.name}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={t.color} stopOpacity={0.35} />
+          <stop offset="100%" stopColor={t.color} stopOpacity={0.02} />
+        </linearGradient>
+      ))}
+    </defs>
+  );
+}
 
-  const topCategory = useMemo(() =>
-    [...TRENDS].sort((a, b) => b.reports - a.reports)[0], []
+function GridLines() {
+  const steps = 5;
+  return (
+    <>
+      {Array.from({ length: steps + 1 }, (_, i) => {
+        const v = Y_MIN + (i / steps) * (Y_MAX - Y_MIN);
+        const y = getY(v);
+        return (
+          <g key={i}>
+            <line
+              x1={PAD.left}
+              y1={y}
+              x2={CHART_W - PAD.right}
+              y2={y}
+              stroke="rgba(255,255,255,0.06)"
+              strokeDasharray="4 4"
+            />
+            <text x={PAD.left - 10} y={y + 4} textAnchor="end" fill="#52525b" fontSize={11}>
+              {(v / 1000).toFixed(0)}k
+            </text>
+          </g>
+        );
+      })}
+      {MONTHS.map((m, i) => (
+        <text
+          key={m}
+          x={getX(i)}
+          y={CHART_H - 8}
+          textAnchor="middle"
+          fill="#52525b"
+          fontSize={11}
+        >
+          {m}
+        </text>
+      ))}
+    </>
+  );
+}
+
+interface TooltipData {
+  monthIdx: number;
+  x: number;
+  y: number;
+}
+
+interface TrendChartProps {
+  hoveredPoint: TooltipData | null;
+  onHover: (d: TooltipData | null) => void;
+}
+
+function TrendChart({ hoveredPoint, onHover }: TrendChartProps) {
+  const svgRef = useRef<SVGSVGElement>(null);
+
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent<SVGSVGElement>) => {
+      if (!svgRef.current) return;
+      const rect = svgRef.current.getBoundingClientRect();
+      const mouseX = ((e.clientX - rect.left) / rect.width) * CHART_W;
+      let closest = 0;
+      let closestDist = Infinity;
+      MONTHS.forEach((_, i) => {
+        const dist = Math.abs(getX(i) - mouseX);
+        if (dist < closestDist) {
+          closestDist = dist;
+          closest = i;
+        }
+      });
+      if (closestDist < PLOT_W / MONTHS.length) {
+        onHover({ monthIdx: closest, x: getX(closest), y: PAD.top });
+      } else {
+        onHover(null);
+      }
+    },
+    [onHover],
   );
 
-  const fastestGrowing = useMemo(() =>
-    [...TRENDS].sort((a, b) => b.change - a.change)[0], []
+  return (
+    <svg
+      ref={svgRef}
+      viewBox={`0 0 ${CHART_W} ${CHART_H}`}
+      className="w-full"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={() => onHover(null)}
+    >
+      <GradientDefs />
+      <GridLines />
+      {SCAM_TYPES.map((t) => (
+        <path key={t.name} d={buildAreaPath(t.data)} fill={`url(#grad-${t.name})`} />
+      ))}
+      {SCAM_TYPES.map((t) => (
+        <path
+          key={`line-${t.name}`}
+          d={buildSmoothPath(t.data)}
+          fill="none"
+          stroke={t.color}
+          strokeWidth={2.5}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      ))}
+      {hoveredPoint && (
+        <>
+          <line
+            x1={hoveredPoint.x}
+            y1={PAD.top}
+            x2={hoveredPoint.x}
+            y2={PAD.top + PLOT_H}
+            stroke="rgba(255,255,255,0.15)"
+            strokeDasharray="4 2"
+          />
+          {SCAM_TYPES.map((t) => {
+            const val = t.data[hoveredPoint.monthIdx];
+            const cy = getY(val);
+            return (
+              <circle
+                key={`dot-${t.name}`}
+                cx={hoveredPoint.x}
+                cy={cy}
+                r={4}
+                fill="#18181b"
+                stroke={t.color}
+                strokeWidth={2}
+              />
+            );
+          })}
+          <foreignObject
+            x={hoveredPoint.x + 10 > CHART_W - 160 ? hoveredPoint.x - 170 : hoveredPoint.x + 10}
+            y={PAD.top + 4}
+            width={160}
+            height={SCAM_TYPES.length * 24 + 32}
+          >
+            <div
+              style={{
+                background: 'rgba(24,24,27,0.92)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: 8,
+                padding: '8px 10px',
+                backdropFilter: 'blur(12px)',
+                fontSize: 11,
+              }}
+            >
+              <div style={{ color: '#a1a1aa', marginBottom: 4, fontWeight: 600, fontSize: 10 }}>
+                {MONTHS[hoveredPoint.monthIdx]}
+              </div>
+              {SCAM_TYPES.map((t) => (
+                <div
+                  key={t.name}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 2 }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <span style={{ width: 7, height: 7, borderRadius: '50%', background: t.color, flexShrink: 0 }} />
+                    <span style={{ color: '#d4d4d8' }}>{t.name}</span>
+                  </div>
+                  <span style={{ color: '#e4e4e7', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
+                    {t.data[hoveredPoint.monthIdx].toLocaleString()}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </foreignObject>
+        </>
+      )}
+    </svg>
   );
+}
 
-  const maxReports = useMemo(() => Math.max(...TRENDS.map(t => t.reports)), []);
+function Legend() {
+  return (
+    <div className="flex flex-wrap gap-x-4 gap-y-1">
+      {SCAM_TYPES.map((t) => (
+        <div key={t.name} className="flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full" style={{ background: t.color }} />
+          <span className="text-[11px] text-zinc-400">{t.name}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
-  const maxStateComplaints = useMemo(() => Math.max(...STATES.map(s => s.complaints)), []);
-
-  const maxMonthly = useMemo(() => Math.max(...MONTHLY_DATA.map(d => d.value)), []);
-  const minMonthly = useMemo(() => Math.min(...MONTHLY_DATA.map(d => d.value)), []);
-
-  const handleRefresh = () => {
-    setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-      addToast('Latest trend data loaded', 'success');
-    }, 1000);
-  };
-
-  if (loading) {
-    return (
-      <div className="db-page animate-fade-in">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg" style={{ background: 'rgba(255,255,255,0.04)' }} />
-          <div className="space-y-1">
-            <div className="h-4 w-36 rounded-lg" style={{ background: 'rgba(255,255,255,0.04)' }} />
-            <div className="h-3 w-52 rounded-lg" style={{ background: 'rgba(255,255,255,0.03)' }} />
+function StatsRow() {
+  const stats = [
+    { label: 'Total Scams', value: '45,230', icon: <BarChart3 size={14} className="text-blue-400" /> },
+    { label: 'This Month', value: '3,847', icon: <Activity size={14} className="text-violet-400" /> },
+    { label: 'Growth', value: '+12.3%', icon: <TrendingUp size={14} className="text-rose-400" /> },
+    { label: 'Most Common', value: 'Phishing', icon: <Shield size={14} className="text-amber-400" /> },
+  ];
+  return (
+    <div className="db-stats">
+      {stats.map((s) => (
+        <div key={s.label} className="db-stat">
+          <div className="db-stat-icon" style={{ background: 'rgba(59,130,246,0.1)' }}>
+            {s.icon}
+          </div>
+          <div>
+            <span className="db-stat-value">{s.value}</span>
+            <span className="db-stat-label">{s.label}</span>
           </div>
         </div>
-        <div className="db-stats">
-          {[1, 2, 3].map(i => (
-            <div key={i} className="h-16 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }} />
-          ))}
+      ))}
+    </div>
+  );
+}
+
+function CategoryBreakdown() {
+  return (
+    <div className="db-section">
+      <div className="db-section-header">
+        <div className="flex items-center gap-2">
+          <BarChart3 size={14} className="text-blue-400" />
+          <span className="db-section-title">Category Breakdown</span>
         </div>
-        <div className="h-52 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }} />
-        <div className="db-grid-2">
-          {[1, 2, 3].map(i => (
-            <div key={i} className="h-20 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }} />
+      </div>
+      <div className="db-card">
+        <div className="space-y-3">
+          {CATEGORIES.map((c) => (
+            <div key={c.name} className="flex items-center gap-3">
+              <span className="text-xs text-zinc-400 w-20 text-right flex-shrink-0">{c.name}</span>
+              <div className="flex-1 h-2.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
+                <div
+                  className="h-full rounded-full transition-all duration-700"
+                  style={{ width: `${c.pct}%`, background: c.color, opacity: 0.8 }}
+                />
+              </div>
+              <span className="text-xs font-medium text-zinc-300 w-10 text-right">{c.pct}%</span>
+              <span className={`text-[11px] font-semibold flex items-center gap-0.5 w-14 justify-end ${c.change > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                {c.change > 0 ? <ArrowUpRight size={11} /> : <ArrowDownRight size={11} />}
+                {Math.abs(c.change)}%
+              </span>
+            </div>
           ))}
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
-  const chartBarWidth = 40;
-  const chartBarGap = 12;
-  const chartWidth = TRENDS.length * (chartBarWidth + chartBarGap) - chartBarGap;
-  const chartHeight = 180;
-  const chartPaddingTop = 30;
+function TopStates() {
+  const maxComplaints = TOP_STATES[0].complaints;
+  return (
+    <div className="db-section">
+      <div className="db-section-header">
+        <div className="flex items-center gap-2">
+          <MapPin size={14} className="text-blue-400" />
+          <span className="db-section-title">Top Affected States</span>
+        </div>
+      </div>
+      <div className="db-card">
+        <div className="space-y-2.5">
+          {TOP_STATES.map((s) => (
+            <div key={s.state} className="flex items-center gap-3">
+              <span className="text-[11px] font-bold text-zinc-500 w-5 text-center flex-shrink-0">#{s.rank}</span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs text-zinc-300 font-medium">{s.state}</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-[11px] text-zinc-500">{s.complaints.toLocaleString()} complaints</span>
+                    <span className="text-[11px] text-zinc-400 font-medium">{s.amount}</span>
+                  </div>
+                </div>
+                <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                  <div
+                    className="h-full rounded-full"
+                    style={{
+                      width: `${(s.complaints / maxComplaints) * 100}%`,
+                      background: 'linear-gradient(90deg, rgba(59,130,246,0.4), rgba(59,130,246,0.7))',
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
-  const monthlyChartWidth = 400;
-  const monthlyChartHeight = 180;
-  const monthlyPaddingLeft = 40;
-  const monthlyPaddingBottom = 30;
-  const monthlyPlotWidth = monthlyChartWidth - monthlyPaddingLeft;
-  const monthlyPlotHeight = monthlyChartHeight - monthlyPaddingBottom;
+function AIPredictions() {
+  const riskColor: Record<string, string> = {
+    high: 'text-rose-400 bg-rose-500/10',
+    medium: 'text-amber-400 bg-amber-500/10',
+    low: 'text-emerald-400 bg-emerald-500/10',
+  };
+  const confColor: Record<string, string> = {
+    high: '#f43f5e',
+    medium: '#f59e0b',
+    low: '#10b981',
+  };
+  return (
+    <div className="db-section">
+      <div className="db-section-header">
+        <div className="flex items-center gap-2">
+          <Brain size={14} className="text-violet-400" />
+          <span className="db-section-title">AI Predictions</span>
+        </div>
+      </div>
+      <div className="db-grid-3">
+        {PREDICTIONS.map((p) => (
+          <div key={p.scamType} className="db-card card-hover">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-semibold text-zinc-200">{p.scamType}</span>
+              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${riskColor[p.risk]}`}>
+                {p.risk.toUpperCase()}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-[11px] text-zinc-500">Confidence</span>
+              <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                <div
+                  className="h-full rounded-full transition-all duration-700"
+                  style={{ width: `${p.confidence}%`, background: confColor[p.risk] }}
+                />
+              </div>
+              <span className="text-[11px] text-zinc-300 font-semibold">{p.confidence}%</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] text-zinc-500">Window:</span>
+              <span className="text-[11px] text-zinc-400">{p.window}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
-  const monthlyPoints = MONTHLY_DATA.map((d, i) => ({
-    x: monthlyPaddingLeft + (i / (MONTHLY_DATA.length - 1)) * monthlyPlotWidth,
-    y: chartPaddingTop + (1 - (d.value - minMonthly) / (maxMonthly - minMonthly)) * (monthlyPlotHeight - chartPaddingTop),
-    label: d.month,
-    value: d.value,
-  }));
+function MonthlyComparisonChart() {
+  const maxVal = Math.max(...MONTHLY_COMPARISON.flatMap((c) => [c.thisMonth, c.lastMonth]));
+  return (
+    <div className="db-section">
+      <div className="db-section-header">
+        <div className="flex items-center gap-2">
+          <BarChart3 size={14} className="text-blue-400" />
+          <span className="db-section-title">Monthly Comparison</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-sm" style={{ background: 'rgba(59,130,246,0.7)' }} />
+            <span className="text-[10px] text-zinc-500">This Month</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-sm" style={{ background: 'rgba(59,130,246,0.25)' }} />
+            <span className="text-[10px] text-zinc-500">Last Month</span>
+          </div>
+        </div>
+      </div>
+      <div className="db-card">
+        <div className="flex items-end gap-3" style={{ height: 180 }}>
+          {MONTHLY_COMPARISON.map((c) => (
+            <div key={c.category} className="flex-1 flex flex-col items-center gap-1">
+              <div className="w-full flex items-end justify-center gap-1" style={{ height: 140 }}>
+                <div
+                  className="w-[40%] rounded-t transition-all duration-500"
+                  style={{
+                    height: `${(c.thisMonth / maxVal) * 100}%`,
+                    background: 'rgba(59,130,246,0.7)',
+                    minHeight: 4,
+                  }}
+                />
+                <div
+                  className="w-[40%] rounded-t transition-all duration-500"
+                  style={{
+                    height: `${(c.lastMonth / maxVal) * 100}%`,
+                    background: 'rgba(59,130,246,0.25)',
+                    minHeight: 4,
+                  }}
+                />
+              </div>
+              <span className="text-[10px] text-zinc-500 text-center leading-tight mt-1">{c.category}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
-  const monthlyPathD = monthlyPoints.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ');
+export default function ScamTrends() {
+  const [period, setPeriod] = useState<Period>('30D');
+  const [hoveredPoint, setHoveredPoint] = useState<TooltipData | null>(null);
+  const periods: Period[] = ['7D', '30D', '90D', '1Y'];
 
   return (
     <div className="db-page animate-fade-in">
       <div className="db-header">
         <div className="db-header-left">
-          <div className="db-header-icon" style={{ background: 'linear-gradient(135deg, #059669, #10b981)' }}>
+          <div className="db-header-icon" style={{ background: 'linear-gradient(135deg, #2563eb, #3b82f6)' }}>
             <TrendingUp size={16} className="text-white" />
           </div>
           <div className="db-header-text">
             <h2 className="db-title">Scam Trends</h2>
-            <p className="db-subtitle">Emerging scam patterns, regional data, and AI predictions</p>
+            <p className="db-subtitle">Advanced analytics, AI predictions, and regional intelligence</p>
           </div>
         </div>
-        <div className="db-header-actions">
-          <button onClick={handleRefresh} disabled={refreshing} className="db-btn">
-            {refreshing ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />} Refresh
-          </button>
-        </div>
-      </div>
-
-      <div className="db-stats">
-        <div className="db-stat">
-          <div className="db-stat-icon" style={{ background: 'rgba(59,130,246,0.12)' }}>
-            <BarChart3 size={13} className="text-blue-400" />
-          </div>
-          <div>
-            <span className="db-stat-value">{totalReports.toLocaleString()}</span>
-            <span className="db-stat-label">Total Reports</span>
-          </div>
-        </div>
-        <div className="db-stat">
-          <div className="db-stat-icon" style={{ background: 'rgba(245,158,11,0.12)' }}>
-            <AlertTriangle size={13} className="text-amber-400" />
-          </div>
-          <div>
-            <span className="db-stat-value">{topCategory.category}</span>
-            <span className="db-stat-label">Top Category</span>
-          </div>
-        </div>
-        <div className="db-stat">
-          <div className="db-stat-icon" style={{ background: 'rgba(244,63,94,0.12)' }}>
-            <TrendingUp size={13} className="text-rose-400" />
-          </div>
-          <div>
-            <span className="db-stat-value">{fastestGrowing.category}</span>
-            <span className="db-stat-label">Fastest Growing ↑{fastestGrowing.change}%</span>
-          </div>
+        <div className="flex items-center gap-1 p-0.5 rounded-lg" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+          {periods.map((p) => (
+            <button
+              key={p}
+              onClick={() => setPeriod(p)}
+              className={`db-btn text-[11px] px-3 py-1 ${
+                period === p ? '!bg-blue-500/15 !text-blue-400 !border-blue-500/20' : '!border-transparent !bg-transparent !text-zinc-500'
+              }`}
+            >
+              {p}
+            </button>
+          ))}
         </div>
       </div>
 
-      <div className="db-card p-3 overflow-x-auto">
-        <h3 className="text-xs font-medium text-zinc-300 mb-2">Category Reports Distribution</h3>
-        <svg width={chartWidth} height={chartHeight + 50} viewBox={`0 0 ${chartWidth} ${chartHeight + 50}`} className="w-full" style={{ minWidth: chartWidth }}>
-          {TRENDS.map((trend, i) => {
-            const barHeight = (trend.reports / maxReports) * chartHeight;
-            const x = i * (chartBarWidth + chartBarGap);
-            const y = chartPaddingTop + (chartHeight - barHeight);
-            const color = getBarColor(trend.change);
-            return (
-              <g key={trend.id} className="group cursor-pointer">
-                <rect
-                  x={x}
-                  y={y}
-                  width={chartBarWidth}
-                  height={barHeight}
-                  rx={4}
-                  fill={color}
-                  fillOpacity={0.7}
-                  className="transition-all duration-200 group-hover:fill-opacity-100"
-                  style={{ filter: 'brightness(1)', transition: 'filter 0.2s' }}
-                  onMouseEnter={(e) => { (e.target as SVGRectElement).style.filter = 'brightness(1.3)'; }}
-                  onMouseLeave={(e) => { (e.target as SVGRectElement).style.filter = 'brightness(1)'; }}
-                />
-                <text
-                  x={x + chartBarWidth / 2}
-                  y={y - 6}
-                  textAnchor="middle"
-                  className="text-[10px] font-bold"
-                  fill={color}
-                >
-                  {trend.change > 0 ? '+' : ''}{trend.change}%
-                </text>
-                <text
-                  x={x + chartBarWidth / 2}
-                  y={chartPaddingTop + chartHeight + 14}
-                  textAnchor="middle"
-                  className="text-[9px]"
-                  fill="#a1a1aa"
-                >
-                  {trend.reports.toLocaleString()}
-                </text>
-                <text
-                  x={x + chartBarWidth / 2}
-                  y={chartPaddingTop + chartHeight + 28}
-                  textAnchor="middle"
-                  className="text-[8px]"
-                  fill="#71717a"
-                >
-                  {trend.category.length > 10 ? trend.category.slice(0, 9) + '..' : trend.category}
-                </text>
-              </g>
-            );
-          })}
-        </svg>
-      </div>
+      <StatsRow />
 
       <div className="db-section">
         <div className="db-section-header">
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-            {TIMEFRAMES.map(tf => (
-              <button key={tf} onClick={() => setTimeframe(tf)}
-                className={`db-btn flex-shrink-0 ${
-                  timeframe === tf ? '!bg-blue-500/15 !text-blue-400 !border-blue-500/20' : ''
-                }`}>
-                {tf}
-              </button>
-            ))}
+          <div className="flex items-center gap-2">
+            <Activity size={14} className="text-blue-400" />
+            <span className="db-section-title">Scam Trends Over Time</span>
           </div>
-          <div className="flex items-center gap-1">
-            <button onClick={() => setSortBy('change')}
-              className={`db-btn ${sortBy === 'change' ? '!bg-white/[0.05] !text-zinc-200 !border-white/[0.08]' : ''}`}>
-              Sort by Change
-            </button>
-            <button onClick={() => setSortBy('reports')}
-              className={`db-btn ${sortBy === 'reports' ? '!bg-white/[0.05] !text-zinc-200 !border-white/[0.08]' : ''}`}>
-              Sort by Reports
-            </button>
-          </div>
+          <Legend />
+        </div>
+        <div className="db-card glass-panel overflow-x-auto">
+          <TrendChart hoveredPoint={hoveredPoint} onHover={setHoveredPoint} />
         </div>
       </div>
 
-      <div className="db-section">
-        {sortedTrends.map(trend => (
-          <div key={trend.id} className="db-card hover:border-white/[0.08] transition-all">
-            <div className="flex items-start gap-2">
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${trend.change > 0 ? 'bg-rose-500/10' : 'bg-emerald-500/10'}`}>
-                {trend.change > 0 ? <ArrowUpRight size={14} className="text-rose-400" /> : <ArrowDownRight size={14} className="text-emerald-400" />}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-zinc-200">{trend.category}</span>
-                  <span className={`text-xs font-bold ${trend.change > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
-                    {trend.change > 0 ? '+' : ''}{trend.change}%
-                  </span>
-                </div>
-                <p className="text-[10px] text-zinc-400 mt-0.5 leading-relaxed">{trend.description}</p>
-                <div className="flex items-center justify-between mt-1.5">
-                  <div className="flex items-center gap-3">
-                    <span className="text-[9px] text-zinc-500 flex items-center gap-0.5">
-                      <BarChart3 size={8} /> {trend.reports.toLocaleString()} reports
-                    </span>
-                    <span className="text-[9px] text-zinc-500 flex items-center gap-0.5">
-                      <MapPin size={8} /> {trend.topRegion}
-                    </span>
-                    <span className="text-[9px] text-zinc-600 flex items-center gap-0.5">
-                      <Calendar size={8} /> {trend.timeframe}
-                    </span>
-                  </div>
-                  <svg width="42" height="14" viewBox="0 0 50 16" className="flex-shrink-0 opacity-60">
-                    <path
-                      d={SPARKLINE_PATHS[trend.id] || 'M0 8 Q5 8, 10 8 T20 8 T30 8'}
-                      fill="none"
-                      stroke={trend.change > 0 ? '#f43f5e' : '#10b981'}
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      transform="scale(1.5, 1)"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="db-grid-2">
-        <div className="db-card p-3">
-          <div className="db-card-header">
-            <MapPin size={13} className="text-blue-400" />
-            <span className="db-card-title">Top Affected States</span>
-          </div>
-          <div className="space-y-1.5">
-            {STATES.map((s) => {
-              const barWidth = (s.complaints / maxStateComplaints) * 100;
-              return (
-                <div key={s.state} className="flex items-center gap-2">
-                  <span className="text-[9px] text-zinc-400 w-24 text-right flex-shrink-0 truncate">{s.state}</span>
-                  <div className="flex-1 h-4 rounded-md overflow-hidden" style={{ background: 'rgba(255,255,255,0.04)' }}>
-                    <div
-                      className="h-full rounded-md transition-all duration-500"
-                      style={{ width: `${barWidth}%`, background: 'linear-gradient(90deg, rgba(59,130,246,0.3), rgba(59,130,246,0.6))' }}
-                    />
-                  </div>
-                  <span className="text-[9px] text-zinc-500 w-12 flex-shrink-0">{s.complaints.toLocaleString()}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="db-card p-3">
-          <div className="db-card-header">
-            <Brain size={13} className="text-violet-400" />
-            <span className="db-card-title">AI Trend Predictions</span>
-          </div>
-          <div className="space-y-2">
-            {PREDICTIONS.map((pred, i) => (
-              <div key={i} className="p-2 rounded-lg" style={{ background: 'rgba(255,255,255,0.02)' }}>
-                <div className="flex items-start gap-2">
-                  <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 mt-1 ${
-                    pred.color === 'rose' ? 'bg-rose-400' : pred.color === 'amber' ? 'bg-amber-400' : 'bg-violet-400'
-                  }`} />
-                  <div className="flex-1">
-                    <p className="text-[10px] text-zinc-300 leading-relaxed">{pred.text}</p>
-                    <div className="flex items-center gap-1.5 mt-1">
-                      <span className="text-[9px] text-zinc-500">Confidence</span>
-                      <div className="w-14 h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
-                        <div
-                          className="h-full rounded-full"
-                          style={{
-                            width: `${pred.confidence}%`,
-                            background: pred.color === 'rose' ? '#f43f5e' : pred.color === 'amber' ? '#f59e0b' : '#8b5cf6',
-                          }}
-                        />
-                      </div>
-                      <span className="text-[9px] text-zinc-400 font-medium">{pred.confidence}%</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="db-card p-3">
-        <div className="db-card-header">
-          <Calendar size={13} className="text-emerald-400" />
-          <span className="db-card-title">Monthly Overview — {topCategory.category}</span>
-        </div>
-        <svg width="100%" height={monthlyChartHeight + monthlyPaddingBottom} viewBox={`0 0 ${monthlyChartWidth} ${monthlyChartHeight + monthlyPaddingBottom}`} preserveAspectRatio="xMidYMid meet">
-          {[0, 0.25, 0.5, 0.75, 1].map((frac, i) => {
-            const val = minMonthly + frac * (maxMonthly - minMonthly);
-            const y = chartPaddingTop + (1 - frac) * (monthlyPlotHeight - chartPaddingTop);
-            return (
-              <g key={i}>
-                <line
-                  x1={monthlyPaddingLeft}
-                  y1={y}
-                  x2={monthlyChartWidth}
-                  y2={y}
-                  stroke="rgba(255,255,255,0.05)"
-                  strokeDasharray="4 4"
-                />
-                <text
-                  x={monthlyPaddingLeft - 6}
-                  y={y + 3}
-                  textAnchor="end"
-                  className="text-[9px]"
-                  fill="#71717a"
-                >
-                  {(val / 1000).toFixed(1)}k
-                </text>
-              </g>
-            );
-          })}
-          <path
-            d={monthlyPathD}
-            fill="none"
-            stroke="url(#lineGradient)"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <defs>
-            <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#3b82f6" />
-              <stop offset="100%" stopColor="#8b5cf6" />
-            </linearGradient>
-          </defs>
-          {monthlyPoints.map((p, i) => (
-            <g key={i}>
-              <circle cx={p.x} cy={p.y} r={4} fill="#18181b" stroke="#3b82f6" strokeWidth="2" />
-              <text
-                x={p.x}
-                y={monthlyChartHeight + 16}
-                textAnchor="middle"
-                className="text-[9px]"
-                fill="#71717a"
-              >
-                {p.label}
-              </text>
-            </g>
-          ))}
-        </svg>
-      </div>
+      <CategoryBreakdown />
+      <TopStates />
+      <AIPredictions />
+      <MonthlyComparisonChart />
     </div>
   );
 }

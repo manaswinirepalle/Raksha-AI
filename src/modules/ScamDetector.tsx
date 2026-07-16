@@ -5,7 +5,7 @@ import {
   FileText, AlertTriangle,   ShieldAlert, ShieldCheck, Shield,
   Sparkles, RotateCcw, ChevronRight,
   Zap, Eye, Brain, TrendingUp, BarChart3, BookOpen,
-  GraduationCap,
+  GraduationCap, Search,
 } from 'lucide-react';
 import { TRANSCRIPT_SCENARIOS } from '../mockData';
 import type { ActivityEntry, TranscriptScenario, RiskLevel, AnalysisRecord } from '../types';
@@ -152,6 +152,8 @@ export default function ScamDetector() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [focusedCardIndex, setFocusedCardIndex] = useState(-1);
   const [activeTab, setActiveTab] = useState<TabId>('analysis');
+  const [scenarioSearch, setScenarioSearch] = useState('');
+  const [scenarioFilter, setScenarioFilter] = useState<RiskLevel | 'ALL'>('ALL');
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const pulseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const modalCardRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -273,6 +275,8 @@ export default function ScamDetector() {
   const openModal = useCallback(() => {
     setFocusedCardIndex(-1);
     setHoveredCard(null);
+    setScenarioSearch('');
+    setScenarioFilter('ALL');
     previousFocusRef.current = document.activeElement as HTMLElement;
     setShowScenarioModal(true);
   }, []);
@@ -302,9 +306,18 @@ export default function ScamDetector() {
     };
   }, [showScenarioModal, closeModal]);
 
+  const filteredScenarios = useMemo(() => {
+    const q = scenarioSearch.toLowerCase();
+    return TRANSCRIPT_SCENARIOS.filter((s) => {
+      const matchFilter = scenarioFilter === 'ALL' || s.riskLevel === scenarioFilter;
+      const matchSearch = !q || s.label.toLowerCase().includes(q) || s.description.toLowerCase().includes(q) || s.id.toLowerCase().includes(q);
+      return matchFilter && matchSearch;
+    });
+  }, [scenarioSearch, scenarioFilter]);
+
   const handleModalKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      const count = TRANSCRIPT_SCENARIOS.length;
+      const count = filteredScenarios.length;
       if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
         e.preventDefault();
         const next = focusedCardIndex < count - 1 ? focusedCardIndex + 1 : 0;
@@ -319,7 +332,7 @@ export default function ScamDetector() {
       }
       if (e.key === 'Enter' && focusedCardIndex >= 0) {
         e.preventDefault();
-        handleSelectScenario(TRANSCRIPT_SCENARIOS[focusedCardIndex]);
+        handleSelectScenario(filteredScenarios[focusedCardIndex]);
       }
       if (e.key === 'Tab' && modalRef.current) {
         const focusable = modalRef.current.querySelectorAll<HTMLElement>('button, [tabindex]:not([tabindex="-1"])');
@@ -329,7 +342,7 @@ export default function ScamDetector() {
         else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
       }
     },
-    [focusedCardIndex, handleSelectScenario]
+    [focusedCardIndex, handleSelectScenario, filteredScenarios]
   );
 
   const highlightedTranscript = useMemo(() => {
@@ -598,12 +611,29 @@ export default function ScamDetector() {
           <div className="sd-modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="sd-modal-panel">
               <div className="sd-modal-header">
-                <div><h3 className="sd-modal-title">Select Scenario</h3><p className="sd-modal-subtitle">Choose a transcript to begin multi-agent analysis</p></div>
+                <div><h3 className="sd-modal-title">Select Scenario</h3><p className="sd-modal-subtitle">{filteredScenarios.length} of {TRANSCRIPT_SCENARIOS.length} scenarios</p></div>
                 <button onClick={closeModal} className="sd-modal-close" aria-label="Close scenario picker" type="button"><span className="sd-modal-close-x">&times;</span></button>
               </div>
-              {isLoadingScenarios ? <ScenarioSkeletonGrid /> : (
-                <div className="scenario-grid">
-                  {TRANSCRIPT_SCENARIOS.map((scenario, index) => {
+              <div className="sd-modal-search-row">
+                <div className="sd-modal-search">
+                  <Search size={14} strokeWidth={1.5} />
+                  <input type="text" placeholder="Search scenarios..." value={scenarioSearch} onChange={(e) => setScenarioSearch(e.target.value)} className="sd-modal-search-input" aria-label="Search scenarios" />
+                </div>
+                <div className="sd-modal-filters" role="radiogroup" aria-label="Filter by risk level">
+                  {(['ALL', 'CRITICAL', 'HIGH', 'MEDIUM', 'LOW'] as const).map((level) => (
+                    <button key={level} onClick={() => setScenarioFilter(level)} className={`sd-modal-filter ${scenarioFilter === level ? 'sd-modal-filter-active' : ''}`} role="radio" aria-checked={scenarioFilter === level}>
+                      {level === 'ALL' ? 'All' : RISK_META[level].label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {isLoadingScenarios ? <ScenarioSkeletonGrid /> : filteredScenarios.length === 0 ? (
+                <div className="sd-modal-empty">
+                  <p className="sd-modal-empty-text">No scenarios match your search</p>
+                </div>
+              ) : (
+                <div className="scenario-grid scenario-grid-2col">
+                  {filteredScenarios.map((scenario, index) => {
                     const meta = RISK_META[scenario.riskLevel];
                     const IconComponent = meta.icon;
                     const isHovered = hoveredCard === scenario.id;
@@ -636,7 +666,7 @@ export default function ScamDetector() {
               )}
               {!isLoadingScenarios && (
                 <div className="sd-modal-footer">
-                  <span className="sd-modal-footer-text">{TRANSCRIPT_SCENARIOS.length} scenarios available</span>
+                  <span className="sd-modal-footer-text">{filteredScenarios.length} of {TRANSCRIPT_SCENARIOS.length} scenarios</span>
                   <span className="sd-modal-footer-hint">Use arrow keys + Enter to navigate</span>
                 </div>
               )}

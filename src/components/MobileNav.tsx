@@ -33,11 +33,11 @@ export default function MobileNav({ active, onSelect }: { active: ModuleId; onSe
     <nav
       className="lg:hidden fixed bottom-0 left-0 right-0 z-50 safe-bottom"
       style={{
-        background: 'rgba(9,9,11,0.95)',
-        backdropFilter: 'blur(24px)',
-        WebkitBackdropFilter: 'blur(24px)',
-        borderTop: '1px solid rgba(255,255,255,0.06)',
-        boxShadow: '0 -4px 24px rgba(0,0,0,0.3)',
+        background: 'rgba(12, 12, 15, 0.88)',
+        backdropFilter: 'blur(32px) saturate(1.3)',
+        WebkitBackdropFilter: 'blur(32px) saturate(1.3)',
+        borderTop: '1px solid rgba(255, 255, 255, 0.06)',
+        boxShadow: '0 -8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.03)',
       }}
     >
       <div ref={navRef} className="relative flex items-center justify-around h-16 px-0.5 max-w-lg mx-auto">

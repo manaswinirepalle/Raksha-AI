@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Shield, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Shield, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { SECTIONS, getModulesBySection, type ModuleId } from '../MODULE_REGISTRY';
 
 export type { ModuleId };
 
-const COLLAPSE_WIDTH = 68;
-const EXPAND_WIDTH = 232;
+const COLLAPSE_WIDTH = 64;
+const EXPAND_WIDTH = 228;
+const PANEL_MARGIN = 10;
+const PANEL_VERTICAL_MARGIN = 10;
 
 export default function Sidebar({ active, onSelect }: { active: ModuleId; onSelect: (id: ModuleId) => void }) {
   const [collapsed, setCollapsed] = useState(() => window.innerWidth < 1400);
@@ -24,8 +26,8 @@ export default function Sidebar({ active, onSelect }: { active: ModuleId; onSele
   }, [windowWidth, collapsed]);
 
   useEffect(() => {
-    const width = windowWidth >= 1024 ? (collapsed ? COLLAPSE_WIDTH : EXPAND_WIDTH) : 0;
-    document.documentElement.style.setProperty('--sidebar-width', `${width}px`);
+    const totalWidth = windowWidth >= 1024 ? (collapsed ? COLLAPSE_WIDTH + PANEL_MARGIN * 2 : EXPAND_WIDTH + PANEL_MARGIN * 2) : 0;
+    document.documentElement.style.setProperty('--sidebar-width', `${totalWidth}px`);
     return () => { document.documentElement.style.setProperty('--sidebar-width', '0px'); };
   }, [collapsed, windowWidth]);
 
@@ -33,33 +35,40 @@ export default function Sidebar({ active, onSelect }: { active: ModuleId; onSele
     setCollapsed(c => !c);
   }, []);
 
+  const sidebarWidth = collapsed ? COLLAPSE_WIDTH : EXPAND_WIDTH;
+
   return (
     <aside
       className="hidden lg:flex flex-col"
       style={{
         position: 'fixed',
-        top: 0,
-        left: 0,
-        height: '100dvh',
+        top: PANEL_VERTICAL_MARGIN,
+        left: PANEL_MARGIN,
+        bottom: PANEL_VERTICAL_MARGIN,
         zIndex: 30,
-        width: collapsed ? COLLAPSE_WIDTH : EXPAND_WIDTH,
-        minWidth: collapsed ? COLLAPSE_WIDTH : EXPAND_WIDTH,
-        background: 'rgba(255,255,255,0.015)',
-        borderRight: '1px solid rgba(255,255,255,0.06)',
+        width: sidebarWidth,
+        minWidth: sidebarWidth,
+        borderRadius: 18,
+        background: 'rgba(15, 15, 18, 0.82)',
+        border: '1px solid rgba(255, 255, 255, 0.06)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.04)',
+        backdropFilter: 'blur(40px) saturate(1.4)',
+        WebkitBackdropFilter: 'blur(40px) saturate(1.4)',
         transition: 'width 300ms cubic-bezier(0.16, 1, 0.3, 1), min-width 300ms cubic-bezier(0.16, 1, 0.3, 1)',
         willChange: 'width',
+        overflow: 'hidden',
       }}
     >
       {/* Brand */}
       <div
-        className={`flex items-center h-11 px-4 ${collapsed ? 'justify-center' : 'gap-3'}`}
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}
+        className={`flex items-center h-12 px-4 ${collapsed ? 'justify-center' : 'gap-3'}`}
+        style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}
       >
         <div
-          className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 icon-hover-rotate"
-          style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.15), rgba(139,92,246,0.1))' }}
+          className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 icon-hover-rotate"
+          style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.2), rgba(139,92,246,0.12))', border: '1px solid rgba(59,130,246,0.15)' }}
         >
-          <Shield size={16} className="text-blue-400" strokeWidth={1.5} />
+          <Shield size={17} className="text-blue-400" strokeWidth={1.5} />
         </div>
         <div
           className="flex flex-col min-w-0 overflow-hidden"
@@ -70,7 +79,7 @@ export default function Sidebar({ active, onSelect }: { active: ModuleId; onSele
             width: collapsed ? 0 : 'auto',
           }}
         >
-          <span className="text-[13px] font-semibold text-zinc-100 tracking-wide truncate whitespace-nowrap">RAKSHA AI</span>
+          <span className="text-[13px] font-bold text-zinc-100 tracking-wide truncate whitespace-nowrap">RAKSHA AI</span>
           <span className="text-[9px] font-mono text-zinc-600 tracking-wider whitespace-nowrap">v1.0.0</span>
         </div>
       </div>
@@ -105,18 +114,18 @@ export default function Sidebar({ active, onSelect }: { active: ModuleId; onSele
                     <button
                       key={m.id}
                       onClick={() => onSelect(m.id)}
-                      className={`w-full flex items-center rounded-lg cursor-pointer group relative btn-ripple overflow-hidden ${
+                      className={`w-full flex items-center rounded-xl cursor-pointer group relative btn-ripple overflow-hidden ${
                         collapsed ? 'justify-center px-0 py-2.5 mx-auto w-10' : 'px-3 py-2 gap-3'
                       }`}
                       style={{
                         color: isActive ? '#60a5fa' : '#71717a',
-                        background: isActive ? 'rgba(59,130,246,0.08)' : 'transparent',
+                        background: isActive ? 'rgba(59,130,246,0.1)' : 'transparent',
                         transition: 'all 250ms cubic-bezier(0.16, 1, 0.3, 1)',
                       }}
                       onMouseEnter={(e) => {
                         if (!isActive) {
                           e.currentTarget.style.color = '#e4e4e7';
-                          e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+                          e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
                         }
                       }}
                       onMouseLeave={(e) => {
@@ -128,10 +137,10 @@ export default function Sidebar({ active, onSelect }: { active: ModuleId; onSele
                     >
                       {isActive && (
                         <div
-                          className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-r-full"
+                          className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full"
                           style={{
                             background: 'linear-gradient(180deg, #3b82f6, #8b5cf6)',
-                            boxShadow: '0 0 8px rgba(59,130,246,0.3)',
+                            boxShadow: '0 0 12px rgba(59,130,246,0.4)',
                           }}
                         />
                       )}
@@ -147,7 +156,7 @@ export default function Sidebar({ active, onSelect }: { active: ModuleId; onSele
                         {m.label}
                       </span>
                       {collapsed && (
-                        <div className="absolute right-full mr-2 px-2.5 py-1.5 rounded-lg text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-50 glass-panel-strong text-zinc-200 font-medium shadow-xl shadow-black/30 top-1/2 -translate-y-1/2">
+                        <div className="absolute left-full ml-3 px-2.5 py-1.5 rounded-lg text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-50 glass-panel-strong text-zinc-200 font-medium shadow-xl shadow-black/30 top-1/2 -translate-y-1/2">
                           {m.label}
                         </div>
                       )}
@@ -161,13 +170,13 @@ export default function Sidebar({ active, onSelect }: { active: ModuleId; onSele
       </nav>
 
       {/* Bottom section */}
-      <div className="px-2 py-3 space-y-0.5" style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+      <div className="px-2 py-3 space-y-1" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.04)' }}>
         <button
           onClick={toggleCollapse}
-          className={`w-full flex items-center rounded-lg text-zinc-600 hover:text-zinc-300 transition-all duration-200 cursor-pointer btn-ripple relative overflow-hidden ${
+          className={`w-full flex items-center rounded-xl text-zinc-600 hover:text-zinc-300 transition-all duration-200 cursor-pointer btn-ripple relative overflow-hidden ${
             collapsed ? 'justify-center px-0 py-2.5' : 'px-3 py-2 gap-3'
           }`}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
           onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
         >
           {collapsed ? <ChevronRight size={17} strokeWidth={1.5} className="transition-transform duration-200" /> : <ChevronLeft size={17} strokeWidth={1.5} className="transition-transform duration-200" />}
@@ -184,19 +193,18 @@ export default function Sidebar({ active, onSelect }: { active: ModuleId; onSele
         </button>
 
         <div
-          className={`flex items-center rounded-lg px-3 py-2.5 mt-1 cursor-default ${collapsed ? 'justify-center px-0' : 'gap-3'}`}
+          className={`flex items-center rounded-xl px-3 py-2.5 mt-1 cursor-default ${collapsed ? 'justify-center px-0' : 'gap-3'}`}
           style={{
-            background: 'rgba(255,255,255,0.02)',
+            background: 'rgba(255, 255, 255, 0.02)',
+            border: '1px solid rgba(255, 255, 255, 0.03)',
             transition: 'background 200ms ease',
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.02)'; }}
         >
           <div
-            className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-[11px] font-semibold text-zinc-300"
-            style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.2), rgba(139,92,246,0.15))' }}
+            className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+            style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.25), rgba(139,92,246,0.18))' }}
           >
-            AI
+            <Sparkles size={14} className="text-blue-400" strokeWidth={1.5} />
           </div>
           <div
             className="flex flex-col min-w-0 overflow-hidden"
@@ -206,8 +214,8 @@ export default function Sidebar({ active, onSelect }: { active: ModuleId; onSele
               transition: 'opacity 150ms ease, width 200ms ease',
             }}
           >
-            <span className="text-[12px] font-medium text-zinc-200 truncate whitespace-nowrap">Analyst</span>
-            <span className="text-[10px] text-zinc-600 truncate whitespace-nowrap">admin@raksha.ai</span>
+            <span className="text-[12px] font-medium text-zinc-200 truncate whitespace-nowrap">AI Analyst</span>
+            <span className="text-[10px] text-zinc-600 truncate whitespace-nowrap">raksha.ai</span>
           </div>
         </div>
       </div>

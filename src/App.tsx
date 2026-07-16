@@ -2,9 +2,11 @@ import { useState, useCallback, useRef, useEffect, lazy, Suspense } from 'react'
 import RadarBackground from './components/RadarBackground';
 import Sidebar, { type ModuleId } from './components/Sidebar';
 import MobileNav from './components/MobileNav';
+import Header from './components/Header';
 import Landing from './components/Landing';
 import { ToastProvider } from './components/Toast';
 import { Loader2 } from 'lucide-react';
+import { MODULES } from './MODULE_REGISTRY';
 
 const ScamDetector = lazy(() => import('./modules/ScamDetector'));
 const MessageChecker = lazy(() => import('./modules/CitizenShield'));
@@ -87,6 +89,7 @@ export default function App() {
   }
 
   const ActiveComponent = MODULE_COMPONENTS[currentView];
+  const currentModule = MODULES.find(m => m.id === currentView);
 
   return (
     <ToastProvider>
@@ -101,6 +104,7 @@ export default function App() {
           }}
         >
           <div className="p-2 sm:p-3 lg:p-4 xl:p-5 2xl:p-5 relative pb-20 lg:pb-6">
+            <Header title={currentModule?.label} subtitle="AI-Powered Cybersecurity Platform" />
             <div key={pageKey} className="animate-page-enter">
               {ActiveComponent && (
                 <Suspense fallback={<PageLoader />}>

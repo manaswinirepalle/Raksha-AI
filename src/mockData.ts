@@ -1,6 +1,9 @@
 import type { TranscriptScenario } from './types';
+import { SCENARIO_BATCH_1 } from './mockData_batch1';
+import { SCENARIO_BATCH_2 } from './mockData_batch2';
+import { SCENARIO_BATCH_3 } from './mockData_batch3';
 
-export const TRANSCRIPT_SCENARIOS: TranscriptScenario[] = [
+const CORE_SCENARIOS: TranscriptScenario[] = [
   {
     id: 'obvious-scam',
     label: 'Obvious Scam — Digital Arrest',
@@ -203,6 +206,13 @@ export const TRANSCRIPT_SCENARIOS: TranscriptScenario[] = [
       ],
     },
   },
+];
+
+export const TRANSCRIPT_SCENARIOS: TranscriptScenario[] = [
+  ...CORE_SCENARIOS,
+  ...SCENARIO_BATCH_1,
+  ...SCENARIO_BATCH_2,
+  ...SCENARIO_BATCH_3,
 ];
 
 export const FRAUD_NODES = [
