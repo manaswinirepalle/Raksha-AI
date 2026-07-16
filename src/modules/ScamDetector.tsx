@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { createPortal } from 'react-dom';
 import type { JSX } from 'react';
 import {
   FileText, AlertTriangle,   ShieldAlert, ShieldCheck, Shield,
@@ -296,13 +295,11 @@ export default function ScamDetector() {
       if (e.key === 'Escape') { e.stopPropagation(); closeModal(); }
     };
     document.addEventListener('keydown', handleEsc);
-    document.body.style.overflow = 'hidden';
     requestAnimationFrame(() => {
       modalRef.current?.querySelectorAll<HTMLElement>('button, [tabindex]:not([tabindex="-1"])')[0]?.focus();
     });
     return () => {
       document.removeEventListener('keydown', handleEsc);
-      document.body.style.overflow = '';
     };
   }, [showScenarioModal, closeModal]);
 
@@ -575,6 +572,77 @@ export default function ScamDetector() {
         </button>
       </div>
 
+      {/* Inline Scenario Selection Grid — expands below trigger in document flow */}
+      <div
+        ref={modalRef}
+        className={`sd-scenario-inline ${showScenarioModal ? 'sd-scenario-inline-open' : ''}`}
+        onKeyDown={handleModalKeyDown}
+        role="region"
+        aria-label="Select a scenario to analyze"
+        aria-hidden={!showScenarioModal}
+      >
+        <div className="sd-scenario-inline-header">
+          <div><h3 className="sd-inline-title">Select Scenario</h3><p className="sd-inline-subtitle">{filteredScenarios.length} of {TRANSCRIPT_SCENARIOS.length} scenarios</p></div>
+          <button onClick={closeModal} className="sd-inline-close" aria-label="Close scenario picker" type="button"><span>&times;</span></button>
+        </div>
+        <div className="sd-inline-search-row">
+          <div className="sd-inline-search">
+            <Search size={14} strokeWidth={1.5} />
+            <input type="text" placeholder="Search scenarios..." value={scenarioSearch} onChange={(e) => setScenarioSearch(e.target.value)} className="sd-inline-search-input" aria-label="Search scenarios" />
+          </div>
+          <div className="sd-inline-filters" role="radiogroup" aria-label="Filter by risk level">
+            {(['ALL', 'CRITICAL', 'HIGH', 'MEDIUM', 'LOW'] as const).map((level) => (
+              <button key={level} onClick={() => setScenarioFilter(level)} className={`sd-inline-filter ${scenarioFilter === level ? 'sd-inline-filter-active' : ''}`} role="radio" aria-checked={scenarioFilter === level}>
+                {level === 'ALL' ? 'All' : RISK_META[level].label}
+              </button>
+            ))}
+          </div>
+        </div>
+        {isLoadingScenarios ? <ScenarioSkeletonGrid /> : filteredScenarios.length === 0 ? (
+          <div className="sd-modal-empty">
+            <p className="sd-modal-empty-text">No scenarios match your search</p>
+          </div>
+        ) : (
+          <div className="scenario-grid scenario-grid-2col" style={{ padding: '0 24px' }}>
+            {filteredScenarios.map((scenario, index) => {
+              const meta = RISK_META[scenario.riskLevel];
+              const IconComponent = meta.icon;
+              const isHovered = hoveredCard === scenario.id;
+              const isSelected = selectedScenario?.id === scenario.id;
+              return (
+                <button key={scenario.id} ref={(el) => { modalCardRefs.current[index] = el; }}
+                  className={`scenario-card ${isSelected ? 'scenario-card-selected' : ''}`}
+                  style={{ background: isHovered || isSelected ? meta.gradient : undefined, borderColor: isHovered || isSelected || focusedCardIndex === index ? meta.borderColor : undefined, boxShadow: isHovered || isSelected ? `0 0 30px ${meta.glowColor}, 0 8px 32px rgba(0,0,0,0.3)` : undefined }}
+                  onClick={() => handleSelectScenario(scenario)} onMouseEnter={() => setHoveredCard(scenario.id)} onMouseLeave={() => setHoveredCard(null)}
+                  onFocus={() => { setHoveredCard(scenario.id); setFocusedCardIndex(index); }} onBlur={() => setHoveredCard(null)}
+                  tabIndex={showScenarioModal ? 0 : -1} role="option" aria-selected={isSelected} aria-label={`${scenario.label} — ${meta.label} risk, score ${scenario.finalScore}`}>
+                  <div className="scenario-card-header">
+                    <div className="scenario-card-icon" style={{ background: meta.bgColor, borderColor: meta.borderColor }}>
+                      <IconComponent size={20} style={{ color: meta.color }} strokeWidth={1.5} />
+                    </div>
+                    <div className="scenario-card-badge" style={{ background: meta.bgColor, color: meta.color, borderColor: meta.borderColor }}>{meta.label}</div>
+                  </div>
+                  <div className="scenario-card-body"><h4 className="scenario-card-title">{scenario.label}</h4><p className="scenario-card-desc">{scenario.description}</p></div>
+                  <div className="scenario-card-footer">
+                    <div className="scenario-card-stats">
+                      <span className="scenario-stat"><span className="scenario-stat-icon"><Brain size={11} strokeWidth={1.5} /></span>{scenario.agentFires.length} agents</span>
+                      <span className="scenario-stat"><span className="scenario-stat-icon"><AlertTriangle size={11} strokeWidth={1.5} /></span>{scenario.redFlags.length} flags</span>
+                    </div>
+                    <div className="scenario-card-score"><span className="scenario-score-label">Risk</span><span className="scenario-score-value" style={{ color: meta.color }}>{scenario.finalScore}</span></div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
+        {!isLoadingScenarios && (
+          <div className="sd-inline-footer">
+            <span className="sd-inline-footer-text">{filteredScenarios.length} of {TRANSCRIPT_SCENARIOS.length} scenarios</span>
+            <span className="sd-inline-footer-hint">Use arrow keys + Enter to navigate</span>
+          </div>
+        )}
+      </div>
+
       {/* Tab Navigation */}
       <div className="sd-tabs" role="tablist" style={{ marginBottom: '8px' }}>
         {TABS.map((tab) => {
@@ -603,78 +671,6 @@ export default function ScamDetector() {
         {activeTab === 'knowledge' && <KnowledgeCenterLazy />}
         {activeTab === 'dashboard' && <CyberDashboardLazy />}
       </div>
-
-      {/* Scenario Selection Modal — portaled to body to escape overflow:hidden ancestors */}
-      {showScenarioModal && createPortal(
-        <div ref={modalRef} className="sd-modal sd-modal-open" onClick={closeModal} onKeyDown={handleModalKeyDown} role="dialog" aria-modal="true" aria-label="Select a scenario to analyze">
-          <div className="sd-modal-backdrop" />
-          <div className="sd-modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="sd-modal-panel">
-              <div className="sd-modal-header">
-                <div><h3 className="sd-modal-title">Select Scenario</h3><p className="sd-modal-subtitle">{filteredScenarios.length} of {TRANSCRIPT_SCENARIOS.length} scenarios</p></div>
-                <button onClick={closeModal} className="sd-modal-close" aria-label="Close scenario picker" type="button"><span className="sd-modal-close-x">&times;</span></button>
-              </div>
-              <div className="sd-modal-search-row">
-                <div className="sd-modal-search">
-                  <Search size={14} strokeWidth={1.5} />
-                  <input type="text" placeholder="Search scenarios..." value={scenarioSearch} onChange={(e) => setScenarioSearch(e.target.value)} className="sd-modal-search-input" aria-label="Search scenarios" />
-                </div>
-                <div className="sd-modal-filters" role="radiogroup" aria-label="Filter by risk level">
-                  {(['ALL', 'CRITICAL', 'HIGH', 'MEDIUM', 'LOW'] as const).map((level) => (
-                    <button key={level} onClick={() => setScenarioFilter(level)} className={`sd-modal-filter ${scenarioFilter === level ? 'sd-modal-filter-active' : ''}`} role="radio" aria-checked={scenarioFilter === level}>
-                      {level === 'ALL' ? 'All' : RISK_META[level].label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              {isLoadingScenarios ? <ScenarioSkeletonGrid /> : filteredScenarios.length === 0 ? (
-                <div className="sd-modal-empty">
-                  <p className="sd-modal-empty-text">No scenarios match your search</p>
-                </div>
-              ) : (
-                <div className="scenario-grid scenario-grid-2col">
-                  {filteredScenarios.map((scenario, index) => {
-                    const meta = RISK_META[scenario.riskLevel];
-                    const IconComponent = meta.icon;
-                    const isHovered = hoveredCard === scenario.id;
-                    const isSelected = selectedScenario?.id === scenario.id;
-                    return (
-                      <button key={scenario.id} ref={(el) => { modalCardRefs.current[index] = el; }}
-                        className={`scenario-card ${isSelected ? 'scenario-card-selected' : ''}`}
-                        style={{ background: isHovered || isSelected ? meta.gradient : undefined, borderColor: isHovered || isSelected || focusedCardIndex === index ? meta.borderColor : undefined, boxShadow: isHovered || isSelected ? `0 0 30px ${meta.glowColor}, 0 8px 32px rgba(0,0,0,0.3)` : undefined }}
-                        onClick={() => handleSelectScenario(scenario)} onMouseEnter={() => setHoveredCard(scenario.id)} onMouseLeave={() => setHoveredCard(null)}
-                        onFocus={() => { setHoveredCard(scenario.id); setFocusedCardIndex(index); }} onBlur={() => setHoveredCard(null)}
-                        tabIndex={0} role="option" aria-selected={isSelected} aria-label={`${scenario.label} — ${meta.label} risk, score ${scenario.finalScore}`}>
-                        <div className="scenario-card-header">
-                          <div className="scenario-card-icon" style={{ background: meta.bgColor, borderColor: meta.borderColor }}>
-                            <IconComponent size={20} style={{ color: meta.color }} strokeWidth={1.5} />
-                          </div>
-                          <div className="scenario-card-badge" style={{ background: meta.bgColor, color: meta.color, borderColor: meta.borderColor }}>{meta.label}</div>
-                        </div>
-                        <div className="scenario-card-body"><h4 className="scenario-card-title">{scenario.label}</h4><p className="scenario-card-desc">{scenario.description}</p></div>
-                        <div className="scenario-card-footer">
-                          <div className="scenario-card-stats">
-                            <span className="scenario-stat"><span className="scenario-stat-icon"><Brain size={11} strokeWidth={1.5} /></span>{scenario.agentFires.length} agents</span>
-                            <span className="scenario-stat"><span className="scenario-stat-icon"><AlertTriangle size={11} strokeWidth={1.5} /></span>{scenario.redFlags.length} flags</span>
-                          </div>
-                          <div className="scenario-card-score"><span className="scenario-score-label">Risk</span><span className="scenario-score-value" style={{ color: meta.color }}>{scenario.finalScore}</span></div>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-              {!isLoadingScenarios && (
-                <div className="sd-modal-footer">
-                  <span className="sd-modal-footer-text">{filteredScenarios.length} of {TRANSCRIPT_SCENARIOS.length} scenarios</span>
-                  <span className="sd-modal-footer-hint">Use arrow keys + Enter to navigate</span>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
     </div>
   );
 }
