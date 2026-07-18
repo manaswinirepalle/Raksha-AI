@@ -403,9 +403,9 @@ export default function KnowledgeCenter() {
               <ShieldAlert size={20} />
             </div>
             <div>
-              <h1 className="text-xl sm:text-2xl font-semibold text-gradient" style={{ color: '#fafafa' }}>
+              <h2 className="text-xl sm:text-2xl font-semibold text-gradient" style={{ color: '#fafafa' }}>
                 Scam Knowledge Center
-              </h1>
+              </h2>
               <p className="text-xs sm:text-sm" style={{ color: '#71717a' }}>
                 Stay informed about the latest scam trends and protection strategies
               </p>
@@ -511,9 +511,9 @@ export default function KnowledgeCenter() {
                         {category.icon}
                       </div>
                       <div className="min-w-0">
-                        <h3 className="text-sm font-semibold truncate" style={{ color: '#e4e4e7' }}>
+                        <h2 className="text-sm font-semibold truncate" style={{ color: '#e4e4e7' }}>
                           {category.name}
-                        </h3>
+                        </h2>
                         <span
                           className="inline-block px-2 py-0.5 rounded-md text-[10px] font-mono font-semibold mt-1"
                           style={{
@@ -569,9 +569,9 @@ export default function KnowledgeCenter() {
                     <div>
                       <div className="flex items-center gap-2 mb-2">
                         <Zap size={13} style={{ color: colors.text }} />
-                        <h4 className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#a1a1aa' }}>
+                        <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#a1a1aa' }}>
                           Common Tactics
-                        </h4>
+                        </h3>
                       </div>
                       <ul className="flex flex-col gap-1.5">
                         {category.tactics.map((tactic, i) => (
@@ -592,9 +592,9 @@ export default function KnowledgeCenter() {
                     <div>
                       <div className="flex items-center gap-2 mb-2">
                         <Eye size={13} style={{ color: '#60a5fa' }} />
-                        <h4 className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#a1a1aa' }}>
+                        <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#a1a1aa' }}>
                           How to Identify
-                        </h4>
+                        </h3>
                       </div>
                       <ul className="flex flex-col gap-1.5">
                         {category.howToIdentify.map((tip, i) => (
@@ -615,9 +615,9 @@ export default function KnowledgeCenter() {
                     <div>
                       <div className="flex items-center gap-2 mb-2">
                         <Shield size={13} style={{ color: '#10b981' }} />
-                        <h4 className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#a1a1aa' }}>
+                        <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#a1a1aa' }}>
                           What to Do if Targeted
-                        </h4>
+                        </h3>
                       </div>
                       <ul className="flex flex-col gap-1.5">
                         {category.whatToDo.map((action, i) => (
@@ -710,9 +710,9 @@ export default function KnowledgeCenter() {
             <Phone size={18} />
           </div>
           <div className="flex-1 min-w-0">
-            <h4 className="text-sm font-semibold" style={{ color: '#fafafa' }}>
+            <h3 className="text-sm font-semibold" style={{ color: '#fafafa' }}>
               Been targeted by a scam?
-            </h4>
+            </h3>
             <p className="text-xs mt-0.5" style={{ color: '#71717a' }}>
               Report immediately to the National Cyber Crime Helpline at{' '}
               <span className="font-mono font-semibold" style={{ color: '#f43f5e' }}>

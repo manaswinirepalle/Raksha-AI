@@ -82,7 +82,9 @@ export default function App() {
       <ToastProvider>
         <div className="w-full h-full flex flex-col" style={{ background: '#09090b' }}>
           <RadarBackground />
-          <Landing onEnter={handleEnter} onModuleSelect={id => handleModuleSelect(id as ModuleId)} />
+          <main className="w-full h-full flex flex-col">
+            <Landing onEnter={handleEnter} onModuleSelect={id => handleModuleSelect(id as ModuleId)} />
+          </main>
         </div>
       </ToastProvider>
     );
@@ -96,7 +98,7 @@ export default function App() {
       <div className="min-h-screen relative" style={{ background: '#09090b' }}>
         <RadarBackground />
         <Sidebar active={currentView} onSelect={handleModuleSelect} />
-        <div
+        <main
           className="flex flex-col min-w-0 relative z-10 overflow-x-hidden"
           style={{
             marginLeft: 'var(--sidebar-width, 0px)',
@@ -113,7 +115,7 @@ export default function App() {
               )}
             </div>
           </div>
-        </div>
+        </main>
         <MobileNav active={currentView} onSelect={handleModuleSelect} />
       </div>
     </ToastProvider>

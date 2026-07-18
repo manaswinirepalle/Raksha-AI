@@ -55,17 +55,11 @@ const ICON_FLOATS = [
 ];
 
 export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => void; onModuleSelect?: (id: string) => void }) {
-  const [heroVisible, setHeroVisible] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 });
   const [isTransitioning, setIsTransitioning] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number>(0);
   const prefersReduced = useReducedMotion();
-
-  useEffect(() => {
-    const t = setTimeout(() => setHeroVisible(true), 100);
-    return () => clearTimeout(t);
-  }, []);
 
   const lerp = useCallback((current: number, target: number, factor: number) => {
     return current + (target - current) * factor;
@@ -143,9 +137,7 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
           borderRadius: '50%',
           background: 'radial-gradient(circle, rgba(59,130,246,0.05) 0%, rgba(99,102,241,0.02) 40%, transparent 65%)',
           transform: 'translate(-50%, -50%)',
-          opacity: heroVisible ? 1 : 0,
-          transition: 'opacity 600ms ease',
-          animation: prefersReduced ? undefined : 'cursorGlowPulse 6s ease-in-out infinite',
+          animation: prefersReduced ? undefined : 'heroFadeIn 600ms ease both, cursorGlowPulse 6s ease-in-out 600ms infinite',
         }}
       />
 
@@ -294,11 +286,7 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
           {/* Top badge */}
           <div
             className="flex justify-center"
-            style={{
-              opacity: heroVisible ? 1 : 0,
-              transform: heroVisible ? 'translateY(0)' : 'translateY(12px)',
-              transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 100ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 100ms',
-            }}
+            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 600ms cubic-bezier(0.16, 1, 0.3, 1) 100ms both' }}
           >
             <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full glass-panel text-[10px] sm:text-[11px] font-medium text-zinc-400 glass-glow">
               <span className="relative flex h-2 w-2">
@@ -315,11 +303,7 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
           <div className="text-center space-y-6 sm:space-y-7">
             <div
               className="flex justify-center"
-              style={{
-                opacity: heroVisible ? 1 : 0,
-                transform: heroVisible ? 'translateY(0) scale(1)' : 'translateY(16px) scale(0.9)',
-                transition: 'opacity 700ms cubic-bezier(0.16, 1, 0.3, 1) 200ms, transform 700ms cubic-bezier(0.16, 1, 0.3, 1) 200ms',
-              }}
+              style={{ animation: prefersReduced ? undefined : 'heroFadeSlideScale 700ms cubic-bezier(0.16, 1, 0.3, 1) 200ms both' }}
             >
               <div className="relative group">
                 <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"
@@ -349,11 +333,7 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
             </div>
 
             <div
-              style={{
-                opacity: heroVisible ? 1 : 0,
-                transform: heroVisible ? 'translateY(0)' : 'translateY(20px)',
-                transition: 'opacity 700ms cubic-bezier(0.16, 1, 0.3, 1) 300ms, transform 700ms cubic-bezier(0.16, 1, 0.3, 1) 300ms',
-              }}
+              style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16, 1, 0.3, 1) 300ms both' }}
             >
               <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[0.92]">
                 <span className="text-gradient block">RAKSHA</span>
@@ -362,11 +342,7 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
             </div>
 
             <div
-              style={{
-                opacity: heroVisible ? 1 : 0,
-                transform: heroVisible ? 'translateY(0)' : 'translateY(16px)',
-                transition: 'opacity 700ms cubic-bezier(0.16, 1, 0.3, 1) 400ms, transform 700ms cubic-bezier(0.16, 1, 0.3, 1) 400ms',
-              }}
+              style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16, 1, 0.3, 1) 400ms both' }}
             >
               <p className="text-zinc-400 text-sm sm:text-base md:text-lg lg:text-xl max-w-2xl mx-auto leading-relaxed font-light">
                 India's AI Scam Protection Platform.
@@ -379,11 +355,7 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
           {/* CTA buttons */}
           <div
             className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4"
-            style={{
-              opacity: heroVisible ? 1 : 0,
-              transform: heroVisible ? 'translateY(0)' : 'translateY(16px)',
-              transition: 'opacity 700ms cubic-bezier(0.16, 1, 0.3, 1) 500ms, transform 700ms cubic-bezier(0.16, 1, 0.3, 1) 500ms',
-            }}
+            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16, 1, 0.3, 1) 500ms both' }}
           >
             <button onClick={handleEnter}
               className="btn-premium btn-ripple btn-shimmer group flex items-center gap-3 px-8 sm:px-10 py-3.5 sm:py-4 rounded-full font-semibold text-sm sm:text-base text-white cursor-pointer touch-target w-full sm:w-auto justify-center relative overflow-hidden"
@@ -412,11 +384,7 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
           {/* Trust indicators */}
           <div
             className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2.5 sm:gap-x-7 lg:gap-x-9"
-            style={{
-              opacity: heroVisible ? 1 : 0,
-              transform: heroVisible ? 'translateY(0)' : 'translateY(12px)',
-              transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) 600ms, transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 600ms',
-            }}
+            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 600ms cubic-bezier(0.16, 1, 0.3, 1) 600ms both' }}
           >
             {TRUST_ITEMS.map((item, i) => {
               const Icon = item.icon;
@@ -437,11 +405,7 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
           {/* Animated statistics */}
           <div
             className="grid grid-cols-3 gap-3 sm:gap-4 lg:gap-5 max-w-2xl lg:max-w-3xl mx-auto"
-            style={{
-              opacity: heroVisible ? 1 : 0,
-              transform: heroVisible ? 'translateY(0)' : 'translateY(20px)',
-              transition: 'opacity 700ms cubic-bezier(0.16, 1, 0.3, 1) 700ms, transform 700ms cubic-bezier(0.16, 1, 0.3, 1) 700ms',
-            }}
+            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16, 1, 0.3, 1) 700ms both' }}
           >
             {STATS.map((stat, i) => {
               const Icon = stat.icon;
@@ -466,11 +430,7 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
           {/* Features preview */}
           <div
             className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4 max-w-3xl lg:max-w-4xl mx-auto"
-            style={{
-              opacity: heroVisible ? 1 : 0,
-              transform: heroVisible ? 'translateY(0)' : 'translateY(20px)',
-              transition: 'opacity 700ms cubic-bezier(0.16, 1, 0.3, 1) 800ms, transform 700ms cubic-bezier(0.16, 1, 0.3, 1) 800ms',
-            }}
+            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16, 1, 0.3, 1) 800ms both' }}
           >
             {FEATURES.map((feat, i) => {
               const Icon = feat.icon;
@@ -483,7 +443,7 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
                     style={{ background: `${feat.color}10` }}>
                     <Icon size={16} style={{ color: feat.color }} strokeWidth={1.5} />
                   </div>
-                  <h3 className="text-zinc-200 text-xs sm:text-sm font-semibold mb-0.5 sm:mb-1">{feat.title}</h3>
+                  <h2 className="text-zinc-200 text-xs sm:text-sm font-semibold mb-0.5 sm:mb-1">{feat.title}</h2>
                   <p className="text-zinc-500 text-[9px] sm:text-[10px] leading-relaxed line-clamp-2">{feat.desc}</p>
                 </button>
               );
@@ -493,10 +453,7 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
           {/* Scroll indicator */}
           <div
             className="flex justify-center pt-2"
-            style={{
-              opacity: heroVisible ? 1 : 0,
-              transition: 'opacity 600ms ease 1000ms',
-            }}
+            style={{ animation: prefersReduced ? undefined : 'heroFadeIn 600ms ease 1000ms both' }}
           >
             <button onClick={handleEnter}
               className="flex flex-col items-center gap-1.5 text-zinc-600 hover:text-zinc-400 transition-colors cursor-pointer group btn-ripple relative overflow-hidden rounded-lg px-3 py-2">

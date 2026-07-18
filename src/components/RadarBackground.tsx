@@ -92,6 +92,7 @@ export default function RadarBackground() {
 
       const w = window.innerWidth;
       const h = window.innerHeight;
+      const isMobile = w < 640;
       const mx = mouseRef.current.x;
       const my = mouseRef.current.y;
 
@@ -212,7 +213,9 @@ export default function RadarBackground() {
       }
 
       // Particles
-      for (const p of particles) {
+      for (let pi = 0; pi < particles.length; pi++) {
+        if (isMobile && pi % 2 !== 0) continue;
+        const p = particles[pi];
         p.life++;
         if (p.life > p.maxLife) {
           p.x = Math.random();
@@ -257,22 +260,26 @@ export default function RadarBackground() {
         }
       }
 
-      // Connection lines between nearby particles
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const a = particles[i];
-          const b = particles[j];
-          const dx = (a.x - b.x) * w;
-          const dy = (a.y - b.y) * h;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 100) {
-            const alpha = (1 - dist / 100) * 0.03;
-            ctx.beginPath();
-            ctx.moveTo(a.x * w, a.y * h);
-            ctx.lineTo(b.x * w, b.y * h);
-            ctx.strokeStyle = `rgba(59, 130, 246, ${alpha})`;
-            ctx.lineWidth = 0.3;
-            ctx.stroke();
+      // Connection lines between nearby particles (skipped on mobile for perf)
+      if (w > 640) {
+        const distThreshold = 100;
+        const distThresholdSq = distThreshold * distThreshold;
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const a = particles[i];
+            const b = particles[j];
+            const dx = (a.x - b.x) * w;
+            const dy = (a.y - b.y) * h;
+            const distSq = dx * dx + dy * dy;
+            if (distSq < distThresholdSq) {
+              const alpha = (1 - Math.sqrt(distSq) / distThreshold) * 0.03;
+              ctx.beginPath();
+              ctx.moveTo(a.x * w, a.y * h);
+              ctx.lineTo(b.x * w, b.y * h);
+              ctx.strokeStyle = `rgba(59, 130, 246, ${alpha})`;
+              ctx.lineWidth = 0.3;
+              ctx.stroke();
+            }
           }
         }
       }

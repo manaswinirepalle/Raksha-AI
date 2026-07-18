@@ -83,7 +83,7 @@ export default function CyberDashboard() {
             <BarChart3 size={24} className="text-blue-400" />
           </div>
           <div className="db-header-text">
-            <h1 className="db-title">Analytics Dashboard</h1>
+            <h2 className="db-title">Analytics Dashboard</h2>
             <p className="db-subtitle">Comprehensive scam detection insights and protection metrics</p>
           </div>
         </div>
