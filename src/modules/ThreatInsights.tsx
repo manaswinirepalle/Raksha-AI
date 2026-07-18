@@ -161,7 +161,7 @@ export default function ThreatInsights() {
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 1000);
+    const t = setTimeout(() => setLoading(false), 150);
     return () => clearTimeout(t);
   }, []);
 

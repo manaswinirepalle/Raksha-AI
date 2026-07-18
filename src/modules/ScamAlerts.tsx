@@ -282,7 +282,7 @@ export default function ScamAlerts() {
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 800);
+    const t = setTimeout(() => setLoading(false), 150);
     return () => clearTimeout(t);
   }, []);
 

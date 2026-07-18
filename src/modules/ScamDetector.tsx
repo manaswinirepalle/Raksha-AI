@@ -160,7 +160,7 @@ export default function ScamDetector() {
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    const t = setTimeout(() => setIsLoadingScenarios(false), 800);
+    const t = setTimeout(() => setIsLoadingScenarios(false), 150);
     return () => clearTimeout(t);
   }, []);
 

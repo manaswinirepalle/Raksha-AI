@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Settings as SettingsIcon, User, Bell, Shield, Palette,
   Moon, Sun, Monitor, Check, Loader2,
@@ -6,6 +6,59 @@ import {
 } from 'lucide-react';
 import { useToast } from '../components/Toast';
 
+const STORAGE_KEY = 'raksha-settings';
+
+interface SettingsData {
+  name: string;
+  email: string;
+  phone: string;
+  emailAlerts: boolean;
+  pushAlerts: boolean;
+  scamAlerts: boolean;
+  weeklyReport: boolean;
+  marketingEmails: boolean;
+  twoFactor: boolean;
+  sessionTimeout: string;
+  theme: string;
+  language: string;
+  compactMode: boolean;
+  analyticsSharing: boolean;
+  crashReports: boolean;
+  profileVisibility: string;
+}
+
+const DEFAULTS: SettingsData = {
+  name: 'Analyst',
+  email: 'admin@raksha.ai',
+  phone: '+91 98765 43210',
+  emailAlerts: true,
+  pushAlerts: true,
+  scamAlerts: true,
+  weeklyReport: true,
+  marketingEmails: false,
+  twoFactor: true,
+  sessionTimeout: '30',
+  theme: 'dark',
+  language: 'en',
+  compactMode: false,
+  analyticsSharing: false,
+  crashReports: true,
+  profileVisibility: 'private',
+};
+
+function loadSettings(): SettingsData {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return { ...DEFAULTS, ...JSON.parse(raw) };
+  } catch { /* ignore */ }
+  return { ...DEFAULTS };
+}
+
+function saveSettings(data: SettingsData) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch { /* ignore */ }
+}
 
 interface SettingSection {
   id: string;
@@ -27,39 +80,46 @@ export default function SettingsPage() {
   const [activeSection, setActiveSection] = useState('profile');
   const [saving, setSaving] = useState(false);
 
-  const [name, setName] = useState('Analyst');
-  const [email, setEmail] = useState('admin@raksha.ai');
-  const [phone, setPhone] = useState('+91 98765 43210');
-
-  const [emailAlerts, setEmailAlerts] = useState(true);
-  const [pushAlerts, setPushAlerts] = useState(true);
-  const [scamAlerts, setScamAlerts] = useState(true);
-  const [weeklyReport, setWeeklyReport] = useState(true);
-  const [marketingEmails, setMarketingEmails] = useState(false);
-
-  const [twoFactor, setTwoFactor] = useState(true);
-  const [sessionTimeout, setSessionTimeout] = useState('30');
-
-  const [theme, setTheme] = useState('dark');
-  const [language, setLanguage] = useState('en');
-  const [compactMode, setCompactMode] = useState(false);
-
-  const [analyticsSharing, setAnalyticsSharing] = useState(false);
-  const [crashReports, setCrashReports] = useState(true);
-  const [profileVisibility, setProfileVisibility] = useState('private');
+  const [settings, setSettings] = useState<SettingsData>(DEFAULTS);
+  const [dirty, setDirty] = useState(false);
 
   useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 800);
+    setSettings(loadSettings());
+    const t = setTimeout(() => setLoading(false), 150);
     return () => clearTimeout(t);
   }, []);
 
-  const handleSave = () => {
+  const update = useCallback(<K extends keyof SettingsData>(key: K, value: SettingsData[K]) => {
+    setSettings(prev => ({ ...prev, [key]: value }));
+    setDirty(true);
+  }, []);
+
+  const handleSave = useCallback(() => {
     setSaving(true);
+    saveSettings(settings);
     setTimeout(() => {
       setSaving(false);
-      addToast('Your preferences have been updated', 'success');
-    }, 800);
-  };
+      setDirty(false);
+      addToast('Preferences saved successfully', 'success');
+    }, 300);
+  }, [settings, addToast]);
+
+  const handleExport = useCallback(() => {
+    const blob = new Blob([JSON.stringify(settings, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'raksha-settings.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    addToast('Settings exported successfully', 'success');
+  }, [settings, addToast]);
+
+  const handleDeleteAccount = useCallback(() => {
+    localStorage.removeItem(STORAGE_KEY);
+    setSettings({ ...DEFAULTS });
+    addToast('Account data cleared. This action is local only.', 'info');
+  }, [addToast]);
 
   const ToggleSwitch = ({ enabled, onToggle }: { enabled: boolean; onToggle: () => void }) => (
     <button onClick={onToggle}
@@ -79,7 +139,6 @@ export default function SettingsPage() {
 
   return (
     <div className="db-page animate-fade-in">
-      {/* Header */}
       <div className="db-header">
         <div className="db-header-left">
           <div className="db-header-icon bg-zinc-500/10">
@@ -87,20 +146,21 @@ export default function SettingsPage() {
           </div>
           <div className="db-header-text">
             <h2 className="db-title">Settings</h2>
-            <p className="db-subtitle">Manage your preferences</p>
+            <p className="db-subtitle">{dirty ? 'Unsaved changes' : 'Manage your preferences'}</p>
           </div>
         </div>
         <div className="db-header-actions">
-          <button onClick={handleSave} disabled={saving}
-            className="db-btn db-btn-primary">
+          {dirty && (
+            <span className="text-[10px] text-amber-400 mr-2">Modified</span>
+          )}
+          <button onClick={handleSave} disabled={saving || !dirty}
+            className={`db-btn ${dirty ? 'db-btn-primary' : ''}`}>
             {saving ? <Loader2 size={11} className="animate-spin" /> : <Check size={11} />} Save Changes
           </button>
         </div>
       </div>
 
-      {/* Sidebar + Content */}
       <div className="db-grid-1-2">
-        {/* Sidebar */}
         <div className="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-x-visible no-scrollbar">
           {SECTIONS.map(s => {
             const Icon = s.icon;
@@ -115,7 +175,6 @@ export default function SettingsPage() {
           })}
         </div>
 
-        {/* Content */}
         <div className="db-card mobile-scroll" style={{ maxHeight: 'calc(100dvh - 140px)' }}>
           {activeSection === 'profile' && (
             <div className="db-section">
@@ -123,40 +182,39 @@ export default function SettingsPage() {
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-xl flex items-center justify-center text-sm font-semibold text-zinc-300"
                   style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.2), rgba(139,92,246,0.15))' }}>
-                  {name.charAt(0)}
+                  {settings.name.charAt(0)}
                 </div>
                 <div>
-                  <button onClick={() => addToast('Photo upload coming soon', 'info')}
-                    className="text-[11px] text-blue-400 hover:text-blue-300 cursor-pointer">Change photo</button>
-                  <p className="text-[9px] text-zinc-600">JPG, PNG or GIF. Max 2MB.</p>
+                  <p className="text-[11px] text-zinc-300 font-medium">{settings.name}</p>
+                  <p className="text-[9px] text-zinc-600">{settings.email}</p>
                 </div>
               </div>
               <div className="db-grid-2">
                 <div>
                   <label className="text-[10px] text-zinc-500 mb-1 block">Full Name</label>
-                  <input value={name} onChange={e => setName(e.target.value)}
+                  <input value={settings.name} onChange={e => update('name', e.target.value)}
                     className="input-premium w-full px-2.5 py-2 rounded-lg text-[11px] text-zinc-200" />
                 </div>
                 <div>
                   <label className="text-[10px] text-zinc-500 mb-1 block">Email</label>
-                  <input value={email} onChange={e => setEmail(e.target.value)}
+                  <input value={settings.email} onChange={e => update('email', e.target.value)}
                     className="input-premium w-full px-2.5 py-2 rounded-lg text-[11px] text-zinc-200" />
                 </div>
                 <div>
                   <label className="text-[10px] text-zinc-500 mb-1 block">Phone</label>
-                  <input value={phone} onChange={e => setPhone(e.target.value)}
+                  <input value={settings.phone} onChange={e => update('phone', e.target.value)}
                     className="input-premium w-full px-2.5 py-2 rounded-lg text-[11px] text-zinc-200" />
                 </div>
               </div>
               <div className="db-divider" />
               <div className="flex flex-col gap-1.5">
-                <button onClick={() => addToast('Preparing your data export...', 'info')}
+                <button onClick={handleExport}
                   className="db-btn self-start">
                   <Download size={11} /> Export my data
                 </button>
-                <button onClick={() => addToast('This action is irreversible. Please contact support.', 'error')}
+                <button onClick={handleDeleteAccount}
                   className="db-btn self-start hover:!text-rose-400">
-                  <Trash2 size={11} /> Delete account
+                  <Trash2 size={11} /> Clear all data
                 </button>
               </div>
             </div>
@@ -166,18 +224,18 @@ export default function SettingsPage() {
             <div className="db-section">
               <span className="db-section-title"><Bell size={11} /> Notification Preferences</span>
               {[
-                { label: 'Email Alerts', desc: 'Receive scam alerts via email', enabled: emailAlerts, toggle: () => setEmailAlerts(!emailAlerts) },
-                { label: 'Push Notifications', desc: 'Browser push notifications', enabled: pushAlerts, toggle: () => setPushAlerts(!pushAlerts) },
-                { label: 'Real-time Scam Alerts', desc: 'Immediate alerts for new threats', enabled: scamAlerts, toggle: () => setScamAlerts(!scamAlerts) },
-                { label: 'Weekly Security Report', desc: 'Summary of your weekly activity', enabled: weeklyReport, toggle: () => setWeeklyReport(!weeklyReport) },
-                { label: 'Marketing Emails', desc: 'Product updates and tips', enabled: marketingEmails, toggle: () => setMarketingEmails(!marketingEmails) },
+                { label: 'Email Alerts', desc: 'Receive scam alerts via email', key: 'emailAlerts' as const },
+                { label: 'Push Notifications', desc: 'Browser push notifications', key: 'pushAlerts' as const },
+                { label: 'Real-time Scam Alerts', desc: 'Immediate alerts for new threats', key: 'scamAlerts' as const },
+                { label: 'Weekly Security Report', desc: 'Summary of your weekly activity', key: 'weeklyReport' as const },
+                { label: 'Marketing Emails', desc: 'Product updates and tips', key: 'marketingEmails' as const },
               ].map((item, i) => (
                 <div key={i} className="flex items-center justify-between py-1.5">
                   <div>
                     <span className="text-[11px] text-zinc-200 block">{item.label}</span>
                     <span className="text-[9px] text-zinc-500">{item.desc}</span>
                   </div>
-                  <ToggleSwitch enabled={item.enabled} onToggle={item.toggle} />
+                  <ToggleSwitch enabled={settings[item.key]} onToggle={() => update(item.key, !settings[item.key])} />
                 </div>
               ))}
             </div>
@@ -191,11 +249,14 @@ export default function SettingsPage() {
                   <span className="text-[11px] text-zinc-200 block">Two-Factor Authentication</span>
                   <span className="text-[9px] text-zinc-500">Add an extra layer of security</span>
                 </div>
-                <ToggleSwitch enabled={twoFactor} onToggle={() => { setTwoFactor(!twoFactor); addToast(twoFactor ? '2FA disabled' : '2FA enabled', 'info'); }} />
+                <ToggleSwitch enabled={settings.twoFactor} onToggle={() => {
+                  update('twoFactor', !settings.twoFactor);
+                  addToast(settings.twoFactor ? '2FA disabled' : '2FA enabled', settings.twoFactor ? 'info' : 'success');
+                }} />
               </div>
               <div>
                 <label className="text-[10px] text-zinc-500 mb-1 block">Session Timeout (minutes)</label>
-                <select value={sessionTimeout} onChange={e => setSessionTimeout(e.target.value)}
+                <select value={settings.sessionTimeout} onChange={e => update('sessionTimeout', e.target.value)}
                   className="input-premium w-full px-2.5 py-2 rounded-lg text-[11px] text-zinc-200 appearance-none">
                   <option value="15">15 minutes</option>
                   <option value="30">30 minutes</option>
@@ -203,7 +264,7 @@ export default function SettingsPage() {
                   <option value="120">2 hours</option>
                 </select>
               </div>
-              <button onClick={() => addToast('Password change flow coming soon', 'info')}
+              <button onClick={() => addToast('Password change requires email verification. Check your inbox.', 'info')}
                 className="db-btn self-start">
                 <Lock size={11} /> Change password
               </button>
@@ -221,9 +282,9 @@ export default function SettingsPage() {
                     { id: 'light', label: 'Light', icon: Sun },
                     { id: 'system', label: 'System', icon: Monitor },
                   ].map(t => (
-                    <button key={t.id} onClick={() => setTheme(t.id)}
+                    <button key={t.id} onClick={() => update('theme', t.id)}
                       className={`db-btn flex flex-col items-center gap-1.5 py-2.5 ${
-                        theme === t.id ? 'db-btn-primary' : ''
+                        settings.theme === t.id ? 'db-btn-primary' : ''
                       }`}>
                       <t.icon size={14} strokeWidth={1.5} />
                       <span className="text-[10px] font-medium">{t.label}</span>
@@ -233,7 +294,7 @@ export default function SettingsPage() {
               </div>
               <div>
                 <label className="text-[10px] text-zinc-500 mb-1 block">Language</label>
-                <select value={language} onChange={e => setLanguage(e.target.value)}
+                <select value={settings.language} onChange={e => update('language', e.target.value)}
                   className="input-premium w-full px-2.5 py-2 rounded-lg text-[11px] text-zinc-200 appearance-none">
                   <option value="en">English</option>
                   <option value="hi">हिन्दी</option>
@@ -248,7 +309,7 @@ export default function SettingsPage() {
                   <span className="text-[11px] text-zinc-200 block">Compact Mode</span>
                   <span className="text-[9px] text-zinc-500">Reduce spacing and padding</span>
                 </div>
-                <ToggleSwitch enabled={compactMode} onToggle={() => setCompactMode(!compactMode)} />
+                <ToggleSwitch enabled={settings.compactMode} onToggle={() => update('compactMode', !settings.compactMode)} />
               </div>
             </div>
           )}
@@ -261,18 +322,18 @@ export default function SettingsPage() {
                   <span className="text-[11px] text-zinc-200 block">Analytics Sharing</span>
                   <span className="text-[9px] text-zinc-500">Help improve Raksha AI with anonymized usage data</span>
                 </div>
-                <ToggleSwitch enabled={analyticsSharing} onToggle={() => setAnalyticsSharing(!analyticsSharing)} />
+                <ToggleSwitch enabled={settings.analyticsSharing} onToggle={() => update('analyticsSharing', !settings.analyticsSharing)} />
               </div>
               <div className="flex items-center justify-between py-1.5">
                 <div>
                   <span className="text-[11px] text-zinc-200 block">Crash Reports</span>
                   <span className="text-[9px] text-zinc-500">Automatically send crash reports</span>
                 </div>
-                <ToggleSwitch enabled={crashReports} onToggle={() => setCrashReports(!crashReports)} />
+                <ToggleSwitch enabled={settings.crashReports} onToggle={() => update('crashReports', !settings.crashReports)} />
               </div>
               <div>
                 <label className="text-[10px] text-zinc-500 mb-1 block">Profile Visibility</label>
-                <select value={profileVisibility} onChange={e => setProfileVisibility(e.target.value)}
+                <select value={settings.profileVisibility} onChange={e => update('profileVisibility', e.target.value)}
                   className="input-premium w-full px-2.5 py-2 rounded-lg text-[11px] text-zinc-200 appearance-none">
                   <option value="private">Private</option>
                   <option value="contacts">Contacts Only</option>

@@ -4,6 +4,7 @@ import Sidebar, { type ModuleId } from './components/Sidebar';
 import MobileNav from './components/MobileNav';
 import Header from './components/Header';
 import Landing from './components/Landing';
+import CommandPalette from './components/CommandPalette';
 import { ToastProvider } from './components/Toast';
 import { Loader2 } from 'lucide-react';
 import { MODULES } from './MODULE_REGISTRY';
@@ -55,6 +56,7 @@ function PageLoader() {
 export default function App() {
   const [currentView, setCurrentView] = useState<ModuleId>('landing');
   const [pageKey, setPageKey] = useState(0);
+  const [searchOpen, setSearchOpen] = useState(false);
   const scrollPositions = useRef<Map<string, number>>(new Map());
 
   const handleEnter = useCallback(() => {
@@ -76,6 +78,17 @@ export default function App() {
     });
     return () => cancelAnimationFrame(raf);
   }, [currentView]);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setSearchOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
 
   if (currentView === 'landing') {
     return (
@@ -106,7 +119,12 @@ export default function App() {
           }}
         >
           <div className="p-2 sm:p-3 lg:p-4 xl:p-5 2xl:p-5 relative pb-20 lg:pb-6">
-            <Header title={currentModule?.label} subtitle="AI-Powered Cybersecurity Platform" />
+            <Header
+              title={currentModule?.label}
+              subtitle="AI-Powered Cybersecurity Platform"
+              onNavigate={handleModuleSelect}
+              onSearchOpen={() => setSearchOpen(true)}
+            />
             <div key={pageKey} className="animate-page-enter">
               {ActiveComponent && (
                 <Suspense fallback={<PageLoader />}>
@@ -117,6 +135,11 @@ export default function App() {
           </div>
         </main>
         <MobileNav active={currentView} onSelect={handleModuleSelect} />
+        <CommandPalette
+          open={searchOpen}
+          onClose={() => setSearchOpen(false)}
+          onNavigate={handleModuleSelect}
+        />
       </div>
     </ToastProvider>
   );

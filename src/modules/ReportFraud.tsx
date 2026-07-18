@@ -195,7 +195,7 @@ export default function ReportFraud() {
   const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 800);
+    const t = setTimeout(() => setLoading(false), 150);
     return () => clearTimeout(t);
   }, []);
 

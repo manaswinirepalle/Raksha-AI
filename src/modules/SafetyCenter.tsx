@@ -121,7 +121,7 @@ export default function SafetyCenter() {
   const [gaugeProgress, setGaugeProgress] = useState(0);
 
   useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 1000);
+    const t = setTimeout(() => setLoading(false), 150);
     return () => clearTimeout(t);
   }, []);
 
@@ -301,7 +301,7 @@ export default function SafetyCenter() {
           <p className="text-zinc-500 text-xs mt-0.5">An error occurred while loading your safety data</p>
         </div>
         <button
-          onClick={() => { setError(false); setLoading(true); setTimeout(() => setLoading(false), 1000); }}
+          onClick={() => { setError(false); setLoading(true); setTimeout(() => setLoading(false), 150); }}
           className="btn-ripple flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium text-blue-400 hover:bg-blue-500/10 border border-blue-500/20 transition-all cursor-pointer"
         >
           <RefreshCw size={13} /> Try Again
