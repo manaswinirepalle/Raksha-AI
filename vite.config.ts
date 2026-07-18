@@ -1,7 +1,6 @@
 import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
-import { vitePrerenderPlugin } from 'vite-prerender-plugin'
 
 function suppressSourcemapWarning(): Plugin {
   return {
@@ -29,6 +28,5 @@ export default defineConfig({
     suppressSourcemapWarning(),
     react(),
     tailwindcss(),
-    vitePrerenderPlugin({ renderTarget: '#root' }),
   ],
 })
