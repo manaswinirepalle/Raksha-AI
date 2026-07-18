@@ -3,28 +3,54 @@ import {
   Shield, ArrowRight, AlertTriangle, TrendingUp, IndianRupee,
   Activity, Globe, Lock, Fingerprint, Zap, Phone, MessageSquare,
   Banknote, Map, ChevronDown, Eye, Brain, Cpu,
-  Sparkles, ShieldCheck, Radar,
+  Sparkles, ShieldCheck, Radar, Network,
 } from 'lucide-react';
 import useReducedMotion from '../hooks/useReducedMotion';
 
 const STATS = [
   { value: 1140000, display: '1.14M', label: 'Cybercrime complaints in India, 2023', icon: AlertTriangle, color: '#f43f5e' },
-  { value: 1776, display: '₹1,776 Cr', label: 'Lost to digital arrest scams (9 months, 2024)', icon: IndianRupee, color: '#f59e0b' },
+  { value: 1776, display: '₹1,776 Cr', label: 'Lost to digital arrest scams in 9 months, 2024', icon: IndianRupee, color: '#f59e0b' },
   { value: 60, display: '60%', label: 'Year-over-year increase in cybercrime', icon: TrendingUp, color: '#f97316' },
 ];
 
 const FEATURES = [
-  { icon: Phone, title: 'Scam Scanner', desc: 'Real-time transcript analysis with multi-agent fraud detection', color: '#f43f5e', module: 'scam-scanner' },
-  { icon: MessageSquare, title: 'Message Checker', desc: 'Instant scam detection for suspicious messages in 22 languages', color: '#3b82f6', module: 'message-checker' },
-  { icon: Shield, title: 'Safety Center', desc: 'Emergency contacts, safety score, and protection tools', color: '#f59e0b', module: 'safety-center' },
-  { icon: Map, title: 'Threat Insights', desc: 'AI-powered threat intelligence and analysis', color: '#10b981', module: 'threat-insights' },
+  {
+    icon: Phone,
+    title: 'Digital Arrest Scam Detector',
+    desc: 'Real-time transcript analysis — catches impersonation scripts, urgency tactics & money-transfer demands during the call',
+    color: '#f43f5e',
+    module: 'scam-scanner',
+    hero: true,
+  },
+  {
+    icon: MessageSquare,
+    title: 'Citizen Fraud Shield',
+    desc: 'Check any suspicious call or message in seconds — in your own language, with instant NCRB report guidance',
+    color: '#3b82f6',
+    module: 'message-checker',
+    hero: true,
+  },
+  {
+    icon: Network,
+    title: 'Fraud Network Graph',
+    desc: 'Map scammer numbers, UPI IDs & wallets to expose coordinated fraud rings',
+    color: '#8b5cf6',
+    module: 'fraud-network',
+  },
+  {
+    icon: Map,
+    title: 'Crime Heatmap',
+    desc: 'Geospatial crime density visualization for patrol prioritization across India',
+    color: '#10b981',
+    module: 'crime-heatmap',
+  },
 ];
 
 const TRUST_ITEMS = [
   { icon: Brain, text: 'AI Powered', color: '#8b5cf6' },
-  { icon: Lock, text: 'Privacy First', color: '#3b82f6' },
-  { icon: Radar, text: 'Real-Time Detection', color: '#06b6d4' },
-  { icon: ShieldCheck, text: 'Secure Analysis', color: '#10b981' },
+  { icon: ShieldCheck, text: 'NCRB Compliant', color: '#3b82f6' },
+  { icon: Radar, text: 'Intervenes at Contact', color: '#06b6d4' },
+  { icon: Globe, text: '22 Languages', color: '#10b981' },
 ];
 
 const PARTICLES = Array.from({ length: 32 }, (_, i) => ({
@@ -293,9 +319,9 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
               </span>
-              <span>AI-Powered Protection</span>
+              <span>AI-Powered · Built for India</span>
               <span className="w-px h-3 bg-zinc-700" />
-              <span>Built for India</span>
+              <span>Real-Time Detection</span>
             </div>
           </div>
 
@@ -345,9 +371,9 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
               style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16, 1, 0.3, 1) 400ms both' }}
             >
               <p className="text-zinc-400 text-sm sm:text-base md:text-lg lg:text-xl max-w-2xl mx-auto leading-relaxed font-light">
-                India's AI Scam Protection Platform.
-                <span className="text-zinc-200 font-medium"> Detect scams before they detect you</span>
-                <span className="text-zinc-500"> — powered by real-time intelligence, not after-the-fact complaints.</span>
+                India's Digital Public Safety Intelligence platform.
+                <span className="text-zinc-200 font-medium"> By the time a victim files a complaint, the money and the trail are already gone</span>
+                <span className="text-zinc-500"> — RAKSHA AI intervenes at the moment of contact instead.</span>
               </p>
             </div>
           </div>
@@ -365,7 +391,7 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
               }}
             >
               <Shield size={18} strokeWidth={2} />
-              <span className="relative z-10">Start Smart Protection</span>
+              <span className="relative z-10">Start Protection</span>
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-300 relative z-10" strokeWidth={2} />
             </button>
             <div className="flex items-center gap-3 text-zinc-500 text-xs sm:text-sm">
@@ -377,7 +403,7 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
                   </div>
                 ))}
               </div>
-              <span>15 modules ready</span>
+              <span>17 modules · Digital Public Safety</span>
             </div>
           </div>
 
@@ -427,27 +453,64 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
             })}
           </div>
 
-          {/* Features preview */}
+          {/* Features preview — Hero + Supporting */}
           <div
-            className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4 max-w-3xl lg:max-w-4xl mx-auto"
+            className="max-w-4xl lg:max-w-5xl mx-auto space-y-3"
             style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16, 1, 0.3, 1) 800ms both' }}
           >
-            {FEATURES.map((feat, i) => {
-              const Icon = feat.icon;
-              return (
-                <button key={i}
-                  onClick={() => handleFeatureClick(feat.module)}
-                  className="glass-panel card-premium rounded-xl p-3 sm:p-4 text-left cursor-pointer group btn-ripple relative overflow-hidden"
-                >
-                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center mb-2 sm:mb-3 icon-hover-rotate"
-                    style={{ background: `${feat.color}10` }}>
-                    <Icon size={16} style={{ color: feat.color }} strokeWidth={1.5} />
-                  </div>
-                  <h2 className="text-zinc-200 text-xs sm:text-sm font-semibold mb-0.5 sm:mb-1">{feat.title}</h2>
-                  <p className="text-zinc-500 text-[9px] sm:text-[10px] leading-relaxed line-clamp-2">{feat.desc}</p>
-                </button>
-              );
-            })}
+            {/* Hero Features — 2 large cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {FEATURES.filter(f => f.hero).map((feat, i) => {
+                const Icon = feat.icon;
+                return (
+                  <button key={i}
+                    onClick={() => handleFeatureClick(feat.module)}
+                    className="glass-panel card-premium rounded-2xl p-5 sm:p-6 text-left cursor-pointer group btn-ripple relative overflow-hidden"
+                    style={{
+                      border: `1px solid ${feat.color}20`,
+                      background: `linear-gradient(135deg, ${feat.color}08 0%, transparent 60%)`,
+                    }}
+                  >
+                    <div className="absolute top-3 right-3">
+                      <span className="text-[8px] font-bold uppercase tracking-wider px-2 py-1 rounded-full"
+                        style={{ background: `${feat.color}15`, color: feat.color, border: `1px solid ${feat.color}25` }}>
+                        Hero Feature
+                      </span>
+                    </div>
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center mb-3 sm:mb-4 icon-hover-rotate"
+                      style={{ background: `${feat.color}12`, border: `1px solid ${feat.color}20` }}>
+                      <Icon size={20} style={{ color: feat.color }} strokeWidth={1.5} />
+                    </div>
+                    <h2 className="text-zinc-100 text-sm sm:text-base font-bold mb-1.5">{feat.title}</h2>
+                    <p className="text-zinc-500 text-[10px] sm:text-xs leading-relaxed line-clamp-3">{feat.desc}</p>
+                    <div className="flex items-center gap-1.5 mt-3 text-[10px] font-medium group-hover:gap-2.5 transition-all"
+                      style={{ color: feat.color }}>
+                      <span>Try it now</span>
+                      <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+            {/* Supporting Features — 2 compact cards */}
+            <div className="grid grid-cols-2 gap-2 sm:gap-3">
+              {FEATURES.filter(f => !f.hero).map((feat, i) => {
+                const Icon = feat.icon;
+                return (
+                  <button key={i}
+                    onClick={() => handleFeatureClick(feat.module)}
+                    className="glass-panel card-premium rounded-xl p-3 sm:p-4 text-left cursor-pointer group btn-ripple relative overflow-hidden"
+                  >
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center mb-2 sm:mb-3 icon-hover-rotate"
+                      style={{ background: `${feat.color}10` }}>
+                      <Icon size={16} style={{ color: feat.color }} strokeWidth={1.5} />
+                    </div>
+                    <h2 className="text-zinc-200 text-xs sm:text-sm font-semibold mb-0.5 sm:mb-1">{feat.title}</h2>
+                    <p className="text-zinc-500 text-[9px] sm:text-[10px] leading-relaxed line-clamp-2">{feat.desc}</p>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Scroll indicator */}

@@ -1,7 +1,8 @@
 import {
-  Scan, MessageCircle, Phone, ShieldAlert, AlertTriangle,
+  Scan, MessageCircle, ShieldAlert, AlertTriangle,
   Flag, Brain, TrendingUp, Lightbulb, BarChart3,
   FileText, ShieldCheck, HelpCircle, Mail, Settings,
+  Banknote, Network, Map,
 } from 'lucide-react';
 
 export type ModuleId =
@@ -10,7 +11,8 @@ export type ModuleId =
   | 'safety-center' | 'scam-alerts' | 'report-fraud'
   | 'threat-insights' | 'scam-trends' | 'safety-tips'
   | 'activity-dashboard' | 'reports' | 'security-overview'
-  | 'help-center' | 'contact-support' | 'settings';
+  | 'help-center' | 'contact-support' | 'settings'
+  | 'fraud-network' | 'crime-heatmap';
 
 export interface ModuleDef {
   id: ModuleId;
@@ -22,24 +24,26 @@ export interface ModuleDef {
 }
 
 export const MODULES: ModuleDef[] = [
-  { id: 'scam-scanner', label: 'Scam Scanner', section: 'Detection', icon: Scan, shortLabel: 'Scan', description: 'Analyze text, calls, and messages for scam indicators' },
-  { id: 'message-checker', label: 'Message Checker', section: 'Detection', icon: MessageCircle, shortLabel: 'Messages', description: 'Verify suspicious SMS, WhatsApp, and email messages' },
-  { id: 'call-protection', label: 'Call Protection', section: 'Detection', icon: Phone, shortLabel: 'Calls', description: 'Real-time call analysis and spam detection' },
-  { id: 'safety-center', label: 'Safety Center', section: 'Protection', icon: ShieldAlert, shortLabel: 'Safety', description: 'Emergency contacts, safety score, and protection tools' },
-  { id: 'scam-alerts', label: 'Scam Alerts', section: 'Protection', icon: AlertTriangle, shortLabel: 'Alerts', description: 'Live trending scam alerts and threat warnings' },
-  { id: 'report-fraud', label: 'Report Fraud', section: 'Protection', icon: Flag, shortLabel: 'Report', description: 'File fraud reports and track complaint status' },
-  { id: 'threat-insights', label: 'Threat Insights', section: 'Insights', icon: Brain, shortLabel: 'Threats', description: 'AI-powered threat intelligence and analysis' },
-  { id: 'scam-trends', label: 'Scam Trends', section: 'Insights', icon: TrendingUp, shortLabel: 'Trends', description: 'Emerging scam patterns and regional data' },
-  { id: 'safety-tips', label: 'Safety Tips', section: 'Insights', icon: Lightbulb, shortLabel: 'Tips', description: 'Expert safety advice and best practices' },
-  { id: 'activity-dashboard', label: 'Activity Dashboard', section: 'Analytics', icon: BarChart3, shortLabel: 'Activity', description: 'Overview of scans, alerts, and protection activity' },
-  { id: 'reports', label: 'Reports', section: 'Analytics', icon: FileText, shortLabel: 'Reports', description: 'Detailed reports and exportable analytics' },
-  { id: 'security-overview', label: 'Security Overview', section: 'Analytics', icon: ShieldCheck, shortLabel: 'Security', description: 'Security score breakdown and protection status' },
+  { id: 'scam-scanner', label: 'Digital Arrest Scam Detector', section: 'Detection', icon: Scan, shortLabel: 'Detector', description: 'Real-time transcript analysis — flags impersonation scripts, urgency tactics & money-transfer demands during the call' },
+  { id: 'message-checker', label: 'Citizen Fraud Shield', section: 'Detection', icon: MessageCircle, shortLabel: 'Shield', description: 'WhatsApp/IVR-style assistant — check any suspicious call or message in seconds, in your own language' },
+  { id: 'call-protection', label: 'Counterfeit Currency Checker', section: 'Detection', icon: Banknote, shortLabel: 'Currency', description: 'RBI-standard security feature verification for ₹500 and ₹2000 notes with confidence scoring' },
+  { id: 'safety-center', label: 'Safety Center', section: 'Protection', icon: ShieldAlert, shortLabel: 'Safety', description: 'Emergency contacts, safety score, and personal protection tools' },
+  { id: 'scam-alerts', label: 'Live Scam Alerts', section: 'Protection', icon: AlertTriangle, shortLabel: 'Alerts', description: 'Real-time trending scam alerts and threat warnings across India' },
+  { id: 'report-fraud', label: 'File NCRP Report', section: 'Protection', icon: Flag, shortLabel: 'Report', description: 'File complaints directly to NCRB/cybercrime.gov.in with auto-generated evidence packages' },
+  { id: 'threat-insights', label: 'Threat Intelligence', section: 'Intelligence', icon: Brain, shortLabel: 'Intelligence', description: 'AI-powered threat intelligence mapping organized fraud operations and scam networks' },
+  { id: 'fraud-network', label: 'Fraud Network Graph', section: 'Intelligence', icon: Network, shortLabel: 'Network', description: 'Force-directed graph mapping scammer numbers, UPI IDs & wallets to expose coordinated fraud rings' },
+  { id: 'crime-heatmap', label: 'Crime Heatmap', section: 'Intelligence', icon: Map, shortLabel: 'Heatmap', description: 'Geospatial crime density visualization for patrol prioritization across Indian cities' },
+  { id: 'scam-trends', label: 'Scam Trends & Analytics', section: 'Intelligence', icon: TrendingUp, shortLabel: 'Trends', description: 'Emerging scam patterns, regional data, and financial loss analytics' },
+  { id: 'safety-tips', label: 'Safety Education', section: 'Intelligence', icon: Lightbulb, shortLabel: 'Learn', description: 'Expert safety advice, scam awareness training, and digital literacy best practices' },
+  { id: 'activity-dashboard', label: 'Activity Dashboard', section: 'Analytics', icon: BarChart3, shortLabel: 'Activity', description: 'Overview of scans, alerts, and platform protection activity' },
+  { id: 'reports', label: 'Generated Reports', section: 'Analytics', icon: FileText, shortLabel: 'Reports', description: 'Detailed forensic reports and exportable evidence analytics' },
+  { id: 'security-overview', label: 'Security Audit', section: 'Analytics', icon: ShieldCheck, shortLabel: 'Security', description: 'Security score breakdown and protection status assessment' },
   { id: 'help-center', label: 'Help Center', section: 'Support', icon: HelpCircle, shortLabel: 'Help', description: 'FAQs, guides, and documentation' },
-  { id: 'contact-support', label: 'Contact Support', section: 'Support', icon: Mail, shortLabel: 'Contact', description: 'Reach our support team' },
-  { id: 'settings', label: 'Settings', section: 'Support', icon: Settings, shortLabel: 'Settings', description: 'Account, preferences, and notifications' },
+  { id: 'contact-support', label: 'Contact Support', section: 'Support', icon: Mail, shortLabel: 'Contact', description: 'Reach the RAKSHA AI support team' },
+  { id: 'settings', label: 'Settings', section: 'Support', icon: Settings, shortLabel: 'Settings', description: 'Account, preferences, and notification configuration' },
 ];
 
-export const SECTIONS = ['Detection', 'Protection', 'Insights', 'Analytics', 'Support'];
+export const SECTIONS = ['Detection', 'Protection', 'Intelligence', 'Analytics', 'Support'];
 
 export function getModulesBySection(section: string): ModuleDef[] {
   return MODULES.filter(m => m.section === section);

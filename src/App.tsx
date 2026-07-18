@@ -10,12 +10,14 @@ import { Loader2 } from 'lucide-react';
 import { MODULES } from './MODULE_REGISTRY';
 
 const ScamDetector = lazy(() => import('./modules/ScamDetector'));
-const MessageChecker = lazy(() => import('./modules/CitizenShield'));
-const CallProtection = lazy(() => import('./modules/CounterfeitAgent'));
+const CitizenShield = lazy(() => import('./modules/CitizenShield'));
+const CounterfeitAgent = lazy(() => import('./modules/CounterfeitAgent'));
 const SafetyCenter = lazy(() => import('./modules/SafetyCenter'));
 const ScamAlerts = lazy(() => import('./modules/ScamAlerts'));
 const ReportFraud = lazy(() => import('./modules/ReportFraud'));
 const ThreatInsights = lazy(() => import('./modules/ThreatInsights'));
+const FraudNetwork = lazy(() => import('./modules/FraudNetwork'));
+const CrimeHeatmap = lazy(() => import('./modules/CrimeHeatmap'));
 const ScamTrends = lazy(() => import('./modules/ScamTrends'));
 const SafetyTips = lazy(() => import('./components/LearningMode'));
 const ActivityDashboard = lazy(() => import('./modules/ActivityDashboard'));
@@ -28,12 +30,14 @@ const SettingsPage = lazy(() => import('./modules/SettingsPage'));
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const MODULE_COMPONENTS: Record<string, React.LazyExoticComponent<React.ComponentType<any>>> = {
   'scam-scanner': ScamDetector,
-  'message-checker': MessageChecker,
-  'call-protection': CallProtection,
+  'message-checker': CitizenShield,
+  'call-protection': CounterfeitAgent,
   'safety-center': SafetyCenter,
   'scam-alerts': ScamAlerts,
   'report-fraud': ReportFraud,
   'threat-insights': ThreatInsights,
+  'fraud-network': FraudNetwork,
+  'crime-heatmap': CrimeHeatmap,
   'scam-trends': ScamTrends,
   'safety-tips': SafetyTips,
   'activity-dashboard': ActivityDashboard,
@@ -121,7 +125,7 @@ export default function App() {
           <div className="p-2 sm:p-3 lg:p-4 xl:p-5 2xl:p-5 relative pb-20 lg:pb-6">
             <Header
               title={currentModule?.label}
-              subtitle="AI-Powered Cybersecurity Platform"
+              subtitle="Digital Public Safety Intelligence"
               onNavigate={handleModuleSelect}
               onSearchOpen={() => setSearchOpen(true)}
             />
