@@ -44,6 +44,7 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
   }, [prefersReduced, handleMouseMove]);
 
   return (
+    <>
     <div
       ref={heroRef}
       className="relative w-full overflow-hidden select-none"
@@ -215,16 +216,23 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
                 transition: 'transform 0.6s cubic-bezier(0.16,1,0.3,1)',
               }}
             >
-              <img
-                src="/images/scam-hero.jpg"
-                alt="Cybersecurity threat detection — real-time AI analysis of scam attempts"
-                className="w-full block"
-                style={{
-                  aspectRatio: '4/3',
-                  objectFit: 'cover',
-                  animation: prefersReduced ? undefined : 'heroImageZoom 15s ease-in-out infinite alternate',
-                }}
-              />
+              <picture>
+                <source srcSet="/images/scam-hero-sm.webp" type="image/webp" />
+                <img
+                  src="/images/scam-hero.jpg"
+                  alt="Cybersecurity threat detection — real-time AI analysis of scam attempts"
+                  className="w-full block"
+                  width={800}
+                  height={420}
+                  loading="eager"
+                  fetchPriority="high"
+                  style={{
+                    aspectRatio: '4/3',
+                    objectFit: 'cover',
+                    animation: prefersReduced ? undefined : 'heroImageZoom 15s ease-in-out infinite alternate',
+                  }}
+                />
+              </picture>
               {/* Gradient overlay */}
               <div
                 className="absolute inset-0 pointer-events-none"
@@ -305,5 +313,81 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
         }}
       />
     </div>
+
+    {/* ═══ Mission / Impact Section ═══ */}
+    <section
+      className="relative w-full overflow-hidden"
+      style={{ background: '#0F172A' }}
+    >
+      <div className="relative w-full" style={{ aspectRatio: '21/9', maxHeight: '60vh' }}>
+        <picture>
+          <source srcSet="/images/scam-hero.webp" type="image/webp" />
+          <img
+            src="/images/scam-hero.jpg"
+            alt="The human cost of digital arrest scams in India"
+            className="w-full h-full block"
+            width={1600}
+            height={686}
+            loading="lazy"
+            decoding="async"
+            style={{ objectFit: 'cover' }}
+          />
+        </picture>
+
+        {/* Dark gradient overlay */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: 'linear-gradient(180deg, rgba(15,23,42,0.85) 0%, rgba(15,23,42,0.55) 40%, rgba(15,23,42,0.85) 100%)',
+          }}
+        />
+
+        {/* Content overlay */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 sm:px-10">
+          <div
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-5"
+            style={{
+              background: 'rgba(239,68,68,0.1)',
+              border: '1px solid rgba(239,68,68,0.2)',
+            }}
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+            <span className="text-[10px] font-semibold text-red-400 tracking-widest uppercase">The Real Threat</span>
+          </div>
+
+          <h2
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight max-w-3xl"
+            style={{ color: '#f1f5f9' }}
+          >
+            Digital arrest scams cost Indian families{' '}
+            <span style={{ color: '#EF4444' }}>₹1,031.9 crore</span>{' '}
+            in{' '}
+            <span style={{ color: '#EF4444' }}>2024 alone</span>.
+          </h2>
+
+          <p
+            className="mt-4 sm:mt-5 text-sm sm:text-base md:text-lg max-w-xl leading-relaxed font-light"
+            style={{ color: '#94a3b8' }}
+          >
+            Behind every number is a real person — a parent, a student, a senior citizen.
+            RAKSHA AI exists so no one faces these threats alone.
+          </p>
+
+          <button
+            onClick={() => { setIsTransitioning(true); setTimeout(() => { if (onModuleSelect) onModuleSelect('scam-scanner'); else onEnter(); }, 500); }}
+            className="mt-6 sm:mt-8 group relative inline-flex items-center gap-2.5 px-6 py-3 rounded-xl font-semibold text-sm text-white cursor-pointer overflow-hidden transition-all duration-300 hover:translate-y-[-2px]"
+            style={{
+              background: 'linear-gradient(135deg, #DC2626, #EF4444)',
+              boxShadow: '0 0 30px rgba(239,68,68,0.2), 0 4px 24px rgba(239,68,68,0.15)',
+            }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+            <ShieldCheck size={16} strokeWidth={2} className="relative z-10" />
+            <span className="relative z-10">Protect Someone Now</span>
+          </button>
+        </div>
+      </div>
+    </section>
+    </>
   );
 }
