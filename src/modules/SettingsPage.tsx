@@ -131,8 +131,8 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <div className="db-page animate-fade-in">
-        <div className="h-8 w-32 rounded-lg" style={{ background: 'rgba(255,255,255,0.04)' }} />
-        <div className="h-48 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }} />
+        <div className="skeleton" style={{ height: 32, width: 128, borderRadius: 8 }} />
+        <div className="skeleton" style={{ height: 192, borderRadius: 12 }} />
       </div>
     );
   }

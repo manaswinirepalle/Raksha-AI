@@ -2,9 +2,9 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import type { JSX } from 'react';
 import {
   FileText, AlertTriangle,   ShieldAlert, ShieldCheck, Shield,
-  Sparkles, RotateCcw, ChevronRight,
+  Sparkles, RotateCcw,
   Zap, Eye, Brain, TrendingUp, BarChart3, BookOpen,
-  GraduationCap, Search, Radio,
+  GraduationCap,
 } from 'lucide-react';
 import { TRANSCRIPT_SCENARIOS } from '../mockData';
 import type { ActivityEntry, TranscriptScenario, RiskLevel, AnalysisRecord } from '../types';
@@ -23,6 +23,7 @@ import TranscriptLearning from '../components/TranscriptLearning';
 import ConfidenceBreakdown from '../components/ConfidenceBreakdown';
 import WhatToDoNext from '../components/WhatToDoNext';
 import ScamAlertFeed from '../components/ScamAlertFeed';
+import SearchableCombobox from '../components/SearchableCombobox';
 import { useCountUp } from '../hooks/useCountUp';
 
 const RISK_META: Record<RiskLevel, {
@@ -76,7 +77,7 @@ const TABS = [
   { id: 'analysis', label: 'Analysis', icon: FileText },
   { id: 'insights', label: 'AI Insights', icon: Brain },
   { id: 'safety', label: 'Safety', icon: Shield },
-  { id: 'alerts', label: 'Alerts', icon: Radio },
+  { id: 'alerts', label: 'Alerts', icon: AlertTriangle },
   { id: 'learn', label: 'Learn', icon: GraduationCap },
   { id: 'knowledge', label: 'Knowledge', icon: BookOpen },
   { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
@@ -119,30 +120,6 @@ const SAFETY_TIPS: Record<RiskLevel, string[]> = {
   ],
 };
 
-function ScenarioSkeletonCard() {
-  return (
-    <div className="scenario-card-skeleton" aria-hidden="true">
-      <div className="skeleton-icon" />
-      <div className="skeleton-lines">
-        <div className="skeleton-line skeleton-line-title" />
-        <div className="skeleton-line skeleton-line-desc" />
-        <div className="skeleton-line skeleton-line-desc-short" />
-      </div>
-      <div className="skeleton-badge" />
-    </div>
-  );
-}
-
-function ScenarioSkeletonGrid() {
-  return (
-    <div className="scenario-grid">
-      <ScenarioSkeletonCard />
-      <ScenarioSkeletonCard />
-      <ScenarioSkeletonCard />
-    </div>
-  );
-}
-
 export default function ScamDetector() {
   const { addToast } = useToast();
   const [selectedScenario, setSelectedScenario] = useState<TranscriptScenario | null>(null);
@@ -150,24 +127,11 @@ export default function ScamDetector() {
   const [analyzed, setAnalyzed] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(-1);
   const [activityEntries, setActivityEntries] = useState<ActivityEntry[]>([]);
-  const [showScenarioModal, setShowScenarioModal] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [isLoadingScenarios, setIsLoadingScenarios] = useState(true);
-  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
-  const [focusedCardIndex, setFocusedCardIndex] = useState(-1);
   const [activeTab, setActiveTab] = useState<TabId>('analysis');
-  const [scenarioSearch, setScenarioSearch] = useState('');
   const [scenarioFilter, setScenarioFilter] = useState<RiskLevel | 'ALL'>('ALL');
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const pulseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const modalCardRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const modalRef = useRef<HTMLDivElement>(null);
-  const previousFocusRef = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    const t = setTimeout(() => setIsLoadingScenarios(false), 150);
-    return () => clearTimeout(t);
-  }, []);
 
   const clearTimeouts = useCallback(() => {
     timeoutsRef.current.forEach((t) => clearTimeout(t));
@@ -258,7 +222,6 @@ export default function ScamDetector() {
   const handleSelectScenario = useCallback(
     (scenario: TranscriptScenario) => {
       setSelectedScenario(scenario);
-      setShowScenarioModal(false);
       setActiveTab('analysis');
       runAnalysis(scenario);
     },
@@ -276,76 +239,10 @@ export default function ScamDetector() {
     setActiveTab('analysis');
   }, [clearTimeouts]);
 
-  const openModal = useCallback(() => {
-    setFocusedCardIndex(-1);
-    setHoveredCard(null);
-    setScenarioSearch('');
-    setScenarioFilter('ALL');
-    previousFocusRef.current = document.activeElement as HTMLElement;
-    setShowScenarioModal(true);
-  }, []);
-
-  const closeModal = useCallback(() => {
-    setShowScenarioModal(false);
-    setHoveredCard(null);
-    setFocusedCardIndex(-1);
-    requestAnimationFrame(() => {
-      previousFocusRef.current?.focus();
-    });
-  }, []);
-
-  useEffect(() => {
-    if (!showScenarioModal) return;
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { e.stopPropagation(); closeModal(); }
-    };
-    document.addEventListener('keydown', handleEsc);
-    requestAnimationFrame(() => {
-      modalRef.current?.querySelectorAll<HTMLElement>('button, [tabindex]:not([tabindex="-1"])')[0]?.focus();
-    });
-    return () => {
-      document.removeEventListener('keydown', handleEsc);
-    };
-  }, [showScenarioModal, closeModal]);
-
   const filteredScenarios = useMemo(() => {
-    const q = scenarioSearch.toLowerCase();
-    return TRANSCRIPT_SCENARIOS.filter((s) => {
-      const matchFilter = scenarioFilter === 'ALL' || s.riskLevel === scenarioFilter;
-      const matchSearch = !q || s.label.toLowerCase().includes(q) || s.description.toLowerCase().includes(q) || s.id.toLowerCase().includes(q);
-      return matchFilter && matchSearch;
-    });
-  }, [scenarioSearch, scenarioFilter]);
-
-  const handleModalKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      const count = filteredScenarios.length;
-      if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
-        e.preventDefault();
-        const next = focusedCardIndex < count - 1 ? focusedCardIndex + 1 : 0;
-        setFocusedCardIndex(next);
-        modalCardRefs.current[next]?.focus();
-      }
-      if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
-        e.preventDefault();
-        const prev = focusedCardIndex > 0 ? focusedCardIndex - 1 : count - 1;
-        setFocusedCardIndex(prev);
-        modalCardRefs.current[prev]?.focus();
-      }
-      if (e.key === 'Enter' && focusedCardIndex >= 0) {
-        e.preventDefault();
-        handleSelectScenario(filteredScenarios[focusedCardIndex]);
-      }
-      if (e.key === 'Tab' && modalRef.current) {
-        const focusable = modalRef.current.querySelectorAll<HTMLElement>('button, [tabindex]:not([tabindex="-1"])');
-        if (focusable.length === 0) return;
-        const first = focusable[0], last = focusable[focusable.length - 1];
-        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-      }
-    },
-    [focusedCardIndex, handleSelectScenario, filteredScenarios]
-  );
+    if (scenarioFilter === 'ALL') return TRANSCRIPT_SCENARIOS;
+    return TRANSCRIPT_SCENARIOS.filter((s) => s.riskLevel === scenarioFilter);
+  }, [scenarioFilter]);
 
   const highlightedTranscript = useMemo(() => {
     if (!selectedScenario) return null;
@@ -561,7 +458,7 @@ export default function ScamDetector() {
 
   return (
     <div className="scam-detector" aria-busy={isAnalyzing}>
-      <div className="sd-header" style={{ marginBottom: '10px' }}>
+      <div className="sd-header">
         <div className="sd-header-left">
           <div className="sd-header-icon"><AlertTriangle size={16} strokeWidth={1.5} /></div>
           <div className="sd-header-text">
@@ -579,89 +476,33 @@ export default function ScamDetector() {
         </div>
       </div>
 
-      <div className="sd-scenario-trigger" style={{ marginBottom: '8px' }}>
-        <button onClick={openModal} className="sd-trigger-btn btn-premium btn-ripple" aria-haspopup="dialog" aria-label="Select a transcript scenario to analyze" disabled={isAnalyzing} style={{ opacity: isAnalyzing ? 0.5 : 1, pointerEvents: isAnalyzing ? 'none' : 'auto' }}>
-          <div className="sd-trigger-left">
-            <FileText size={15} strokeWidth={1.5} />
-            <span className="sd-trigger-text">{selectedScenario ? selectedScenario.label : 'Choose a scam scenario to analyze...'}</span>
-          </div>
-          <ChevronRight size={15} strokeWidth={1.5} className="sd-trigger-chevron" />
-        </button>
-      </div>
-
-      {/* Inline Scenario Selection Grid — expands below trigger in document flow */}
-      <div
-        ref={modalRef}
-        className={`sd-scenario-inline ${showScenarioModal ? 'sd-scenario-inline-open' : ''}`}
-        onKeyDown={handleModalKeyDown}
-        role="region"
-        aria-label="Select a scenario to analyze"
-        aria-hidden={!showScenarioModal}
-      >
-        <div className="sd-scenario-inline-header">
-          <div><h3 className="sd-inline-title">Select Scenario</h3><p className="sd-inline-subtitle">{filteredScenarios.length} of {TRANSCRIPT_SCENARIOS.length} scenarios</p></div>
-          <button onClick={closeModal} className="sd-inline-close" aria-label="Close scenario picker" type="button"><span>&times;</span></button>
-        </div>
-        <div className="sd-inline-search-row">
-          <div className="sd-inline-search">
-            <Search size={14} strokeWidth={1.5} />
-            <input type="text" placeholder="Search scenarios..." value={scenarioSearch} onChange={(e) => setScenarioSearch(e.target.value)} className="sd-inline-search-input" aria-label="Search scenarios" />
-          </div>
-          <div className="sd-inline-filters" role="radiogroup" aria-label="Filter by risk level">
-            {(['ALL', 'CRITICAL', 'HIGH', 'MEDIUM', 'LOW'] as const).map((level) => (
-              <button key={level} onClick={() => setScenarioFilter(level)} className={`sd-inline-filter ${scenarioFilter === level ? 'sd-inline-filter-active' : ''}`} role="radio" aria-checked={scenarioFilter === level}>
-                {level === 'ALL' ? 'All' : RISK_META[level].label}
-              </button>
-            ))}
-          </div>
-        </div>
-        {isLoadingScenarios ? <ScenarioSkeletonGrid /> : filteredScenarios.length === 0 ? (
-          <div className="sd-modal-empty">
-            <p className="sd-modal-empty-text">No scenarios match your search</p>
-          </div>
-        ) : (
-          <div className="scenario-grid scenario-grid-2col" style={{ padding: '0 24px' }}>
-            {filteredScenarios.map((scenario, index) => {
-              const meta = RISK_META[scenario.riskLevel];
-              const IconComponent = meta.icon;
-              const isHovered = hoveredCard === scenario.id;
-              const isSelected = selectedScenario?.id === scenario.id;
-              return (
-                <button key={scenario.id} ref={(el) => { modalCardRefs.current[index] = el; }}
-                  className={`scenario-card ${isSelected ? 'scenario-card-selected' : ''}`}
-                  style={{ background: isHovered || isSelected ? meta.gradient : undefined, borderColor: isHovered || isSelected || focusedCardIndex === index ? meta.borderColor : undefined, boxShadow: isHovered || isSelected ? `0 0 30px ${meta.glowColor}, 0 8px 32px rgba(0,0,0,0.3)` : undefined }}
-                  onClick={() => handleSelectScenario(scenario)} onMouseEnter={() => setHoveredCard(scenario.id)} onMouseLeave={() => setHoveredCard(null)}
-                  onFocus={() => { setHoveredCard(scenario.id); setFocusedCardIndex(index); }} onBlur={() => setHoveredCard(null)}
-                  tabIndex={showScenarioModal ? 0 : -1} role="option" aria-selected={isSelected} aria-label={`${scenario.label} — ${meta.label} risk, score ${scenario.finalScore}`}>
-                  <div className="scenario-card-header">
-                    <div className="scenario-card-icon" style={{ background: meta.bgColor, borderColor: meta.borderColor }}>
-                      <IconComponent size={20} style={{ color: meta.color }} strokeWidth={1.5} />
-                    </div>
-                    <div className="scenario-card-badge" style={{ background: meta.bgColor, color: meta.color, borderColor: meta.borderColor }}>{meta.label}</div>
-                  </div>
-                  <div className="scenario-card-body"><h4 className="scenario-card-title">{scenario.label}</h4><p className="scenario-card-desc">{scenario.description}</p></div>
-                  <div className="scenario-card-footer">
-                    <div className="scenario-card-stats">
-                      <span className="scenario-stat"><span className="scenario-stat-icon"><Brain size={11} strokeWidth={1.5} /></span>{scenario.agentFires.length} agents</span>
-                      <span className="scenario-stat"><span className="scenario-stat-icon"><AlertTriangle size={11} strokeWidth={1.5} /></span>{scenario.redFlags.length} flags</span>
-                    </div>
-                    <div className="scenario-card-score"><span className="scenario-score-label">Risk</span><span className="scenario-score-value" style={{ color: meta.color }}>{scenario.finalScore}</span></div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        )}
-        {!isLoadingScenarios && (
-          <div className="sd-inline-footer">
-            <span className="sd-inline-footer-text">{filteredScenarios.length} of {TRANSCRIPT_SCENARIOS.length} scenarios</span>
-            <span className="sd-inline-footer-hint">Use arrow keys + Enter to navigate</span>
-          </div>
-        )}
+      {/* Scenario Picker + Risk Filter */}
+      <div className="sd-combo-row">
+        <SearchableCombobox
+          scenarios={filteredScenarios}
+          selectedId={selectedScenario?.id ?? null}
+          onSelect={handleSelectScenario}
+          placeholder="Choose a scam scenario to analyze..."
+          disabled={isAnalyzing}
+          riskMeta={RISK_META}
+        />
+        <select
+          className="sd-risk-filter"
+          value={scenarioFilter}
+          onChange={(e) => setScenarioFilter(e.target.value as RiskLevel | 'ALL')}
+          disabled={isAnalyzing}
+          aria-label="Filter by risk level"
+        >
+          <option value="ALL">All Levels</option>
+          <option value="CRITICAL">Critical</option>
+          <option value="HIGH">High</option>
+          <option value="MEDIUM">Medium</option>
+          <option value="LOW">Low</option>
+        </select>
       </div>
 
       {/* Tab Navigation */}
-      <div className="sd-tabs" role="tablist" style={{ marginBottom: '8px' }}>
+      <div className="sd-tabs" role="tablist">
         {TABS.map((tab) => {
           const Icon = tab.icon;
           return (

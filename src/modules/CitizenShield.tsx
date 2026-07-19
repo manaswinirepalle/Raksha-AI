@@ -269,7 +269,7 @@ export default function CitizenShield() {
         </div>
         <div className="flex items-center gap-1.5 flex-shrink-0">
           <button onClick={handleClear}
-            className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-[10px] text-zinc-500 hover:text-zinc-200 hover:bg-white/[0.04] transition-all cursor-pointer"
+            className="flex items-center gap-1 px-2 py-1.5 rounded-[10px] text-[10px] text-zinc-500 hover:text-zinc-200 hover:bg-white/[0.04] transition-all cursor-pointer"
             aria-label="Clear conversation">
             <RotateCcw size={10} strokeWidth={1.5} />
             <span className="hidden sm:inline">Clear</span>
@@ -393,7 +393,7 @@ export default function CitizenShield() {
               <div className="flex items-center gap-1 flex-shrink-0">
                 {/* Paste button */}
                 <button onClick={handlePaste} disabled={isAnalyzing}
-                  className="w-7 h-7 rounded-lg flex items-center justify-center text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.04] transition-all cursor-pointer disabled:opacity-40"
+                  className="w-7 h-7 rounded-[10px] flex items-center justify-center text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.04] transition-all cursor-pointer disabled:opacity-40"
                   aria-label="Paste from clipboard"
                   title="Paste from clipboard">
                   {pasted ? <ClipboardCheck size={13} className="text-blue-400" /> : <Clipboard size={13} />}
@@ -406,7 +406,7 @@ export default function CitizenShield() {
 
                 {/* Send button */}
                 <button onClick={() => handleSend()} disabled={!input.trim() || isAnalyzing}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                  className="w-8 h-8 rounded-[10px] flex items-center justify-center cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                   style={{
                     background: input.trim() ? 'linear-gradient(135deg, #3b82f6, #6366f1)' : 'rgba(255,255,255,0.04)',
                     color: input.trim() ? '#fff' : '#52525b',

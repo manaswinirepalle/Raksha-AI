@@ -17,7 +17,7 @@ export default function Header({ title, subtitle, onNavigate, onSearchOpen }: He
       <div className="flex items-center gap-3 min-w-0">
         {title && (
           <div className="min-w-0">
-            <h1 className="text-[15px] font-bold text-zinc-100 truncate">{title}</h1>
+            <h1 className="text-[15px] font-semibold text-zinc-100 truncate">{title}</h1>
             {subtitle && <p className="text-[11px] text-zinc-500 truncate">{subtitle}</p>}
           </div>
         )}
