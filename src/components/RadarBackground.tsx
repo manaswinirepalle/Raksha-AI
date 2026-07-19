@@ -40,10 +40,14 @@ export default function RadarBackground() {
     let animFrame: number;
     let isVisible = true;
     let angle = 0;
+    let lastFrameTime = 0;
+    const FRAME_INTERVAL = 1000 / 30; // cap at 30fps for background canvas
     const particles: Particle[] = [];
     const lightBeams: LightBeam[] = [];
+    const isMobile = window.innerWidth < 640;
+    const PARTICLE_COUNT = isMobile ? 16 : 30;
 
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
       particles.push({
         x: Math.random(),
         y: Math.random(),
@@ -90,9 +94,15 @@ export default function RadarBackground() {
         return;
       }
 
+      // Throttle to 30fps to reduce GPU/CPU load and free main thread for scroll
+      if (time - lastFrameTime < FRAME_INTERVAL) {
+        animFrame = requestAnimationFrame(draw);
+        return;
+      }
+      lastFrameTime = time;
+
       const w = window.innerWidth;
       const h = window.innerHeight;
-      const isMobile = w < 640;
       const mx = mouseRef.current.x;
       const my = mouseRef.current.y;
 
@@ -260,8 +270,8 @@ export default function RadarBackground() {
         }
       }
 
-      // Connection lines between nearby particles (skipped on mobile for perf)
-      if (w > 640) {
+      // Connection lines between nearby particles (skipped on mobile and large particle counts for perf)
+      if (w > 640 && particles.length <= 30) {
         const distThreshold = 100;
         const distThresholdSq = distThreshold * distThreshold;
         for (let i = 0; i < particles.length; i++) {

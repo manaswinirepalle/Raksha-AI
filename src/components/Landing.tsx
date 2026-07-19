@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Shield, ArrowRight, AlertTriangle, TrendingUp, IndianRupee,
-  Activity, Globe, Lock, Fingerprint, Zap, Phone, MessageSquare,
-  Banknote, Map, ChevronDown, Eye, Brain, Cpu,
-  Sparkles, ShieldCheck, Radar, Network,
+  Globe, Phone, MessageSquare,
+  Banknote, Map, Brain,
+  ShieldCheck, Radar, Network,
 } from 'lucide-react';
 import useReducedMotion from '../hooks/useReducedMotion';
 
@@ -53,7 +53,7 @@ const TRUST_ITEMS = [
   { icon: Globe, text: '22 Languages', color: '#10b981' },
 ];
 
-const PARTICLES = Array.from({ length: 32 }, (_, i) => ({
+const PARTICLES = Array.from({ length: 16 }, (_, i) => ({
   id: i,
   x: Math.random() * 100,
   y: Math.random() * 100,
@@ -61,64 +61,30 @@ const PARTICLES = Array.from({ length: 32 }, (_, i) => ({
   opacity: Math.random() * 0.12 + 0.02,
   dur: Math.random() * 25 + 18,
   delay: Math.random() * 12,
-  driftX: (Math.random() - 0.5) * 40,
-  driftY: -(Math.random() * 30 + 10),
-  rotate: Math.random() * 360,
 }));
 
-const ICON_FLOATS = [
-  { Icon: Shield, x: 8, y: 15, size: 18, opacity: 0.04, dur: 18, delay: 0, parallax: 0.02 },
-  { Icon: Lock, x: 88, y: 20, size: 14, opacity: 0.035, dur: 22, delay: 2, parallax: 0.015 },
-  { Icon: Activity, x: 5, y: 75, size: 12, opacity: 0.03, dur: 20, delay: 4, parallax: 0.025 },
-  { Icon: Globe, x: 92, y: 70, size: 20, opacity: 0.03, dur: 24, delay: 1, parallax: 0.01 },
-  { Icon: Fingerprint, x: 15, y: 88, size: 14, opacity: 0.025, dur: 19, delay: 3, parallax: 0.03 },
-  { Icon: Zap, x: 50, y: 5, size: 12, opacity: 0.03, dur: 21, delay: 5, parallax: 0.02 },
-  { Icon: Brain, x: 75, y: 85, size: 16, opacity: 0.025, dur: 23, delay: 2.5, parallax: 0.015 },
-  { Icon: Eye, x: 30, y: 10, size: 10, opacity: 0.025, dur: 17, delay: 6, parallax: 0.02 },
-  { Icon: Cpu, x: 65, y: 12, size: 13, opacity: 0.025, dur: 20, delay: 3.5, parallax: 0.018 },
-  { Icon: Sparkles, x: 42, y: 92, size: 11, opacity: 0.02, dur: 25, delay: 7, parallax: 0.022 },
-  { Icon: ShieldCheck, x: 78, y: 45, size: 13, opacity: 0.02, dur: 19, delay: 1.5, parallax: 0.016 },
-];
-
 export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => void; onModuleSelect?: (id: string) => void }) {
-  const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 });
   const [isTransitioning, setIsTransitioning] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
-  const rafRef = useRef<number>(0);
+  const glowRef = useRef<HTMLDivElement>(null);
   const prefersReduced = useReducedMotion();
 
-  const lerp = useCallback((current: number, target: number, factor: number) => {
-    return current + (target - current) * factor;
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!glowRef.current || !heroRef.current) return;
+    const rect = heroRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    glowRef.current.style.left = `${x}%`;
+    glowRef.current.style.top = `${y}%`;
   }, []);
 
   useEffect(() => {
-    if (!heroRef.current || prefersReduced) return;
+    if (prefersReduced) return;
     const el = heroRef.current;
-    let targetX = 0.5;
-    let targetY = 0.5;
-    let currentX = 0.5;
-    let currentY = 0.5;
-
-    const handleMove = (e: MouseEvent) => {
-      const rect = el.getBoundingClientRect();
-      targetX = (e.clientX - rect.left) / rect.width;
-      targetY = (e.clientY - rect.top) / rect.height;
-    };
-
-    const tick = () => {
-      currentX = lerp(currentX, targetX, 0.06);
-      currentY = lerp(currentY, targetY, 0.06);
-      setMousePos({ x: currentX, y: currentY });
-      rafRef.current = requestAnimationFrame(tick);
-    };
-
-    el.addEventListener('mousemove', handleMove, { passive: true });
-    rafRef.current = requestAnimationFrame(tick);
-    return () => {
-      el.removeEventListener('mousemove', handleMove);
-      cancelAnimationFrame(rafRef.current);
-    };
-  }, [prefersReduced, lerp]);
+    if (!el) return;
+    el.addEventListener('mousemove', handleMouseMove, { passive: true });
+    return () => el.removeEventListener('mousemove', handleMouseMove);
+  }, [prefersReduced, handleMouseMove]);
 
   const handleEnter = () => {
     setIsTransitioning(true);
@@ -133,15 +99,6 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
     }, 500);
   };
 
-  const parallaxX = (mousePos.x - 0.5) * 2;
-  const parallaxY = (mousePos.y - 0.5) * 2;
-
-  const cursorGlowStyle = useMemo(() => ({
-    left: `${mousePos.x * 100}%`,
-    top: `${mousePos.y * 100}%`,
-    willChange: 'left, top' as const,
-  }), [mousePos.x, mousePos.y]);
-
   return (
     <div
       ref={heroRef}
@@ -153,31 +110,30 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
         transition: 'opacity 500ms cubic-bezier(0.16, 1, 0.3, 1), transform 500ms cubic-bezier(0.16, 1, 0.3, 1), filter 500ms cubic-bezier(0.16, 1, 0.3, 1)',
       }}
     >
-      {/* Cursor glow */}
+      {/* Cursor glow — positioned via ref, no React state */}
       <div
+        ref={glowRef}
         className="absolute pointer-events-none z-[1]"
         style={{
-          ...cursorGlowStyle,
           width: 600,
           height: 600,
           borderRadius: '50%',
           background: 'radial-gradient(circle, rgba(59,130,246,0.05) 0%, rgba(99,102,241,0.02) 40%, transparent 65%)',
           transform: 'translate(-50%, -50%)',
-          animation: prefersReduced ? undefined : 'heroFadeIn 600ms ease both, cursorGlowPulse 6s ease-in-out 600ms infinite',
+          willChange: 'left, top',
         }}
       />
 
-      {/* Animated gradient mesh background */}
+      {/* Background gradient mesh — CSS-only, no JS animation */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div
           className="absolute"
           style={{
             width: 700, height: 700, borderRadius: '50%',
             background: 'radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 65%)',
-            left: `calc(${mousePos.x * 100}% - 350px)`,
-            top: `calc(${mousePos.y * 100}% - 350px)`,
-            willChange: 'left, top',
-            animation: prefersReduced ? undefined : 'glowPulse 8s ease-in-out infinite',
+            left: '50%', top: '50%',
+            transform: 'translate(-50%, -50%)',
+            animation: prefersReduced ? undefined : 'premiumMeshDrift2 20s ease-in-out infinite',
           }}
         />
         <div
@@ -186,25 +142,7 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
             width: 550, height: 550, borderRadius: '50%',
             background: 'radial-gradient(circle, rgba(139,92,246,0.04) 0%, transparent 65%)',
             right: '8%', bottom: '12%',
-            animation: prefersReduced ? undefined : 'premiumMeshDrift2 20s ease-in-out infinite',
-          }}
-        />
-        <div
-          className="absolute"
-          style={{
-            width: 450, height: 450, borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(6,182,212,0.03) 0%, transparent 65%)',
-            left: '18%', top: '55%',
             animation: prefersReduced ? undefined : 'premiumMeshDrift3 22s ease-in-out infinite',
-          }}
-        />
-        <div
-          className="absolute"
-          style={{
-            width: 350, height: 350, borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(244,63,94,0.02) 0%, transparent 65%)',
-            right: '25%', top: '20%',
-            animation: prefersReduced ? undefined : 'premiumMeshDrift1 25s ease-in-out infinite',
           }}
         />
         <div className="absolute inset-0 opacity-[0.012]"
@@ -221,7 +159,7 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
         />
       </div>
 
-      {/* Floating particles */}
+      {/* Floating particles — pure CSS animation, no JS */}
       {PARTICLES.map((p) => (
         <div
           key={p.id}
@@ -233,38 +171,12 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
             height: p.size,
             background: `rgba(255,255,255,${p.opacity})`,
             boxShadow: `0 0 ${p.size * 3}px rgba(59,130,246,${p.opacity * 0.5})`,
-            '--p-drift-x': `${p.driftX}px`,
-            '--p-drift-y': `${p.driftY}px`,
-            '--p-rotate': `${p.rotate}deg`,
-            '--p-opacity': `${p.opacity}`,
             animation: prefersReduced ? undefined : `particleDrift ${p.dur}s ease-in-out ${p.delay}s infinite`,
-          } as React.CSSProperties}
+          }}
         />
       ))}
 
-      {/* Floating icon elements with parallax */}
-      {!prefersReduced && ICON_FLOATS.map((el, i) => {
-        const Icon = el.Icon;
-        const px = parallaxX * el.parallax * 100;
-        const py = parallaxY * el.parallax * 100;
-        return (
-          <div
-            key={i}
-            className="absolute pointer-events-none"
-            style={{
-              left: `${el.x}%`,
-              top: `${el.y}%`,
-              transform: `translate(${px}px, ${py}px)`,
-              willChange: 'transform',
-              animation: `particleFloat ${el.dur}s ease-in-out ${el.delay}s infinite`,
-            }}
-          >
-            <Icon size={el.size} style={{ opacity: el.opacity }} className="text-white" />
-          </div>
-        );
-      })}
-
-      {/* Orbital rings */}
+      {/* Orbital ring — single ring instead of 3 */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
         <div
           className="w-[280px] h-[280px] sm:w-[340px] sm:h-[340px] md:w-[400px] md:h-[400px] lg:w-[500px] lg:h-[500px] xl:w-[600px] xl:h-[600px] rounded-full"
@@ -274,36 +186,6 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
           }}
         />
       </div>
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-        <div
-          className="w-[420px] h-[420px] sm:w-[500px] sm:h-[500px] md:w-[580px] md:h-[580px] lg:w-[700px] lg:h-[700px] xl:w-[820px] xl:h-[820px] rounded-full"
-          style={{ border: '1px solid rgba(139,92,246,0.03)' }}
-        />
-      </div>
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-        <div
-          className="w-[560px] h-[560px] sm:w-[660px] sm:h-[660px] md:w-[760px] md:h-[760px] lg:w-[900px] lg:h-[900px] xl:w-[1040px] xl:h-[1040px] rounded-full"
-          style={{ border: '1px solid rgba(255,255,255,0.015)' }}
-        />
-      </div>
-
-      {/* Orbiting dots */}
-      {!prefersReduced && (
-        <>
-          <div className="absolute top-1/2 left-1/2 pointer-events-none">
-            <div className="animate-orbit" style={{ width: 0, height: 0 }}>
-              <div className="w-1.5 h-1.5 rounded-full -translate-x-1/2 -translate-y-1/2"
-                style={{ background: 'rgba(59,130,246,0.5)', boxShadow: '0 0 12px rgba(59,130,246,0.3)' }} />
-            </div>
-          </div>
-          <div className="absolute top-1/2 left-1/2 pointer-events-none">
-            <div className="animate-orbit-reverse" style={{ width: 0, height: 0 }}>
-              <div className="w-1 h-1 rounded-full -translate-x-1/2 -translate-y-1/2"
-                style={{ background: 'rgba(139,92,246,0.4)', boxShadow: '0 0 10px rgba(139,92,246,0.25)' }} />
-            </div>
-          </div>
-        </>
-      )}
 
       {/* Main content */}
       <div className="flex-1 flex flex-col items-center justify-center relative z-10 px-5 sm:px-8 lg:px-12 xl:px-16">
@@ -471,12 +353,6 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
                       background: `linear-gradient(135deg, ${feat.color}08 0%, transparent 60%)`,
                     }}
                   >
-                    <div className="absolute top-3 right-3">
-                      <span className="text-[8px] font-bold uppercase tracking-wider px-2 py-1 rounded-full"
-                        style={{ background: `${feat.color}15`, color: feat.color, border: `1px solid ${feat.color}25` }}>
-                        Hero Feature
-                      </span>
-                    </div>
                     <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center mb-3 sm:mb-4 icon-hover-rotate"
                       style={{ background: `${feat.color}12`, border: `1px solid ${feat.color}20` }}>
                       <Icon size={20} style={{ color: feat.color }} strokeWidth={1.5} />
@@ -511,18 +387,6 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
                 );
               })}
             </div>
-          </div>
-
-          {/* Scroll indicator */}
-          <div
-            className="flex justify-center pt-2"
-            style={{ animation: prefersReduced ? undefined : 'heroFadeIn 600ms ease 1000ms both' }}
-          >
-            <button onClick={handleEnter}
-              className="flex flex-col items-center gap-1.5 text-zinc-600 hover:text-zinc-400 transition-colors cursor-pointer group btn-ripple relative overflow-hidden rounded-lg px-3 py-2">
-              <span className="text-[9px] sm:text-[10px] font-medium tracking-wider uppercase">Explore Platform</span>
-              <ChevronDown size={16} className={prefersReduced ? '' : 'animate-scroll-bounce'} strokeWidth={1.5} />
-            </button>
           </div>
         </div>
       </div>

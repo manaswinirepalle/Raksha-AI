@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Shield, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { Shield, ChevronLeft, ChevronRight } from 'lucide-react';
 import { SECTIONS, getModulesBySection, type ModuleId } from '../MODULE_REGISTRY';
 
 export type { ModuleId };
@@ -191,33 +191,6 @@ export default function Sidebar({ active, onSelect }: { active: ModuleId; onSele
             Collapse
           </span>
         </button>
-
-        <div
-          className={`flex items-center rounded-xl px-3 py-2.5 mt-1 cursor-default ${collapsed ? 'justify-center px-0' : 'gap-3'}`}
-          style={{
-            background: 'rgba(255, 255, 255, 0.02)',
-            border: '1px solid rgba(255, 255, 255, 0.03)',
-            transition: 'background 200ms ease',
-          }}
-        >
-          <div
-            className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-            style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.25), rgba(139,92,246,0.18))' }}
-          >
-            <Sparkles size={14} className="text-blue-400" strokeWidth={1.5} />
-          </div>
-          <div
-            className="flex flex-col min-w-0 overflow-hidden"
-            style={{
-              opacity: collapsed ? 0 : 1,
-              width: collapsed ? 0 : 'auto',
-              transition: 'opacity 150ms ease, width 200ms ease',
-            }}
-          >
-            <span className="text-[12px] font-medium text-zinc-200 truncate whitespace-nowrap">AI Analyst</span>
-            <span className="text-[10px] text-zinc-600 truncate whitespace-nowrap">raksha.ai</span>
-          </div>
-        </div>
       </div>
     </aside>
   );
