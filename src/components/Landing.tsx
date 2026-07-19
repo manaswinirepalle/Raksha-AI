@@ -1,83 +1,39 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import {
-  Shield, ArrowRight, AlertTriangle, TrendingUp, IndianRupee,
-  Globe, Phone, MessageSquare,
-  Banknote, Map, Brain,
-  ShieldCheck, Radar, Network,
-} from 'lucide-react';
+import { ShieldCheck, TriangleAlert, Lock, Fingerprint, Eye, Bell, ArrowRight } from 'lucide-react';
 import useReducedMotion from '../hooks/useReducedMotion';
-import VictimIllustration from './VictimIllustration';
 
-const STATS = [
-  { value: 1140000, display: '1.14M', label: 'Cybercrime complaints in India, 2023', icon: AlertTriangle, color: '#f43f5e' },
-  { value: 1776, display: '₹1,776 Cr', label: 'Lost to digital arrest scams in 9 months, 2024', icon: IndianRupee, color: '#f59e0b' },
-  { value: 60, display: '60%', label: 'Year-over-year increase in cybercrime', icon: TrendingUp, color: '#f97316' },
+const GLASS_CARDS = [
+  { icon: TriangleAlert, label: 'Scam Alert', color: '#EF4444', position: { top: '8%', left: '-4%' }, delay: '0s' },
+  { icon: ShieldCheck, label: 'Fraud Detected', color: '#2563EB', position: { top: '15%', right: '-3%' }, delay: '1.2s' },
+  { icon: Fingerprint, label: 'AI Analysis', color: '#38BDF8', position: { bottom: '18%', left: '-2%' }, delay: '0.6s' },
+  { icon: Lock, label: 'OTP Protection', color: '#2563EB', position: { bottom: '12%', right: '-4%' }, delay: '1.8s' },
 ];
 
-const FEATURES = [
-  {
-    icon: Phone,
-    title: 'Digital Arrest Scam Detector',
-    desc: 'Real-time transcript analysis — catches impersonation scripts, urgency tactics & money-transfer demands during the call',
-    color: '#f43f5e',
-    module: 'scam-scanner',
-    hero: true,
-  },
-  {
-    icon: MessageSquare,
-    title: 'Citizen Fraud Shield',
-    desc: 'Check any suspicious call or message in seconds — in your own language, with instant NCRB report guidance',
-    color: '#3b82f6',
-    module: 'message-checker',
-    hero: true,
-  },
-  {
-    icon: Network,
-    title: 'Fraud Network Graph',
-    desc: 'Map scammer numbers, UPI IDs & wallets to expose coordinated fraud rings',
-    color: '#8b5cf6',
-    module: 'fraud-network',
-  },
-  {
-    icon: Map,
-    title: 'Crime Heatmap',
-    desc: 'Geospatial crime density visualization for patrol prioritization across India',
-    color: '#10b981',
-    module: 'crime-heatmap',
-  },
-];
-
-const TRUST_ITEMS = [
-  { icon: Brain, text: 'AI Powered', color: '#8b5cf6' },
-  { icon: ShieldCheck, text: 'NCRB Compliant', color: '#3b82f6' },
-  { icon: Radar, text: 'Intervenes at Contact', color: '#06b6d4' },
-  { icon: Globe, text: '22 Languages', color: '#10b981' },
-];
-
-const PARTICLES = Array.from({ length: 16 }, (_, i) => ({
+const PARTICLES = Array.from({ length: 20 }, (_, i) => ({
   id: i,
   x: Math.random() * 100,
   y: Math.random() * 100,
-  size: Math.random() * 2.5 + 0.5,
-  opacity: Math.random() * 0.12 + 0.02,
-  dur: Math.random() * 25 + 18,
-  delay: Math.random() * 12,
+  size: Math.random() * 2 + 0.5,
+  opacity: Math.random() * 0.15 + 0.03,
+  dur: Math.random() * 30 + 20,
+  delay: Math.random() * 15,
+  isRed: Math.random() < 0.12,
 }));
 
 export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => void; onModuleSelect?: (id: string) => void }) {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
-  const glowRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLDivElement>(null);
   const prefersReduced = useReducedMotion();
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!glowRef.current || !heroRef.current) return;
+    if (!heroRef.current || prefersReduced) return;
     const rect = heroRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    glowRef.current.style.left = `${x}%`;
-    glowRef.current.style.top = `${y}%`;
-  }, []);
+    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+    setMousePos({ x: x * 6, y: y * 4 });
+  }, [prefersReduced]);
 
   useEffect(() => {
     if (prefersReduced) return;
@@ -87,80 +43,20 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
     return () => el.removeEventListener('mousemove', handleMouseMove);
   }, [prefersReduced, handleMouseMove]);
 
-  const handleEnter = () => {
-    setIsTransitioning(true);
-    setTimeout(() => onEnter(), 500);
-  };
-
-  const handleFeatureClick = (module: string) => {
-    setIsTransitioning(true);
-    setTimeout(() => {
-      if (onModuleSelect) onModuleSelect(module);
-      else onEnter();
-    }, 500);
-  };
-
   return (
     <div
       ref={heroRef}
-      className="flex-1 flex flex-col relative z-10 overflow-hidden select-none"
+      className="relative w-full overflow-hidden select-none"
       style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(180deg, #020617 0%, #07152F 50%, #0F172A 100%)',
         opacity: isTransitioning ? 0 : 1,
         transform: isTransitioning ? 'scale(0.98)' : 'scale(1)',
         filter: isTransitioning ? 'blur(4px)' : 'blur(0)',
-        transition: 'opacity 500ms cubic-bezier(0.16, 1, 0.3, 1), transform 500ms cubic-bezier(0.16, 1, 0.3, 1), filter 500ms cubic-bezier(0.16, 1, 0.3, 1)',
+        transition: 'opacity 500ms cubic-bezier(0.16,1,0.3,1), transform 500ms cubic-bezier(0.16,1,0.3,1), filter 500ms cubic-bezier(0.16,1,0.3,1)',
       }}
     >
-      {/* Cursor glow — positioned via ref, no React state */}
-      <div
-        ref={glowRef}
-        className="absolute pointer-events-none z-[1]"
-        style={{
-          width: 600,
-          height: 600,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(59,130,246,0.05) 0%, rgba(99,102,241,0.02) 40%, transparent 65%)',
-          transform: 'translate(-50%, -50%)',
-          willChange: 'left, top',
-        }}
-      />
-
-      {/* Background gradient mesh — CSS-only, no JS animation */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div
-          className="absolute"
-          style={{
-            width: 700, height: 700, borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 65%)',
-            left: '50%', top: '50%',
-            transform: 'translate(-50%, -50%)',
-            animation: prefersReduced ? undefined : 'premiumMeshDrift2 20s ease-in-out infinite',
-          }}
-        />
-        <div
-          className="absolute"
-          style={{
-            width: 550, height: 550, borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(139,92,246,0.04) 0%, transparent 65%)',
-            right: '8%', bottom: '12%',
-            animation: prefersReduced ? undefined : 'premiumMeshDrift3 22s ease-in-out infinite',
-          }}
-        />
-        <div className="absolute inset-0 opacity-[0.012]"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)
-            `,
-            backgroundSize: '64px 64px',
-          }}
-        />
-        <div className="absolute inset-0"
-          style={{ background: 'radial-gradient(ellipse at center, transparent 20%, #09090b 75%)' }}
-        />
-      </div>
-
-      {/* Floating particles — pure CSS animation, no JS */}
+      {/* Background particles */}
       {PARTICLES.map((p) => (
         <div
           key={p.id}
@@ -170,239 +66,244 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
             top: `${p.y}%`,
             width: p.size,
             height: p.size,
-            background: `rgba(255,255,255,${p.opacity})`,
-            boxShadow: `0 0 ${p.size * 3}px rgba(59,130,246,${p.opacity * 0.5})`,
-            animation: prefersReduced ? undefined : `particleDrift ${p.dur}s ease-in-out ${p.delay}s infinite`,
+            background: p.isRed ? `rgba(239,68,68,${p.opacity})` : `rgba(56,189,248,${p.opacity})`,
+            boxShadow: p.isRed
+              ? `0 0 ${p.size * 4}px rgba(239,68,68,${p.opacity * 0.4})`
+              : `0 0 ${p.size * 4}px rgba(37,99,235,${p.opacity * 0.3})`,
+            animation: prefersReduced ? undefined : `heroParticleFloat ${p.dur}s ease-in-out ${p.delay}s infinite alternate`,
           }}
         />
       ))}
 
-      {/* Orbital ring — single ring instead of 3 */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-        <div
-          className="w-[280px] h-[280px] sm:w-[340px] sm:h-[340px] md:w-[400px] md:h-[400px] lg:w-[500px] lg:h-[500px] xl:w-[600px] xl:h-[600px] rounded-full"
-          style={{
-            border: '1px solid rgba(59,130,246,0.04)',
-            animation: prefersReduced ? undefined : 'breathe 6s ease-in-out infinite',
-          }}
-        />
-      </div>
+      {/* Radial blue glow behind image area */}
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          width: '70%',
+          height: '70%',
+          right: '-5%',
+          top: '15%',
+          background: 'radial-gradient(ellipse at center, rgba(37,99,235,0.08) 0%, transparent 65%)',
+          filter: 'blur(60px)',
+        }}
+      />
 
-      {/* Main content */}
-      <div className="flex-1 flex flex-col items-center justify-center relative z-10 px-5 sm:px-8 lg:px-12 xl:px-16">
-        <div className="max-w-4xl lg:max-w-5xl w-full space-y-8 sm:space-y-10 lg:space-y-12">
+      {/* Main content grid */}
+      <div className="relative z-10 w-full h-full max-w-[1400px] mx-auto flex flex-col lg:flex-row items-center justify-center min-h-screen px-6 sm:px-8 lg:px-12 xl:px-16 gap-10 lg:gap-16 py-20 lg:py-0">
 
-          {/* Top badge */}
+        {/* LEFT — Text content */}
+        <div className="w-full lg:w-[42%] flex flex-col justify-center gap-7 sm:gap-8 lg:gap-9">
+          {/* Badge */}
           <div
-            className="flex justify-center"
-            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 600ms cubic-bezier(0.16, 1, 0.3, 1) 100ms both' }}
+            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 600ms cubic-bezier(0.16,1,0.3,1) 100ms both' }}
           >
-            <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full glass-panel text-[10px] sm:text-[11px] font-medium text-zinc-400 glass-glow">
+            <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full"
+              style={{
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                backdropFilter: 'blur(12px)',
+              }}
+            >
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
               </span>
-              <span>AI-Powered · Built for India</span>
-              <span className="w-px h-3 bg-zinc-700" />
-              <span>Real-Time Detection</span>
+              <span className="text-[11px] font-medium text-slate-400 tracking-wide">AI-Powered · Built for India</span>
             </div>
           </div>
 
-          {/* Hero headline */}
-          <div className="text-center space-y-6 sm:space-y-7">
-            <div
-              className="flex justify-center"
-              style={{ animation: prefersReduced ? undefined : 'heroFadeSlideScale 700ms cubic-bezier(0.16, 1, 0.3, 1) 200ms both' }}
-            >
-              <div className="relative group">
-                <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(59,130,246,0.15), rgba(139,92,246,0.1))',
-                    filter: 'blur(20px)',
-                    transform: 'scale(1.3)',
-                  }}
-                />
-                <div
-                  className="relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-2xl flex items-center justify-center glass-panel-strong"
-                  style={{
-                    boxShadow: '0 0 40px rgba(59,130,246,0.12), 0 0 80px rgba(59,130,246,0.06), inset 0 1px 0 rgba(255,255,255,0.08)',
-                    animation: prefersReduced ? undefined : 'shieldPulse 4s ease-in-out infinite',
-                  }}
-                >
-                  <Shield size={32} className="text-blue-400 sm:w-9 sm:h-9 md:w-11 md:h-11" strokeWidth={1.5} />
-                  <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full"
-                    style={{
-                      background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
-                      boxShadow: '0 0 12px rgba(59,130,246,0.5)',
-                      animation: prefersReduced ? undefined : 'glowPulse 3s ease-in-out infinite',
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div
-              style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16, 1, 0.3, 1) 300ms both' }}
-            >
-              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[0.92]">
-                <span className="text-gradient block">RAKSHA</span>
-                <span className="text-gradient-accent block mt-1">AI</span>
-              </h1>
-            </div>
-
-            <div
-              style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16, 1, 0.3, 1) 400ms both' }}
-            >
-              <p className="text-zinc-400 text-sm sm:text-base md:text-lg lg:text-xl max-w-2xl mx-auto leading-relaxed font-light">
-                India's Digital Public Safety Intelligence platform.
-                <span className="text-zinc-200 font-medium"> By the time a victim files a complaint, the money and the trail are already gone</span>
-                <span className="text-zinc-500"> — RAKSHA AI intervenes at the moment of contact instead.</span>
-              </p>
-            </div>
-          </div>
-
-          {/* CTA buttons */}
+          {/* Headline */}
           <div
-            className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4"
-            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16, 1, 0.3, 1) 500ms both' }}
+            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16,1,0.3,1) 200ms both' }}
           >
-            <button onClick={handleEnter}
-              className="btn-premium btn-ripple btn-shimmer group flex items-center gap-3 px-8 sm:px-10 py-3.5 sm:py-4 rounded-full font-semibold text-sm sm:text-base text-white cursor-pointer touch-target w-full sm:w-auto justify-center relative overflow-hidden"
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[3.5rem] xl:text-7xl font-bold tracking-tight leading-[1.08] text-slate-100">
+              Stop{' '}
+              <span
+                style={{
+                  background: 'linear-gradient(135deg, #2563EB, #38BDF8)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
+              >
+                Scams
+              </span>
+              <br className="hidden sm:block" />
+              {' '}Before They<br className="hidden md:block" /> Cost You Money.
+            </h1>
+          </div>
+
+          {/* Subtitle */}
+          <div
+            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16,1,0.3,1) 350ms both' }}
+          >
+            <p className="text-slate-400 text-sm sm:text-base lg:text-lg leading-relaxed max-w-lg font-light">
+              Protect yourself from phishing, fraud, fake websites, suspicious links, and online financial scams with AI-powered real-time detection.
+            </p>
+          </div>
+
+          {/* Buttons */}
+          <div
+            className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4"
+            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16,1,0.3,1) 450ms both' }}
+          >
+            <button
+              onClick={() => { setIsTransitioning(true); setTimeout(() => { if (onModuleSelect) onModuleSelect('scam-scanner'); else onEnter(); }, 500); }}
+              className="group relative inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl font-semibold text-sm text-white cursor-pointer overflow-hidden transition-all duration-300 hover:translate-y-[-2px]"
               style={{
-                background: 'linear-gradient(135deg, #3b82f6, #6366f1)',
-                boxShadow: '0 0 30px rgba(59,130,246,0.2), 0 4px 20px rgba(59,130,246,0.15)',
+                background: 'linear-gradient(135deg, #2563EB, #1D4ED8)',
+                boxShadow: '0 0 30px rgba(37,99,235,0.25), 0 4px 24px rgba(37,99,235,0.2)',
               }}
             >
-              <Shield size={18} strokeWidth={2} />
-              <span className="relative z-10">Start Protection</span>
-              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-300 relative z-10" strokeWidth={2} />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+              <ShieldCheck size={18} strokeWidth={2} className="relative z-10" />
+              <span className="relative z-10">Get Protected</span>
+              <ArrowRight size={16} strokeWidth={2} className="relative z-10 group-hover:translate-x-1 transition-transform duration-300" />
             </button>
-            <div className="flex items-center gap-3 text-zinc-500 text-xs sm:text-sm">
-              <div className="flex -space-x-2">
-                {[Phone, MessageSquare, Banknote, Map].map((Icon, i) => (
-                  <div key={i} className="w-8 h-8 rounded-full glass-panel flex items-center justify-center"
-                    style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
-                    <Icon size={13} className="text-zinc-400" strokeWidth={1.5} />
-                  </div>
-                ))}
-              </div>
-              <span>17 modules · Digital Public Safety</span>
-            </div>
+            <button
+              onClick={() => { setIsTransitioning(true); setTimeout(() => { if (onModuleSelect) onModuleSelect('message-checker'); else onEnter(); }, 500); }}
+              className="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl font-semibold text-sm text-slate-300 cursor-pointer transition-all duration-300 hover:text-white hover:translate-y-[-2px]"
+              style={{
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                backdropFilter: 'blur(8px)',
+              }}
+            >
+              <span>Learn More</span>
+              <ArrowRight size={14} strokeWidth={2} className="group-hover:translate-x-1 transition-transform duration-300" />
+            </button>
           </div>
 
-          {/* Trust indicators */}
+          {/* Trust line */}
           <div
-            className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2.5 sm:gap-x-7 lg:gap-x-9"
-            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 600ms cubic-bezier(0.16, 1, 0.3, 1) 600ms both' }}
+            className="flex items-center gap-5 pt-1"
+            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 600ms cubic-bezier(0.16,1,0.3,1) 550ms both' }}
           >
-            {TRUST_ITEMS.map((item, i) => {
+            {[
+              { icon: Eye, text: 'Real-time' },
+              { icon: Bell, text: 'Instant Alerts' },
+              { icon: Lock, text: 'Bank-grade Security' },
+            ].map((item, i) => {
               const Icon = item.icon;
               return (
-                <div key={i}
-                  className="flex items-center gap-2 text-zinc-500 text-[10px] sm:text-[11px] font-medium group cursor-default"
-                >
-                  <div className="w-5 h-5 rounded-md flex items-center justify-center icon-hover-rotate"
-                    style={{ background: `${item.color}10` }}>
-                    <Icon size={11} style={{ color: item.color }} strokeWidth={1.5} />
-                  </div>
-                  <span className="group-hover:text-zinc-300 transition-colors duration-200">{item.text}</span>
+                <div key={i} className="flex items-center gap-1.5 text-slate-500 text-[11px] font-medium">
+                  <Icon size={12} strokeWidth={1.5} className="text-blue-400/60" />
+                  <span>{item.text}</span>
                 </div>
               );
             })}
           </div>
+        </div>
 
-          {/* Animated statistics */}
+        {/* RIGHT — Hero image */}
+        <div className="w-full lg:w-[58%] flex items-center justify-center relative" style={{ minHeight: '50vh' }}>
+          {/* Image container with floating cards */}
           <div
-            className="grid grid-cols-3 gap-3 sm:gap-4 lg:gap-5 max-w-2xl lg:max-w-3xl mx-auto"
-            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16, 1, 0.3, 1) 700ms both' }}
+            className="relative w-full"
+            style={{ maxWidth: 680 }}
           >
-            {STATS.map((stat, i) => {
-              const Icon = stat.icon;
+            {/* Main image */}
+            <div
+              ref={imageRef}
+              className="relative overflow-hidden"
+              style={{
+                borderRadius: 24,
+                border: '1px solid rgba(255,255,255,0.08)',
+                boxShadow: '0 30px 90px rgba(0,0,0,0.45)',
+                animation: prefersReduced ? undefined : 'heroImageIn 1s cubic-bezier(0.16,1,0.3,1) 0.1s both',
+                transform: `translateX(${mousePos.x}px) translateY(${mousePos.y}px)`,
+                transition: 'transform 0.6s cubic-bezier(0.16,1,0.3,1)',
+              }}
+            >
+              <img
+                src="/images/scam-hero.jpg"
+                alt="Cybersecurity threat detection — real-time AI analysis of scam attempts"
+                className="w-full block"
+                style={{
+                  aspectRatio: '4/3',
+                  objectFit: 'cover',
+                  animation: prefersReduced ? undefined : 'heroImageZoom 15s ease-in-out infinite alternate',
+                }}
+              />
+              {/* Gradient overlay */}
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background: 'linear-gradient(rgba(2,6,23,0.35), rgba(2,6,23,0.60))',
+                }}
+              />
+              {/* Bottom label */}
+              <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg"
+                  style={{
+                    background: 'rgba(10,10,14,0.7)',
+                    border: '1px solid rgba(37,99,235,0.2)',
+                    backdropFilter: 'blur(12px)',
+                  }}
+                >
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-[10px] font-semibold text-blue-400 tracking-wide">RAKSHA AI</span>
+                  <span className="text-[9px] text-emerald-400 font-mono">ACTIVE</span>
+                </div>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg"
+                  style={{
+                    background: 'rgba(10,10,14,0.7)',
+                    border: '1px solid rgba(255,255,255,0.06)',
+                    backdropFilter: 'blur(12px)',
+                  }}
+                >
+                  <ShieldCheck size={11} className="text-blue-400" strokeWidth={2} />
+                  <span className="text-[10px] text-slate-400 font-medium">Protected</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Floating glass cards */}
+            {GLASS_CARDS.map((card, i) => {
+              const Icon = card.icon;
+              const posStyle: React.CSSProperties = {
+                position: 'absolute',
+                ...card.position,
+                zIndex: 20,
+                animation: prefersReduced ? undefined : `heroCardFloat 5s ease-in-out ${card.delay} infinite alternate`,
+              };
               return (
-                <div key={i}
-                  className="glass-panel card-premium rounded-xl sm:rounded-2xl p-3 sm:p-5 text-center group"
+                <div
+                  key={i}
+                  className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl pointer-events-none"
+                  style={{
+                    ...posStyle,
+                    background: 'rgba(255,255,255,0.06)',
+                    backdropFilter: 'blur(14px)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    boxShadow: '0 12px 40px rgba(0,0,0,0.25)',
+                    animation: prefersReduced ? undefined : `heroFadeSlideUp 600ms cubic-bezier(0.16,1,0.3,1) ${0.8 + i * 0.15}s both, heroCardFloat 5s ease-in-out ${card.delay} infinite alternate`,
+                  }}
                 >
-                  <div className="mx-auto w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center mb-2 sm:mb-3 icon-hover-rotate"
-                    style={{ background: `${stat.color}10` }}>
-                    <Icon size={16} style={{ color: stat.color }} strokeWidth={1.5} />
-                  </div>
-                  <div className="font-mono text-lg sm:text-2xl md:text-3xl font-bold tracking-tight animate-count-up"
-                    style={{ color: stat.color, animationDelay: `${700 + i * 200}ms` }}>
-                    {stat.display}
-                  </div>
-                  <p className="text-zinc-500 text-[9px] sm:text-[11px] leading-snug mt-1 sm:mt-2 line-clamp-2">{stat.label}</p>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Features preview — Hero + Supporting */}
-          <div
-            className="max-w-4xl lg:max-w-5xl mx-auto space-y-3"
-            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16, 1, 0.3, 1) 800ms both' }}
-          >
-            {/* Hero Features — 2 large cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {FEATURES.filter(f => f.hero).map((feat, i) => {
-                const Icon = feat.icon;
-                return (
-                  <button key={i}
-                    onClick={() => handleFeatureClick(feat.module)}
-                    className="glass-panel card-premium rounded-2xl p-5 sm:p-6 text-left cursor-pointer group btn-ripple relative overflow-hidden"
+                  <div
+                    className="w-7 h-7 rounded-lg flex items-center justify-center"
                     style={{
-                      border: `1px solid ${feat.color}20`,
-                      background: `linear-gradient(135deg, ${feat.color}08 0%, transparent 60%)`,
+                      background: `${card.color}15`,
+                      border: `1px solid ${card.color}25`,
                     }}
                   >
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center mb-3 sm:mb-4 icon-hover-rotate"
-                      style={{ background: `${feat.color}12`, border: `1px solid ${feat.color}20` }}>
-                      <Icon size={20} style={{ color: feat.color }} strokeWidth={1.5} />
-                    </div>
-                    <h2 className="text-zinc-100 text-sm sm:text-base font-bold mb-1.5">{feat.title}</h2>
-                    <p className="text-zinc-500 text-[10px] sm:text-xs leading-relaxed line-clamp-3">{feat.desc}</p>
-                    <div className="flex items-center gap-1.5 mt-3 text-[10px] font-medium group-hover:gap-2.5 transition-all"
-                      style={{ color: feat.color }}>
-                      <span>Try it now</span>
-                      <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-            {/* Supporting Features — 2 compact cards */}
-            <div className="grid grid-cols-2 gap-2 sm:gap-3">
-              {FEATURES.filter(f => !f.hero).map((feat, i) => {
-                const Icon = feat.icon;
-                return (
-                  <button key={i}
-                    onClick={() => handleFeatureClick(feat.module)}
-                    className="glass-panel card-premium rounded-xl p-3 sm:p-4 text-left cursor-pointer group btn-ripple relative overflow-hidden"
-                  >
-                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center mb-2 sm:mb-3 icon-hover-rotate"
-                      style={{ background: `${feat.color}10` }}>
-                      <Icon size={16} style={{ color: feat.color }} strokeWidth={1.5} />
-                    </div>
-                    <h2 className="text-zinc-200 text-xs sm:text-sm font-semibold mb-0.5 sm:mb-1">{feat.title}</h2>
-                    <p className="text-zinc-500 text-[9px] sm:text-[10px] leading-relaxed line-clamp-2">{feat.desc}</p>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Emotional illustration — real human cost of scams */}
-          <div
-            className="max-w-4xl lg:max-w-5xl mx-auto space-y-4"
-            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16, 1, 0.3, 1) 900ms both' }}
-          >
-            <VictimIllustration />
-            <p className="text-center text-zinc-600 text-[10px] sm:text-xs leading-relaxed max-w-lg mx-auto">
-              Every day, millions of Indians face the stress and isolation of digital arrest scams.
-              <span className="text-zinc-400 font-medium"> RAKSHA AI intervenes before the money is gone.</span>
-            </p>
+                    <Icon size={13} style={{ color: card.color }} strokeWidth={1.5} />
+                  </div>
+                  <span className="text-[11px] font-medium text-slate-300 whitespace-nowrap">{card.label}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
+
+      {/* Bottom gradient fade */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none z-20"
+        style={{
+          background: 'linear-gradient(to top, #0F172A, transparent)',
+        }}
+      />
     </div>
   );
 }
