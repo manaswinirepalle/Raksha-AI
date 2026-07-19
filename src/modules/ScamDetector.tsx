@@ -351,18 +351,12 @@ export default function ScamDetector() {
             {isAnalyzing && <span className="sd-status sd-status-live" aria-live="polite"><span className="sd-status-dot sd-status-dot-live" />ANALYZING</span>}
             {analyzed && <span className="sd-status sd-status-done" aria-live="polite"><Sparkles size={10} />COMPLETE</span>}
           </div>
-          <div className="sd-transcript-body mobile-scroll">
+          <div className="sd-transcript-body">
             {!selectedScenario && (
               <div className="sd-empty-state">
                 <div className="sd-empty-icon"><FileText size={28} strokeWidth={1} /></div>
                 <p className="sd-empty-title">Select a scam scenario above</p>
                 <p className="sd-empty-desc">Choose from {TRANSCRIPT_SCENARIOS.length} pre-loaded scenarios to see real-time multi-agent analysis</p>
-                <div className="sd-empty-legend">
-                  {TRANSCRIPT_SCENARIOS.map((s, i) => {
-                    const meta = RISK_META[s.riskLevel];
-                    return (<div key={i} className="sd-legend-item"><div className="sd-legend-dot" style={{ background: meta.color }} /><span className="sd-legend-text">{meta.label}</span></div>);
-                  })}
-                </div>
               </div>
             )}
             {selectedScenario && highlightedTranscript}

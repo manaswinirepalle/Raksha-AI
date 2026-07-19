@@ -2164,7 +2164,6 @@
   display: flex;
   flex-direction: column;
   border-radius: 16px;
-  overflow: hidden;
   min-height: 200px;
 }
 .sd-transcript-header {
@@ -2206,7 +2205,6 @@
 }
 .sd-transcript-body {
   flex: 1;
-  overflow-y: auto;
   padding: 16px 20px;
 }
 
