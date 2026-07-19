@@ -4,7 +4,7 @@ import {
   FileText, AlertTriangle,   ShieldAlert, ShieldCheck, Shield,
   Sparkles, RotateCcw, ChevronRight,
   Zap, Eye, Brain, TrendingUp, BarChart3, BookOpen,
-  GraduationCap, Search,
+  GraduationCap, Search, Radio,
 } from 'lucide-react';
 import { TRANSCRIPT_SCENARIOS } from '../mockData';
 import type { ActivityEntry, TranscriptScenario, RiskLevel, AnalysisRecord } from '../types';
@@ -20,6 +20,10 @@ import SafetyTips from '../components/SafetyTips';
 import Recommendations from '../components/Recommendations';
 import ExportPanel from '../components/ExportPanel';
 import TranscriptLearning from '../components/TranscriptLearning';
+import ConfidenceBreakdown from '../components/ConfidenceBreakdown';
+import WhatToDoNext from '../components/WhatToDoNext';
+import ScamAlertFeed from '../components/ScamAlertFeed';
+import { useCountUp } from '../hooks/useCountUp';
 
 const RISK_META: Record<RiskLevel, {
   label: string;
@@ -72,6 +76,7 @@ const TABS = [
   { id: 'analysis', label: 'Analysis', icon: FileText },
   { id: 'insights', label: 'AI Insights', icon: Brain },
   { id: 'safety', label: 'Safety', icon: Shield },
+  { id: 'alerts', label: 'Alerts', icon: Radio },
   { id: 'learn', label: 'Learn', icon: GraduationCap },
   { id: 'knowledge', label: 'Knowledge', icon: BookOpen },
   { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
@@ -421,16 +426,20 @@ export default function ScamDetector() {
       )}
       <div className="sd-metrics">
         {[
-          { label: 'Detection Precision', value: '97.3%', color: '#3b82f6', icon: TargetIcon },
-          { label: 'Recall', value: '94.8%', color: '#10b981', icon: TrendingUp },
-          { label: 'False Positive Rate', value: '2.1%', color: '#06b6d4', highlight: 'LOW', icon: Eye },
-          { label: 'Alert Lead Time', value: '14.2 days', color: '#8b5cf6', icon: Zap },
+          { label: 'Detection Precision', value: 97.3, color: '#3b82f6', icon: TargetIcon },
+          { label: 'Recall', value: 94.8, color: '#10b981', icon: TrendingUp },
+          { label: 'False Positive Rate', value: 2.1, color: '#06b6d4', highlight: 'LOW', icon: Eye },
+          { label: 'Alert Lead Time', value: 14.2, color: '#8b5cf6', icon: Zap, suffix: ' days' },
         ].map((m, i) => (
           <div key={i} className="sd-metric glass-panel card-hover">
             <m.icon size={13} style={{ color: m.color }} strokeWidth={1.5} />
             <div className="sd-metric-content">
               <div className="sd-metric-value-row">
-                <span className="sd-metric-value" style={{ color: m.color }}>{m.value}</span>
+                {analyzed ? (
+                  <CountUpMetric value={m.value} color={m.color} suffix={m.suffix || '%'} duration={1500 + i * 200} />
+                ) : (
+                  <span className="sd-metric-value" style={{ color: m.color }}>—</span>
+                )}
                 {m.highlight && <span className="sd-metric-badge">{m.highlight}</span>}
               </div>
               <span className="sd-metric-label">{m.label}</span>
@@ -515,6 +524,7 @@ export default function ScamDetector() {
         </div>
         <AIInsights insights={a.insights} visible={analyzed} />
         <AIExplanation analysis={a} visible={analyzed} />
+        <ConfidenceBreakdown scenario={selectedScenario} visible={analyzed} />
       </div>
     );
   };
@@ -530,6 +540,7 @@ export default function ScamDetector() {
     return (
       <div className="sd-tab-content">
         <SafetyTips tips={tips} visible={analyzed} />
+        <WhatToDoNext riskLevel={selectedScenario.riskLevel} visible={analyzed} />
         <Recommendations recommendations={selectedScenario.aiAnalysis.recommendations} riskLevel={selectedScenario.riskLevel} visible={analyzed} />
         <ExportPanel scenario={selectedScenario} analyzed={analyzed} />
       </div>
@@ -539,6 +550,12 @@ export default function ScamDetector() {
   const renderLearnTab = () => (
     <div className="sd-tab-content">
       <TranscriptLearning scenario={selectedScenario} visible={true} />
+    </div>
+  );
+
+  const renderAlertsTab = () => (
+    <div className="sd-tab-content">
+      <ScamAlertFeed />
     </div>
   );
 
@@ -663,16 +680,22 @@ export default function ScamDetector() {
       </div>
 
       {/* Tab Content */}
-      <div className="sd-tab-panel" style={{ marginTop: 0 }}>
+      <div className="sd-tab-panel sd-tab-panel-animated" style={{ marginTop: 0 }} key={activeTab}>
         {activeTab === 'analysis' && renderAnalysisTab()}
         {activeTab === 'insights' && renderInsightsTab()}
         {activeTab === 'safety' && renderSafetyTab()}
+        {activeTab === 'alerts' && renderAlertsTab()}
         {activeTab === 'learn' && renderLearnTab()}
         {activeTab === 'knowledge' && <KnowledgeCenterLazy />}
         {activeTab === 'dashboard' && <CyberDashboardLazy />}
       </div>
     </div>
   );
+}
+
+function CountUpMetric({ value, color, suffix = '%', duration = 1500 }: { value: number; color: string; suffix?: string; duration?: number }) {
+  const count = useCountUp(value, duration);
+  return <span className="sd-metric-value" style={{ color }}>{count.toFixed(1)}{suffix}</span>;
 }
 
 function TargetIcon({ size, style, strokeWidth }: { size: number; style?: React.CSSProperties; strokeWidth?: number }) {

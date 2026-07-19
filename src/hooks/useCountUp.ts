@@ -1,45 +1,26 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
-export default function useCountUp(end: number, duration = 1200, startOnVisible = true) {
+export function useCountUp(target: number, duration = 1500, startOnMount = true): number {
   const [value, setValue] = useState(0);
-  const ref = useRef<HTMLDivElement>(null);
-  const hasAnimated = useRef(false);
+  const startTime = useRef<number | null>(null);
+  const rafId = useRef<number>(0);
 
   useEffect(() => {
-    if (!startOnVisible) {
-      animateValue();
-      return;
-    }
-
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !hasAnimated.current) {
-          hasAnimated.current = true;
-          animateValue();
-          observer.unobserve(el);
-        }
-      },
-      { threshold: 0.3 }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [end, duration, startOnVisible]);
-
-  function animateValue() {
-    const start = performance.now();
-    const step = (now: number) => {
-      const elapsed = now - start;
+    if (!startOnMount) return;
+    startTime.current = null;
+    const animate = (timestamp: number) => {
+      if (!startTime.current) startTime.current = timestamp;
+      const elapsed = timestamp - startTime.current;
       const progress = Math.min(elapsed / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
-      setValue(Math.round(eased * end));
-      if (progress < 1) requestAnimationFrame(step);
+      setValue(eased * target);
+      if (progress < 1) {
+        rafId.current = requestAnimationFrame(animate);
+      }
     };
-    requestAnimationFrame(step);
-  }
+    rafId.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafId.current);
+  }, [target, duration, startOnMount]);
 
-  return { ref, value };
+  return value;
 }

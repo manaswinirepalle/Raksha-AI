@@ -6,6 +6,7 @@ import {
   ShieldCheck, Radar, Network,
 } from 'lucide-react';
 import useReducedMotion from '../hooks/useReducedMotion';
+import VictimIllustration from './VictimIllustration';
 
 const STATS = [
   { value: 1140000, display: '1.14M', label: 'Cybercrime complaints in India, 2023', icon: AlertTriangle, color: '#f43f5e' },
@@ -387,6 +388,18 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
                 );
               })}
             </div>
+          </div>
+
+          {/* Emotional illustration — real human cost of scams */}
+          <div
+            className="max-w-4xl lg:max-w-5xl mx-auto space-y-4"
+            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16, 1, 0.3, 1) 900ms both' }}
+          >
+            <VictimIllustration />
+            <p className="text-center text-zinc-600 text-[10px] sm:text-xs leading-relaxed max-w-lg mx-auto">
+              Every day, millions of Indians face the stress and isolation of digital arrest scams.
+              <span className="text-zinc-400 font-medium"> RAKSHA AI intervenes before the money is gone.</span>
+            </p>
           </div>
         </div>
       </div>

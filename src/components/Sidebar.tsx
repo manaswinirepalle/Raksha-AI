@@ -9,8 +9,16 @@ const EXPAND_WIDTH = 228;
 const PANEL_MARGIN = 10;
 const PANEL_VERTICAL_MARGIN = 10;
 
+const SIDEBAR_STATE_KEY = 'raksha-sidebar-collapsed';
+
 export default function Sidebar({ active, onSelect }: { active: ModuleId; onSelect: (id: ModuleId) => void }) {
-  const [collapsed, setCollapsed] = useState(() => window.innerWidth < 1400);
+  const [collapsed, setCollapsed] = useState(() => {
+    try {
+      const stored = localStorage.getItem(SIDEBAR_STATE_KEY);
+      if (stored !== null) return stored === 'true';
+    } catch { /* ignore */ }
+    return window.innerWidth < 1400;
+  });
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   useEffect(() => {
@@ -32,7 +40,11 @@ export default function Sidebar({ active, onSelect }: { active: ModuleId; onSele
   }, [collapsed, windowWidth]);
 
   const toggleCollapse = useCallback(() => {
-    setCollapsed(c => !c);
+    setCollapsed(c => {
+      const next = !c;
+      try { localStorage.setItem(SIDEBAR_STATE_KEY, String(next)); } catch { /* ignore */ }
+      return next;
+    });
   }, []);
 
   const sidebarWidth = collapsed ? COLLAPSE_WIDTH : EXPAND_WIDTH;
