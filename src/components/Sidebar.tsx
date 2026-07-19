@@ -27,11 +27,7 @@ export default function Sidebar({ active, onSelect }: { active: ModuleId; onSele
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  useEffect(() => {
-    if (windowWidth < 1400 && !collapsed) {
-      setCollapsed(true);
-    }
-  }, [windowWidth, collapsed]);
+
 
   useEffect(() => {
     const totalWidth = windowWidth >= 1024 ? (collapsed ? COLLAPSE_WIDTH + PANEL_MARGIN * 2 : EXPAND_WIDTH + PANEL_MARGIN * 2) : 0;

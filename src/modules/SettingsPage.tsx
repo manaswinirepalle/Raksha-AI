@@ -282,7 +282,7 @@ export default function SettingsPage() {
                     { id: 'light', label: 'Light', icon: Sun },
                     { id: 'system', label: 'System', icon: Monitor },
                   ].map(t => (
-                    <button key={t.id} onClick={() => update('theme', t.id)}
+                    <button key={t.id} onClick={() => { update('theme', t.id); if (t.id !== 'dark') addToast(`${t.label} theme coming soon — dark mode is optimized for safety analysis`, 'info'); }}
                       className={`db-btn flex flex-col items-center gap-1.5 py-2.5 ${
                         settings.theme === t.id ? 'db-btn-primary' : ''
                       }`}>
@@ -294,7 +294,7 @@ export default function SettingsPage() {
               </div>
               <div>
                 <label className="text-[10px] text-zinc-500 mb-1 block">Language</label>
-                <select value={settings.language} onChange={e => update('language', e.target.value)}
+                <select value={settings.language} onChange={e => { update('language', e.target.value); if (e.target.value !== 'en') addToast('Multi-language support coming soon', 'info'); }}
                   className="input-premium w-full px-2.5 py-2 rounded-lg text-[11px] text-zinc-200 appearance-none">
                   <option value="en">English</option>
                   <option value="hi">हिन्दी</option>
@@ -309,7 +309,7 @@ export default function SettingsPage() {
                   <span className="text-[11px] text-zinc-200 block">Compact Mode</span>
                   <span className="text-[9px] text-zinc-500">Reduce spacing and padding</span>
                 </div>
-                <ToggleSwitch enabled={settings.compactMode} onToggle={() => update('compactMode', !settings.compactMode)} />
+                <ToggleSwitch enabled={settings.compactMode} onToggle={() => { update('compactMode', !settings.compactMode); addToast(!settings.compactMode ? 'Compact mode enabled' : 'Compact mode disabled', 'success'); }} />
               </div>
             </div>
           )}
