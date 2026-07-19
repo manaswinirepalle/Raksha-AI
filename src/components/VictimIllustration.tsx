@@ -1,49 +1,61 @@
+import landingPhoto from '../assets/landing-photo.jpg';
+
 export default function VictimIllustration() {
   return (
-    <div className="w-full max-w-2xl mx-auto relative group">
+    <div className="w-full relative group -mx-5 sm:-mx-8 lg:-mx-12 xl:-mx-16">
       <div
-        className="relative overflow-hidden rounded-2xl"
+        className="relative overflow-hidden"
         style={{
-          border: '1px solid rgba(255,255,255,0.06)',
-          boxShadow: '0 8px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,0,0,0.3)',
+          borderRadius: 0,
+          boxShadow: '0 8px 60px rgba(0,0,0,0.6), inset 0 0 80px rgba(0,0,0,0.3)',
         }}
       >
         <img
-          src="https://images.pexels.com/photos/12304661/pexels-photo-12304661.jpeg?auto=compress&cs=tinysrgb&w=800&q=80"
+          src={landingPhoto}
           alt="Person illuminated by phone screen in the dark — representing the stress and isolation of scam victims"
           className="w-full h-auto block"
           style={{
             aspectRatio: '16/9',
             objectFit: 'cover',
-            filter: 'brightness(0.85) contrast(1.05)',
+            filter: 'brightness(0.9) contrast(1.08) saturate(1.1)',
           }}
-          loading="lazy"
         />
-        {/* Gradient overlay for blending into dark theme */}
+        {/* Gradient overlays for cinematic blending */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: 'linear-gradient(180deg, rgba(9,9,11,0.3) 0%, transparent 25%, transparent 75%, rgba(9,9,11,0.6) 100%)',
+            background: `
+              linear-gradient(180deg, rgba(9,9,11,0.7) 0%, transparent 20%, transparent 80%, rgba(9,9,11,0.8) 100%),
+              linear-gradient(90deg, rgba(9,9,11,0.4) 0%, transparent 30%, transparent 70%, rgba(9,9,11,0.4) 100%)
+            `,
           }}
         />
-        {/* RAKSHA AI badge */}
+        {/* Vignette */}
         <div
-          className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-1.5 rounded-full"
+          className="absolute inset-0 pointer-events-none"
           style={{
-            background: 'rgba(15,15,18,0.8)',
-            border: '1px solid rgba(59,130,246,0.25)',
-            backdropFilter: 'blur(12px)',
+            background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.5) 100%)',
+          }}
+        />
+        {/* Bottom RAKSHA AI label */}
+        <div
+          className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2.5 px-4 py-2 rounded-full"
+          style={{
+            background: 'rgba(10,10,14,0.75)',
+            border: '1px solid rgba(59,130,246,0.2)',
+            backdropFilter: 'blur(16px)',
           }}
         >
-          <span className="text-[10px] font-semibold text-blue-400 tracking-wide">RAKSHA AI</span>
-          <span className="text-[9px] text-emerald-400 font-mono">PROTECTED</span>
+          <span className="text-[11px] font-bold text-blue-400 tracking-wide">RAKSHA AI</span>
+          <span className="w-px h-3 bg-zinc-700" />
+          <span className="text-[10px] text-emerald-400 font-mono font-medium">PROTECTED</span>
         </div>
       </div>
-      {/* Subtle glow behind the image */}
+      {/* Edge fade into surrounding dark */}
       <div
-        className="absolute -inset-4 -z-10 rounded-3xl opacity-20 blur-2xl pointer-events-none"
+        className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(ellipse at center, rgba(59,130,246,0.15), transparent 70%)',
+          boxShadow: 'inset 0 0 100px 40px rgba(9,9,11,0.9)',
         }}
       />
     </div>
