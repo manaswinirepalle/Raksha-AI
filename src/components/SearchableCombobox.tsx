@@ -63,18 +63,23 @@ export default function SearchableCombobox({
         setFocusedIndex(-1);
       }
     };
-    const onScroll = () => {
+    const onScroll = (e: Event) => {
+      const target = e.target as Node;
+      if (listRef.current && listRef.current.contains(target)) return;
       setIsOpen(false);
       setSearch('');
       setFocusedIndex(-1);
     };
     document.addEventListener('mousedown', handler);
     window.addEventListener('scroll', onScroll, true);
-    window.addEventListener('resize', onScroll);
+    window.addEventListener('resize', () => {
+      setIsOpen(false);
+      setSearch('');
+      setFocusedIndex(-1);
+    });
     return () => {
       document.removeEventListener('mousedown', handler);
       window.removeEventListener('scroll', onScroll, true);
-      window.removeEventListener('resize', onScroll);
     };
   }, [isOpen]);
 

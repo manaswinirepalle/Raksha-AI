@@ -1637,11 +1637,25 @@
   border-radius: 12px;
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.06);
   z-index: 9999;
-  max-height: 320px;
-  overflow: hidden;
+  max-height: min(320px, 60vh);
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
   display: flex;
   flex-direction: column;
   pointer-events: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.1) transparent;
+}
+.sd-combo-dropdown::-webkit-scrollbar {
+  width: 5px;
+}
+.sd-combo-dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sd-combo-dropdown::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px;
 }
 @keyframes comboOpen {
   from { opacity: 0; transform: translateY(-4px) scale(0.98); }
@@ -3366,17 +3380,120 @@
   .sd-tabs {
     gap: 1px;
     padding: 3px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .sd-tabs::-webkit-scrollbar {
+    display: none;
   }
   .sd-tab {
-    padding: 6px 10px;
+    padding: 8px 12px;
     font-size: 11px;
-    gap: 4px;
+    gap: 5px;
+    flex-shrink: 0;
+    min-height: 36px;
+    white-space: nowrap;
   }
-  .sd-tab-label {
-    display: none;
+  .sd-combo-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .sd-combo-input-wrap {
+    height: 44px;
+    padding: 0 14px;
+  }
+  .sd-combo-input {
+    font-size: 14px;
+  }
+  .sd-combo-dropdown {
+    max-height: min(280px, 45vh);
+  }
+  .sd-combo-item {
+    padding: 12px 12px;
+    min-height: 48px;
+    gap: 10px;
+  }
+  .sd-combo-item-label {
+    font-size: 13px;
+  }
+  .sd-combo-item-desc {
+    font-size: 11px;
+  }
+  .sd-combo-item-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+  .sd-combo-item-score {
+    font-size: 11px;
+  }
+  .sd-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .sd-metric {
+    padding: 10px 12px;
+    gap: 8px;
+    border-radius: 12px;
+  }
+  .sd-metric-value {
+    font-size: 13px;
+  }
+  .sd-metric-label {
+    font-size: 9px;
+  }
+  .sd-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .sd-header-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  .sd-risk-filter {
+    height: 44px;
+    font-size: 13px;
+    padding: 0 32px 0 12px;
   }
   .sd-insights-top {
     flex-direction: column;
+  }
+  .sd-transcript-body {
+    padding: 12px;
+  }
+  .sd-transcript-header {
+    padding: 10px 14px;
+  }
+  .sd-evidence {
+    min-height: 100px;
+  }
+  .sd-activity {
+    max-height: 140px;
+  }
+  .sd-banner {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 12px;
+  }
+  .sd-banner-label {
+    font-size: 11px;
+  }
+  .sd-banner-risk {
+    font-size: 11px;
+  }
+  .sd-banner-meta {
+    font-size: 10px;
+    margin-left: 0;
+  }
+  .sd-btn-label {
+    display: none;
+  }
+  input, select, textarea {
+    font-size: 16px !important;
   }
 }
 

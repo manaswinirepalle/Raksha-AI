@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { ShieldCheck, TriangleAlert, Lock, Fingerprint, Eye, Bell, ArrowRight } from 'lucide-react';
+import { ShieldCheck, TriangleAlert, Lock, Fingerprint, Eye, Bell, ArrowRight, Zap, Target } from 'lucide-react';
 import useReducedMotion from '../hooks/useReducedMotion';
 
 const GLASS_CARDS = [
@@ -19,6 +19,13 @@ const PARTICLES = Array.from({ length: 20 }, (_, i) => ({
   delay: Math.random() * 15,
   isRed: Math.random() < 0.12,
 }));
+
+const FEATURES = [
+  { icon: Target, label: '97.3% Detection', color: '#3b82f6' },
+  { icon: Zap, label: 'Real-time Analysis', color: '#f59e0b' },
+  { icon: Eye, label: 'Instant Alerts', color: '#10b981' },
+  { icon: Bell, label: 'Bank-grade Security', color: '#8b5cf6' },
+];
 
 export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => void; onModuleSelect?: (id: string) => void }) {
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -43,8 +50,15 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
     return () => el.removeEventListener('mousemove', handleMouseMove);
   }, [prefersReduced, handleMouseMove]);
 
+  const navigateTo = useCallback((id: string) => {
+    setIsTransitioning(true);
+    setTimeout(() => {
+      if (onModuleSelect) onModuleSelect(id);
+      else onEnter();
+    }, 500);
+  }, [onModuleSelect, onEnter]);
+
   return (
-    <>
     <div
       ref={heroRef}
       className="relative w-full overflow-hidden select-none"
@@ -90,10 +104,10 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
       />
 
       {/* Main content grid */}
-      <div className="relative z-10 w-full h-full max-w-[1400px] mx-auto flex flex-col lg:flex-row items-center justify-center min-h-screen px-6 sm:px-8 lg:px-12 xl:px-16 gap-10 lg:gap-16 py-20 lg:py-0">
+      <div className="relative z-10 w-full h-full max-w-[1400px] mx-auto flex flex-col lg:flex-row items-center justify-center min-h-screen px-5 sm:px-8 lg:px-12 xl:px-16 gap-8 lg:gap-16 py-20 lg:py-0">
 
         {/* LEFT — Text content */}
-        <div className="w-full lg:w-[42%] flex flex-col justify-center gap-7 sm:gap-8 lg:gap-9">
+        <div className="w-full lg:w-[42%] flex flex-col justify-center gap-5 sm:gap-7 lg:gap-8">
           {/* Badge */}
           <div
             style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 600ms cubic-bezier(0.16,1,0.3,1) 100ms both' }}
@@ -113,24 +127,23 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
             </div>
           </div>
 
-          {/* Headline */}
+          {/* Statistic headline — the strongest content from the mission section */}
           <div
             style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16,1,0.3,1) 200ms both' }}
           >
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[3.5rem] xl:text-7xl font-bold tracking-tight leading-[1.08] text-slate-100">
-              Stop{' '}
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.4rem] xl:text-6xl font-bold tracking-tight leading-[1.1] text-slate-100">
+              Digital arrest scams cost Indian families{' '}
               <span
                 style={{
-                  background: 'linear-gradient(135deg, #2563EB, #38BDF8)',
+                  background: 'linear-gradient(135deg, #EF4444, #F97316)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
                 }}
               >
-                Scams
-              </span>
-              <br className="hidden sm:block" />
-              {' '}Before They<br className="hidden md:block" /> Cost You Money.
+                ₹1,031.9 crore
+              </span>{' '}
+              in 2024.
             </h1>
           </div>
 
@@ -139,21 +152,38 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
             style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16,1,0.3,1) 350ms both' }}
           >
             <p className="text-slate-400 text-sm sm:text-base lg:text-lg leading-relaxed max-w-lg font-light">
-              Protect yourself from phishing, fraud, fake websites, suspicious links, and online financial scams with AI-powered real-time detection.
+              Behind every number is a real person. RAKSHA AI uses multi-agent AI to detect digital arrest scams, phishing, and financial fraud before they cost you money.
             </p>
+          </div>
+
+          {/* Feature highlights — clean row */}
+          <div
+            className="flex flex-wrap items-center gap-x-5 gap-y-2"
+            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 600ms cubic-bezier(0.16,1,0.3,1) 420ms both' }}
+          >
+            {FEATURES.map((f, i) => {
+              const Icon = f.icon;
+              return (
+                <div key={i} className="flex items-center gap-1.5">
+                  <Icon size={13} strokeWidth={1.5} style={{ color: f.color }} />
+                  <span className="text-[11px] sm:text-xs font-medium text-slate-500">{f.label}</span>
+                </div>
+              );
+            })}
           </div>
 
           {/* Buttons */}
           <div
-            className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4"
-            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16,1,0.3,1) 450ms both' }}
+            className="flex flex-col sm:flex-row items-stretch sm:items-start gap-3"
+            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16,1,0.3,1) 500ms both' }}
           >
             <button
-              onClick={() => { setIsTransitioning(true); setTimeout(() => { if (onModuleSelect) onModuleSelect('scam-scanner'); else onEnter(); }, 500); }}
-              className="group relative inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl font-semibold text-sm text-white cursor-pointer overflow-hidden transition-all duration-300 hover:translate-y-[-2px]"
+              onClick={() => navigateTo('scam-scanner')}
+              className="group relative inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl font-semibold text-sm text-white cursor-pointer overflow-hidden transition-all duration-300 hover:translate-y-[-2px]"
               style={{
                 background: 'linear-gradient(135deg, #2563EB, #1D4ED8)',
                 boxShadow: '0 0 30px rgba(37,99,235,0.25), 0 4px 24px rgba(37,99,235,0.2)',
+                minHeight: 44,
               }}
             >
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
@@ -162,42 +192,23 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
               <ArrowRight size={16} strokeWidth={2} className="relative z-10 group-hover:translate-x-1 transition-transform duration-300" />
             </button>
             <button
-              onClick={() => { setIsTransitioning(true); setTimeout(() => { if (onModuleSelect) onModuleSelect('message-checker'); else onEnter(); }, 500); }}
-              className="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl font-semibold text-sm text-slate-300 cursor-pointer transition-all duration-300 hover:text-white hover:translate-y-[-2px]"
+              onClick={() => navigateTo('message-checker')}
+              className="group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl font-semibold text-sm text-slate-300 cursor-pointer transition-all duration-300 hover:text-white hover:translate-y-[-2px]"
               style={{
                 background: 'rgba(255,255,255,0.04)',
                 border: '1px solid rgba(255,255,255,0.08)',
                 backdropFilter: 'blur(8px)',
+                minHeight: 44,
               }}
             >
               <span>Learn More</span>
               <ArrowRight size={14} strokeWidth={2} className="group-hover:translate-x-1 transition-transform duration-300" />
             </button>
           </div>
-
-          {/* Trust line */}
-          <div
-            className="flex items-center gap-5 pt-1"
-            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 600ms cubic-bezier(0.16,1,0.3,1) 550ms both' }}
-          >
-            {[
-              { icon: Eye, text: 'Real-time' },
-              { icon: Bell, text: 'Instant Alerts' },
-              { icon: Lock, text: 'Bank-grade Security' },
-            ].map((item, i) => {
-              const Icon = item.icon;
-              return (
-                <div key={i} className="flex items-center gap-1.5 text-slate-500 text-[11px] font-medium">
-                  <Icon size={12} strokeWidth={1.5} className="text-blue-400/60" />
-                  <span>{item.text}</span>
-                </div>
-              );
-            })}
-          </div>
         </div>
 
         {/* RIGHT — Hero image */}
-        <div className="w-full lg:w-[58%] flex items-center justify-center relative" style={{ minHeight: '50vh' }}>
+        <div className="w-full lg:w-[58%] flex items-center justify-center relative" style={{ minHeight: '40vh' }}>
           {/* Image container with floating cards */}
           <div
             className="relative w-full"
@@ -266,7 +277,7 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
               </div>
             </div>
 
-            {/* Floating glass cards */}
+            {/* Floating glass cards — hidden on mobile for cleaner look */}
             {GLASS_CARDS.map((card, i) => {
               const Icon = card.icon;
               const posStyle: React.CSSProperties = {
@@ -313,81 +324,5 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
         }}
       />
     </div>
-
-    {/* ═══ Mission / Impact Section ═══ */}
-    <section
-      className="relative w-full overflow-hidden"
-      style={{ background: '#0F172A' }}
-    >
-      <div className="relative w-full" style={{ aspectRatio: '21/9', maxHeight: '60vh' }}>
-        <picture>
-          <source srcSet="/images/scam-hero.webp" type="image/webp" />
-          <img
-            src="/images/scam-hero.jpg"
-            alt="The human cost of digital arrest scams in India"
-            className="w-full h-full block"
-            width={1600}
-            height={686}
-            loading="lazy"
-            decoding="async"
-            style={{ objectFit: 'cover' }}
-          />
-        </picture>
-
-        {/* Dark gradient overlay */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: 'linear-gradient(180deg, rgba(15,23,42,0.85) 0%, rgba(15,23,42,0.55) 40%, rgba(15,23,42,0.85) 100%)',
-          }}
-        />
-
-        {/* Content overlay */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 sm:px-10">
-          <div
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-5"
-            style={{
-              background: 'rgba(239,68,68,0.1)',
-              border: '1px solid rgba(239,68,68,0.2)',
-            }}
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
-            <span className="text-[10px] font-semibold text-red-400 tracking-widest uppercase">The Real Threat</span>
-          </div>
-
-          <h2
-            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight max-w-3xl"
-            style={{ color: '#f1f5f9' }}
-          >
-            Digital arrest scams cost Indian families{' '}
-            <span style={{ color: '#EF4444' }}>₹1,031.9 crore</span>{' '}
-            in{' '}
-            <span style={{ color: '#EF4444' }}>2024 alone</span>.
-          </h2>
-
-          <p
-            className="mt-4 sm:mt-5 text-sm sm:text-base md:text-lg max-w-xl leading-relaxed font-light"
-            style={{ color: '#94a3b8' }}
-          >
-            Behind every number is a real person — a parent, a student, a senior citizen.
-            RAKSHA AI exists so no one faces these threats alone.
-          </p>
-
-          <button
-            onClick={() => { setIsTransitioning(true); setTimeout(() => { if (onModuleSelect) onModuleSelect('scam-scanner'); else onEnter(); }, 500); }}
-            className="mt-6 sm:mt-8 group relative inline-flex items-center gap-2.5 px-6 py-3 rounded-xl font-semibold text-sm text-white cursor-pointer overflow-hidden transition-all duration-300 hover:translate-y-[-2px]"
-            style={{
-              background: 'linear-gradient(135deg, #DC2626, #EF4444)',
-              boxShadow: '0 0 30px rgba(239,68,68,0.2), 0 4px 24px rgba(239,68,68,0.15)',
-            }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-            <ShieldCheck size={16} strokeWidth={2} className="relative z-10" />
-            <span className="relative z-10">Protect Someone Now</span>
-          </button>
-        </div>
-      </div>
-    </section>
-    </>
   );
 }
