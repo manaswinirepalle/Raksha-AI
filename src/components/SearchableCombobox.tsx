@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { Search, ChevronDown, ChevronUp, FileText } from 'lucide-react';
 import type { TranscriptScenario } from '../types';
 
@@ -22,6 +23,7 @@ export default function SearchableCombobox({
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [focusedIndex, setFocusedIndex] = useState(-1);
+  const [dropPos, setDropPos] = useState<{ top: number; left: number; width: number } | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -39,6 +41,13 @@ export default function SearchableCombobox({
     );
   }, [scenarios, search]);
 
+  const measureAndOpen = useCallback(() => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    setDropPos({ top: rect.bottom + 4, left: rect.left, width: rect.width });
+    setIsOpen(true);
+  }, []);
+
   useEffect(() => {
     if (isOpen) {
       requestAnimationFrame(() => inputRef.current?.focus());
@@ -54,8 +63,19 @@ export default function SearchableCombobox({
         setFocusedIndex(-1);
       }
     };
+    const onScroll = () => {
+      setIsOpen(false);
+      setSearch('');
+      setFocusedIndex(-1);
+    };
     document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    window.addEventListener('scroll', onScroll, true);
+    window.addEventListener('resize', onScroll);
+    return () => {
+      document.removeEventListener('mousedown', handler);
+      window.removeEventListener('scroll', onScroll, true);
+      window.removeEventListener('resize', onScroll);
+    };
   }, [isOpen]);
 
   const handleKeyDown = useCallback(
@@ -63,7 +83,7 @@ export default function SearchableCombobox({
       if (!isOpen) {
         if (e.key === 'ArrowDown' || e.key === 'Enter') {
           e.preventDefault();
-          setIsOpen(true);
+          measureAndOpen();
         }
         return;
       }
@@ -103,7 +123,7 @@ export default function SearchableCombobox({
           break;
       }
     },
-    [isOpen, focusedIndex, filtered, onSelect]
+    [isOpen, focusedIndex, filtered, onSelect, measureAndOpen]
   );
 
   const handleSelect = useCallback(
@@ -118,14 +138,76 @@ export default function SearchableCombobox({
 
   const selectedScenario = scenarios.find((s) => s.id === selectedId);
 
+  const dropdown = isOpen && dropPos ? createPortal(
+    <div
+      className="sd-combo-dropdown"
+      role="listbox"
+      id="sd-combo-listbox"
+      ref={listRef}
+      style={{ position: 'fixed', top: dropPos.top, left: dropPos.left, width: dropPos.width }}
+    >
+      {filtered.length === 0 ? (
+        <div className="sd-combo-empty">
+          <FileText size={16} strokeWidth={1.5} />
+          <span>No scenarios match</span>
+        </div>
+      ) : (
+        filtered.map((scenario, i) => {
+          const meta = riskMeta[scenario.riskLevel];
+          const isSelected = scenario.id === selectedId;
+          const isFocused = i === focusedIndex;
+          return (
+            <div
+              key={scenario.id}
+              ref={(el) => {
+                itemRefs.current[i] = el;
+              }}
+              className={`sd-combo-item${isFocused ? ' sd-combo-item-active' : ''}${isSelected ? ' sd-combo-item-selected' : ''}`}
+              role="option"
+              aria-selected={isSelected}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                handleSelect(scenario);
+              }}
+              onMouseEnter={() => setFocusedIndex(i)}
+            >
+              <div className="sd-combo-item-risk" style={{ background: meta.color }} />
+              <div className="sd-combo-item-body">
+                <div className="sd-combo-item-label">{scenario.label}</div>
+                <div className="sd-combo-item-desc">{scenario.description}</div>
+              </div>
+              <div className="sd-combo-item-meta">
+                <span
+                  className="sd-combo-item-badge"
+                  style={{ background: meta.bgColor, color: meta.color, borderColor: meta.borderColor }}
+                >
+                  {meta.label}
+                </span>
+                <span className="sd-combo-item-score" style={{ color: meta.color }}>
+                  {scenario.finalScore}
+                </span>
+              </div>
+            </div>
+          );
+        })
+      )}
+    </div>,
+    document.body
+  ) : null;
+
   return (
     <div ref={containerRef} className="sd-combo-wrap" onKeyDown={handleKeyDown}>
       <div
         className="sd-combo-input-wrap"
         onClick={() => {
           if (!disabled) {
-            setIsOpen(true);
-            inputRef.current?.focus();
+            if (isOpen) {
+              setIsOpen(false);
+              setSearch('');
+              setFocusedIndex(-1);
+            } else {
+              measureAndOpen();
+            }
           }
         }}
       >
@@ -142,7 +224,7 @@ export default function SearchableCombobox({
             setFocusedIndex(-1);
           }}
           onFocus={() => {
-            if (!disabled) setIsOpen(true);
+            if (!disabled && !isOpen) measureAndOpen();
           }}
           placeholder={selectedScenario ? selectedScenario.label : placeholder}
           disabled={disabled}
@@ -158,52 +240,7 @@ export default function SearchableCombobox({
         </div>
       </div>
 
-      {isOpen && (
-        <div className="sd-combo-dropdown" role="listbox" id="sd-combo-listbox" ref={listRef}>
-          {filtered.length === 0 ? (
-            <div className="sd-combo-empty">
-              <FileText size={16} strokeWidth={1.5} />
-              <span>No scenarios match</span>
-            </div>
-          ) : (
-            filtered.map((scenario, i) => {
-              const meta = riskMeta[scenario.riskLevel];
-              const isSelected = scenario.id === selectedId;
-              const isFocused = i === focusedIndex;
-              return (
-                <div
-                  key={scenario.id}
-                  ref={(el) => {
-                    itemRefs.current[i] = el;
-                  }}
-                  className={`sd-combo-item${isFocused ? ' sd-combo-item-active' : ''}${isSelected ? ' sd-combo-item-selected' : ''}`}
-                  role="option"
-                  aria-selected={isSelected}
-                  onClick={() => handleSelect(scenario)}
-                  onMouseEnter={() => setFocusedIndex(i)}
-                >
-                  <div className="sd-combo-item-risk" style={{ background: meta.color }} />
-                  <div className="sd-combo-item-body">
-                    <div className="sd-combo-item-label">{scenario.label}</div>
-                    <div className="sd-combo-item-desc">{scenario.description}</div>
-                  </div>
-                  <div className="sd-combo-item-meta">
-                    <span
-                      className="sd-combo-item-badge"
-                      style={{ background: meta.bgColor, color: meta.color, borderColor: meta.borderColor }}
-                    >
-                      {meta.label}
-                    </span>
-                    <span className="sd-combo-item-score" style={{ color: meta.color }}>
-                      {scenario.finalScore}
-                    </span>
-                  </div>
-                </div>
-              );
-            })
-          )}
-        </div>
-      )}
+      {dropdown}
     </div>
   );
 }
