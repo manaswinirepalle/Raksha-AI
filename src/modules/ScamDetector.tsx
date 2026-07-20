@@ -347,7 +347,7 @@ export default function ScamDetector() {
       <div className="sd-main">
         <div className="sd-transcript glass-panel card-hover">
           <div className="sd-transcript-header">
-            <span className="sd-section-label">Transcript Analysis</span>
+            <h3 className="sd-section-label m-0 p-0">Transcript Analysis</h3>
             {isAnalyzing && <span className="sd-status sd-status-live" aria-live="polite"><span className="sd-status-dot sd-status-dot-live" />ANALYZING</span>}
             {analyzed && <span className="sd-status sd-status-done" aria-live="polite"><Sparkles size={10} />COMPLETE</span>}
           </div>
@@ -364,7 +364,7 @@ export default function ScamDetector() {
         </div>
         <div className="sd-sidebar">
           <div className="sd-risk glass-panel card-hover">
-            <span className="sd-section-label">Threat Assessment</span>
+            <h3 className="sd-section-label m-0 p-0">Threat Assessment</h3>
             {selectedScenario ? (
               <RiskScore score={analyzed || isAnalyzing ? selectedScenario.finalScore : 0} level={analyzed ? selectedScenario.riskLevel : 'LOW'} animate={isAnalyzing || analyzed} />
             ) : <div className="sd-risk-idle">Awaiting input</div>}
@@ -404,7 +404,7 @@ export default function ScamDetector() {
         <div className="sd-insights-top">
           <RiskGauge score={selectedScenario.finalScore} level={selectedScenario.riskLevel} animate={analyzed} />
           <div className="sd-insights-meta glass-panel card-hover">
-            <span className="sd-section-label">Threat Classification</span>
+            <h3 className="sd-section-label m-0 p-0">Threat Classification</h3>
             <div className="sd-threat-category" style={{ color: RISK_META[selectedScenario.riskLevel].color }}>{a.threatCategory}</div>
             <div className="sd-threat-stats">
               <div className="sd-threat-stat"><span className="sd-threat-stat-label">Confidence</span><span className="sd-threat-stat-value">{a.confidence}%</span></div>

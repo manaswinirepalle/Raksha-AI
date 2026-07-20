@@ -3,6 +3,7 @@ import RadarBackground from './components/RadarBackground';
 import Sidebar, { type ModuleId } from './components/Sidebar';
 import MobileNav from './components/MobileNav';
 import Header from './components/Header';
+import Footer from './components/Footer';
 import Landing from './components/Landing';
 import CommandPalette from './components/CommandPalette';
 import { ToastProvider } from './components/Toast';
@@ -101,6 +102,7 @@ export default function App() {
           <RadarBackground />
           <main className="w-full h-full flex flex-col">
             <Landing onEnter={handleEnter} onModuleSelect={id => handleModuleSelect(id as ModuleId)} />
+            <Footer onNavigate={id => handleModuleSelect(id as ModuleId)} />
           </main>
         </div>
       </ToastProvider>
@@ -136,6 +138,7 @@ export default function App() {
                 </Suspense>
               )}
             </div>
+            <Footer onNavigate={handleModuleSelect} />
           </div>
         </main>
         <MobileNav active={currentView} onSelect={handleModuleSelect} />
