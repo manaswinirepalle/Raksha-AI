@@ -1,17 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { ShieldCheck, ArrowRight, Target, Zap, Eye } from 'lucide-react';
+import { ShieldCheck, Shield, ArrowRight, Target, Zap, Eye } from 'lucide-react';
 import useReducedMotion from '../hooks/useReducedMotion';
-
-const PARTICLES = Array.from({ length: 12 }, (_, i) => ({
-  id: i,
-  x: Math.random() * 100,
-  y: Math.random() * 100,
-  size: Math.random() * 1.8 + 0.5,
-  opacity: Math.random() * 0.12 + 0.03,
-  dur: Math.random() * 25 + 18,
-  delay: Math.random() * 12,
-  isRed: Math.random() < 0.1,
-}));
 
 const TRUST_INDICATORS = [
   { icon: Target, label: '97.3% Detection Accuracy' },
@@ -64,67 +53,53 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
     >
       {/* Full-bleed background image */}
       <div
-        className="absolute inset-0 w-full h-full"
+        className="absolute inset-0"
         style={{
           animation: prefersReduced ? undefined : 'heroImageIn 1.2s cubic-bezier(0.16,1,0.3,1) 0s both',
         }}
       >
-        <picture className="block w-full h-full">
-          <img
-            src="/images/scam-hero.jpg"
-            alt=""
-            aria-hidden="true"
-            className="block w-full h-full"
-            width={1200}
-            height={630}
-            loading="eager"
-            fetchPriority="high"
-            style={{
-              objectFit: 'cover',
-              objectPosition: 'center 30%',
-              transform: `translateX(${mousePos.x}px) translateY(${mousePos.y}px) scale(1.05)`,
-              transition: 'transform 0.8s cubic-bezier(0.16,1,0.3,1)',
-              animation: prefersReduced ? undefined : 'heroImageZoom 18s ease-in-out infinite alternate',
-            }}
-          />
-        </picture>
-        {/* Gradient overlay — lighter overall, strong only behind text zone */}
+        <img
+          src="/images/cyber-rainy-night.jpg"
+          alt=""
+          aria-hidden="true"
+          loading="eager"
+          fetchPriority="high"
+          className="absolute inset-0 w-full h-full"
+          style={{
+            objectFit: 'cover',
+            objectPosition: 'center center',
+            transform: `translateX(${mousePos.x}px) translateY(${mousePos.y}px) scale(1.08)`,
+            transition: 'transform 0.8s cubic-bezier(0.16,1,0.3,1)',
+          }}
+        />
+        {/* Gradient overlay — heavy left for text readability, transparent right to show image */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: 'linear-gradient(105deg, rgba(2,6,23,0.88) 0%, rgba(2,6,23,0.78) 25%, rgba(2,6,23,0.45) 50%, rgba(2,6,23,0.15) 75%, rgba(2,6,23,0.05) 100%)',
+            background: 'linear-gradient(105deg, rgba(2,6,23,0.92) 0%, rgba(2,6,23,0.82) 20%, rgba(2,6,23,0.55) 45%, rgba(2,6,23,0.2) 65%, rgba(2,6,23,0.08) 80%, transparent 100%)',
           }}
         />
         {/* Bottom vignette */}
         <div
-          className="absolute bottom-0 left-0 right-0 h-40 pointer-events-none"
+          className="absolute bottom-0 left-0 right-0 pointer-events-none"
           style={{
-            background: 'linear-gradient(to top, #020617 0%, transparent 100%)',
+            height: '30vh',
+            minHeight: 120,
+            background: 'linear-gradient(to top, #020617 0%, rgba(2,6,23,0.6) 40%, transparent 100%)',
+          }}
+        />
+        {/* Top subtle vignette */}
+        <div
+          className="absolute top-0 left-0 right-0 pointer-events-none"
+          style={{
+            height: '15vh',
+            background: 'linear-gradient(to bottom, rgba(2,6,23,0.4) 0%, transparent 100%)',
           }}
         />
       </div>
 
-      {/* Particles */}
-      {PARTICLES.map((p) => (
-        <div
-          key={p.id}
-          className="absolute pointer-events-none rounded-full z-10"
-          style={{
-            left: `${p.x}%`,
-            top: `${p.y}%`,
-            width: p.size,
-            height: p.size,
-            background: p.isRed ? `rgba(239,68,68,${p.opacity})` : `rgba(56,189,248,${p.opacity})`,
-            boxShadow: p.isRed
-              ? `0 0 ${p.size * 4}px rgba(239,68,68,${p.opacity * 0.4})`
-              : `0 0 ${p.size * 4}px rgba(37,99,235,${p.opacity * 0.3})`,
-            animation: prefersReduced ? undefined : `heroParticleFloat ${p.dur}s ease-in-out ${p.delay}s infinite alternate`,
-          }}
-        />
-      ))}
-
       {/* Content — positioned over the image */}
-      <div className="relative z-20 w-full max-w-[1400px] mx-auto min-h-screen flex flex-col justify-center px-5 sm:px-8 lg:px-12 xl:px-16 py-24 lg:py-0">
+      <div className="relative z-20 w-full max-w-[1400px] mx-auto min-h-screen flex flex-col justify-center px-5 sm:px-8 lg:px-12 xl:px-16 py-20 sm:py-24 lg:py-0">
         <div className="max-w-2xl">
 
           {/* Eyebrow */}
@@ -132,25 +107,26 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
             style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 600ms cubic-bezier(0.16,1,0.3,1) 100ms both' }}
           >
             <p
-              className="text-[10px] sm:text-[11px] font-semibold tracking-[0.2em] uppercase mb-6 sm:mb-8"
+              className="text-[10px] sm:text-[11px] font-semibold tracking-[0.2em] uppercase mb-4 sm:mb-6 lg:mb-8"
               style={{ color: 'rgba(148,163,184,0.7)' }}
             >
               Digital Public Safety Intelligence
             </p>
           </div>
 
-          {/* RAKSHA AI brand wordmark */}
+          {/* RAKSHA AI brand wordmark with shield icon */}
           <div
             style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16,1,0.3,1) 200ms both' }}
           >
-            <h1
-              className="font-black tracking-tight leading-none text-white"
-              style={{
-                fontSize: 'clamp(3rem, 8vw, 7rem)',
-                letterSpacing: '-0.03em',
-              }}
-            >
-              RAKSHA AI
+            <h1 className="flex items-center gap-3 sm:gap-4 font-black tracking-tight leading-none text-white">
+              <Shield
+                className="text-blue-400 flex-shrink-0"
+                strokeWidth={1.5}
+                style={{ width: 'clamp(2rem, 5vw, 3.5rem)', height: 'clamp(2rem, 5vw, 3.5rem)' }}
+              />
+              <span style={{ fontSize: 'clamp(2.5rem, 7vw, 6rem)', letterSpacing: '-0.03em' }}>
+                RAKSHA AI
+              </span>
             </h1>
           </div>
 
@@ -159,9 +135,9 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
             style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 600ms cubic-bezier(0.16,1,0.3,1) 350ms both' }}
           >
             <p
-              className="font-light tracking-wide mt-4 sm:mt-5"
+              className="font-light tracking-wide mt-3 sm:mt-4 lg:mt-5"
               style={{
-                fontSize: 'clamp(1rem, 2vw, 1.35rem)',
+                fontSize: 'clamp(0.95rem, 2vw, 1.35rem)',
                 color: 'rgba(203,213,225,0.8)',
               }}
             >
@@ -169,11 +145,11 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
             </p>
           </div>
 
-          {/* Stat line — the relocated ₹1,031.9 crore data point */}
+          {/* Stat line */}
           <div
             style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 600ms cubic-bezier(0.16,1,0.3,1) 450ms both' }}
           >
-            <p className="text-slate-500 text-xs sm:text-sm mt-3 sm:mt-4 font-light max-w-md leading-relaxed">
+            <p className="text-slate-500 text-xs sm:text-sm mt-2.5 sm:mt-3 lg:mt-4 font-light max-w-md leading-relaxed">
               Indian families lost{' '}
               <span className="text-slate-400 font-medium">₹1,031.9 crore</span>{' '}
               to digital arrest scams in 2024. RAKSHA AI detects and prevents them before they cost you money.
@@ -182,15 +158,15 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
 
           {/* Trust indicators */}
           <div
-            className="flex flex-wrap items-center gap-x-5 gap-y-2.5 mt-7 sm:mt-9"
+            className="flex flex-wrap items-center gap-x-4 sm:gap-x-5 gap-y-2 mt-5 sm:mt-6 lg:mt-7"
             style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 600ms cubic-bezier(0.16,1,0.3,1) 550ms both' }}
           >
             {TRUST_INDICATORS.map((f, i) => {
               const Icon = f.icon;
               return (
-                <div key={i} className="flex items-center gap-2">
-                  <Icon size={14} strokeWidth={1.5} className="text-blue-400" />
-                  <span className="text-[11px] sm:text-xs font-medium text-slate-400">{f.label}</span>
+                <div key={i} className="flex items-center gap-1.5 sm:gap-2">
+                  <Icon size={13} strokeWidth={1.5} className="text-blue-400" />
+                  <span className="text-[10px] sm:text-xs font-medium text-slate-400">{f.label}</span>
                 </div>
               );
             })}
@@ -198,12 +174,12 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
 
           {/* CTA */}
           <div
-            className="mt-8 sm:mt-10"
+            className="mt-6 sm:mt-7 lg:mt-8"
             style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16,1,0.3,1) 650ms both' }}
           >
             <button
               onClick={() => navigateTo('scam-scanner')}
-              className="group relative inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-xl font-semibold text-sm text-white cursor-pointer overflow-hidden transition-all duration-300 hover:translate-y-[-2px]"
+              className="group relative inline-flex items-center justify-center gap-2.5 px-7 sm:px-8 py-3.5 sm:py-4 rounded-xl font-semibold text-sm text-white cursor-pointer overflow-hidden transition-all duration-300 hover:translate-y-[-2px] w-full sm:w-auto"
               style={{
                 background: 'linear-gradient(135deg, #2563EB, #1D4ED8)',
                 boxShadow: '0 0 40px rgba(37,99,235,0.3), 0 4px 24px rgba(37,99,235,0.25)',
