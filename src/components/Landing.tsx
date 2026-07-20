@@ -1,36 +1,27 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { ShieldCheck, TriangleAlert, Lock, Fingerprint, Eye, Bell, ArrowRight, Zap, Target } from 'lucide-react';
+import { ShieldCheck, ArrowRight, Target, Zap, Eye } from 'lucide-react';
 import useReducedMotion from '../hooks/useReducedMotion';
 
-const GLASS_CARDS = [
-  { icon: TriangleAlert, label: 'Scam Alert', color: '#EF4444', position: { top: '8%', left: '-4%' }, delay: '0s' },
-  { icon: ShieldCheck, label: 'Fraud Detected', color: '#2563EB', position: { top: '15%', right: '-3%' }, delay: '1.2s' },
-  { icon: Fingerprint, label: 'AI Analysis', color: '#38BDF8', position: { bottom: '18%', left: '-2%' }, delay: '0.6s' },
-  { icon: Lock, label: 'OTP Protection', color: '#2563EB', position: { bottom: '12%', right: '-4%' }, delay: '1.8s' },
-];
-
-const PARTICLES = Array.from({ length: 20 }, (_, i) => ({
+const PARTICLES = Array.from({ length: 12 }, (_, i) => ({
   id: i,
   x: Math.random() * 100,
   y: Math.random() * 100,
-  size: Math.random() * 2 + 0.5,
-  opacity: Math.random() * 0.15 + 0.03,
-  dur: Math.random() * 30 + 20,
-  delay: Math.random() * 15,
-  isRed: Math.random() < 0.12,
+  size: Math.random() * 1.8 + 0.5,
+  opacity: Math.random() * 0.12 + 0.03,
+  dur: Math.random() * 25 + 18,
+  delay: Math.random() * 12,
+  isRed: Math.random() < 0.1,
 }));
 
-const FEATURES = [
-  { icon: Target, label: '97.3% Detection', color: '#3b82f6' },
-  { icon: Zap, label: 'Real-time Analysis', color: '#f59e0b' },
-  { icon: Eye, label: 'Instant Alerts', color: '#10b981' },
-  { icon: Bell, label: 'Bank-grade Security', color: '#8b5cf6' },
+const TRUST_INDICATORS = [
+  { icon: Target, label: '97.3% Detection Accuracy' },
+  { icon: Zap, label: 'Real-time Analysis' },
+  { icon: Eye, label: 'Instant Alerts' },
 ];
 
 export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => void; onModuleSelect?: (id: string) => void }) {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
-  const imageRef = useRef<HTMLDivElement>(null);
   const prefersReduced = useReducedMotion();
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
@@ -39,7 +30,7 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
     const rect = heroRef.current.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
     const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-    setMousePos({ x: x * 6, y: y * 4 });
+    setMousePos({ x: x * 4, y: y * 3 });
   }, [prefersReduced]);
 
   useEffect(() => {
@@ -64,18 +55,61 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
       className="relative w-full overflow-hidden select-none"
       style={{
         minHeight: '100vh',
-        background: 'linear-gradient(180deg, #020617 0%, #07152F 50%, #0F172A 100%)',
+        background: '#020617',
         opacity: isTransitioning ? 0 : 1,
         transform: isTransitioning ? 'scale(0.98)' : 'scale(1)',
         filter: isTransitioning ? 'blur(4px)' : 'blur(0)',
         transition: 'opacity 500ms cubic-bezier(0.16,1,0.3,1), transform 500ms cubic-bezier(0.16,1,0.3,1), filter 500ms cubic-bezier(0.16,1,0.3,1)',
       }}
     >
-      {/* Background particles */}
+      {/* Full-bleed background image */}
+      <div
+        className="absolute inset-0 w-full h-full"
+        style={{
+          animation: prefersReduced ? undefined : 'heroImageIn 1.2s cubic-bezier(0.16,1,0.3,1) 0s both',
+        }}
+      >
+        <picture className="block w-full h-full">
+          <source srcSet="/images/scam-hero.webp" type="image/webp" />
+          <img
+            src="/images/scam-hero.jpg"
+            alt=""
+            aria-hidden="true"
+            className="block w-full h-full"
+            width={1200}
+            height={630}
+            loading="eager"
+            fetchPriority="high"
+            style={{
+              objectFit: 'cover',
+              objectPosition: 'center 30%',
+              transform: `translateX(${mousePos.x}px) translateY(${mousePos.y}px) scale(1.05)`,
+              transition: 'transform 0.8s cubic-bezier(0.16,1,0.3,1)',
+              animation: prefersReduced ? undefined : 'heroImageZoom 18s ease-in-out infinite alternate',
+            }}
+          />
+        </picture>
+        {/* Gradient overlay — strong left for text, lighter right to reveal image */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: 'linear-gradient(105deg, rgba(2,6,23,0.92) 0%, rgba(2,6,23,0.85) 30%, rgba(2,6,23,0.55) 55%, rgba(2,6,23,0.25) 80%, rgba(2,6,23,0.1) 100%)',
+          }}
+        />
+        {/* Bottom vignette */}
+        <div
+          className="absolute bottom-0 left-0 right-0 h-40 pointer-events-none"
+          style={{
+            background: 'linear-gradient(to top, #020617 0%, transparent 100%)',
+          }}
+        />
+      </div>
+
+      {/* Particles */}
       {PARTICLES.map((p) => (
         <div
           key={p.id}
-          className="absolute pointer-events-none rounded-full"
+          className="absolute pointer-events-none rounded-full z-10"
           style={{
             left: `${p.x}%`,
             top: `${p.y}%`,
@@ -90,48 +124,32 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
         />
       ))}
 
-      {/* Radial blue glow behind image area */}
-      <div
-        className="absolute pointer-events-none"
-        style={{
-          width: '70%',
-          height: '70%',
-          right: '-5%',
-          top: '15%',
-          background: 'radial-gradient(ellipse at center, rgba(37,99,235,0.08) 0%, transparent 65%)',
-          filter: 'blur(60px)',
-        }}
-      />
+      {/* Content — positioned over the image */}
+      <div className="relative z-20 w-full max-w-[1400px] mx-auto min-h-screen flex flex-col justify-center px-5 sm:px-8 lg:px-12 xl:px-16 py-24 lg:py-0">
+        <div className="max-w-2xl">
 
-      {/* Main content grid */}
-      <div className="relative z-10 w-full h-full max-w-[1400px] mx-auto flex flex-col lg:flex-row items-center justify-center min-h-screen px-5 sm:px-8 lg:px-12 xl:px-16 gap-8 lg:gap-16 py-20 lg:py-0">
-
-        {/* LEFT — Text content */}
-        <div className="w-full lg:w-[42%] flex flex-col justify-center gap-5 sm:gap-7 lg:gap-8">
-          {/* Badge */}
+          {/* Eyebrow */}
           <div
             style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 600ms cubic-bezier(0.16,1,0.3,1) 100ms both' }}
           >
-            <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full"
-              style={{
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                backdropFilter: 'blur(12px)',
-              }}
+            <p
+              className="text-[10px] sm:text-[11px] font-semibold tracking-[0.2em] uppercase mb-6 sm:mb-8"
+              style={{ color: 'rgba(148,163,184,0.7)' }}
             >
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
-              </span>
-              <span className="text-[11px] font-medium text-slate-400 tracking-wide">AI-Powered · Built for India</span>
-            </div>
+              Digital Public Safety Intelligence
+            </p>
           </div>
 
-          {/* Statistic headline — the strongest content from the mission section */}
+          {/* Headline */}
           <div
             style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16,1,0.3,1) 200ms both' }}
           >
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.4rem] xl:text-6xl font-bold tracking-tight leading-[1.1] text-slate-100">
+            <h1
+              className="font-extrabold tracking-tight leading-[1.05] text-white"
+              style={{
+                fontSize: 'clamp(2.2rem, 5.5vw, 4.5rem)',
+              }}
+            >
               Digital arrest scams cost Indian families{' '}
               <span
                 style={{
@@ -147,43 +165,43 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
             </h1>
           </div>
 
-          {/* Subtitle */}
+          {/* Supporting line */}
           <div
-            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16,1,0.3,1) 350ms both' }}
+            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 600ms cubic-bezier(0.16,1,0.3,1) 380ms both' }}
           >
-            <p className="text-slate-400 text-sm sm:text-base lg:text-lg leading-relaxed max-w-lg font-light">
-              Behind every number is a real person. RAKSHA AI uses multi-agent AI to detect digital arrest scams, phishing, and financial fraud before they cost you money.
+            <p className="text-slate-400 text-sm sm:text-base lg:text-lg leading-relaxed max-w-lg mt-5 sm:mt-7 font-light">
+              RAKSHA AI uses multi-agent AI to detect and prevent digital arrest scams before they cost you money.
             </p>
           </div>
 
-          {/* Feature highlights — clean row */}
+          {/* Trust indicators */}
           <div
-            className="flex flex-wrap items-center gap-x-5 gap-y-2"
-            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 600ms cubic-bezier(0.16,1,0.3,1) 420ms both' }}
+            className="flex flex-wrap items-center gap-x-5 gap-y-2.5 mt-6 sm:mt-8"
+            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 600ms cubic-bezier(0.16,1,0.3,1) 480ms both' }}
           >
-            {FEATURES.map((f, i) => {
+            {TRUST_INDICATORS.map((f, i) => {
               const Icon = f.icon;
               return (
-                <div key={i} className="flex items-center gap-1.5">
-                  <Icon size={13} strokeWidth={1.5} style={{ color: f.color }} />
-                  <span className="text-[11px] sm:text-xs font-medium text-slate-500">{f.label}</span>
+                <div key={i} className="flex items-center gap-2">
+                  <Icon size={14} strokeWidth={1.5} className="text-blue-400" />
+                  <span className="text-[11px] sm:text-xs font-medium text-slate-400">{f.label}</span>
                 </div>
               );
             })}
           </div>
 
-          {/* Buttons */}
+          {/* CTA */}
           <div
-            className="flex flex-col sm:flex-row items-stretch sm:items-start gap-3"
-            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16,1,0.3,1) 500ms both' }}
+            className="mt-8 sm:mt-10"
+            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16,1,0.3,1) 580ms both' }}
           >
             <button
               onClick={() => navigateTo('scam-scanner')}
-              className="group relative inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl font-semibold text-sm text-white cursor-pointer overflow-hidden transition-all duration-300 hover:translate-y-[-2px]"
+              className="group relative inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-xl font-semibold text-sm text-white cursor-pointer overflow-hidden transition-all duration-300 hover:translate-y-[-2px]"
               style={{
                 background: 'linear-gradient(135deg, #2563EB, #1D4ED8)',
-                boxShadow: '0 0 30px rgba(37,99,235,0.25), 0 4px 24px rgba(37,99,235,0.2)',
-                minHeight: 44,
+                boxShadow: '0 0 40px rgba(37,99,235,0.3), 0 4px 24px rgba(37,99,235,0.25)',
+                minHeight: 48,
               }}
             >
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
@@ -191,138 +209,10 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
               <span className="relative z-10">Get Protected</span>
               <ArrowRight size={16} strokeWidth={2} className="relative z-10 group-hover:translate-x-1 transition-transform duration-300" />
             </button>
-            <button
-              onClick={() => navigateTo('message-checker')}
-              className="group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl font-semibold text-sm text-slate-300 cursor-pointer transition-all duration-300 hover:text-white hover:translate-y-[-2px]"
-              style={{
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                backdropFilter: 'blur(8px)',
-                minHeight: 44,
-              }}
-            >
-              <span>Learn More</span>
-              <ArrowRight size={14} strokeWidth={2} className="group-hover:translate-x-1 transition-transform duration-300" />
-            </button>
           </div>
-        </div>
 
-        {/* RIGHT — Hero image */}
-        <div className="w-full lg:w-[58%] flex items-center justify-center relative" style={{ minHeight: '40vh' }}>
-          {/* Image container with floating cards */}
-          <div
-            className="relative w-full"
-            style={{ maxWidth: 680 }}
-          >
-            {/* Main image */}
-            <div
-              ref={imageRef}
-              className="relative overflow-hidden"
-              style={{
-                borderRadius: 24,
-                border: '1px solid rgba(255,255,255,0.08)',
-                boxShadow: '0 30px 90px rgba(0,0,0,0.45)',
-                animation: prefersReduced ? undefined : 'heroImageIn 1s cubic-bezier(0.16,1,0.3,1) 0.1s both',
-                transform: `translateX(${mousePos.x}px) translateY(${mousePos.y}px)`,
-                transition: 'transform 0.6s cubic-bezier(0.16,1,0.3,1)',
-              }}
-            >
-              <picture>
-                <source srcSet="/images/scam-hero-sm.webp" type="image/webp" />
-                <img
-                  src="/images/scam-hero.jpg"
-                  alt="Cybersecurity threat detection — real-time AI analysis of scam attempts"
-                  className="w-full block"
-                  width={800}
-                  height={420}
-                  loading="eager"
-                  fetchPriority="high"
-                  style={{
-                    aspectRatio: '4/3',
-                    objectFit: 'cover',
-                    animation: prefersReduced ? undefined : 'heroImageZoom 15s ease-in-out infinite alternate',
-                  }}
-                />
-              </picture>
-              {/* Gradient overlay */}
-              <div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  background: 'linear-gradient(rgba(2,6,23,0.35), rgba(2,6,23,0.60))',
-                }}
-              />
-              {/* Bottom label */}
-              <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg"
-                  style={{
-                    background: 'rgba(10,10,14,0.7)',
-                    border: '1px solid rgba(37,99,235,0.2)',
-                    backdropFilter: 'blur(12px)',
-                  }}
-                >
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-[10px] font-semibold text-blue-400 tracking-wide">RAKSHA AI</span>
-                  <span className="text-[9px] text-emerald-400 font-mono">ACTIVE</span>
-                </div>
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg"
-                  style={{
-                    background: 'rgba(10,10,14,0.7)',
-                    border: '1px solid rgba(255,255,255,0.06)',
-                    backdropFilter: 'blur(12px)',
-                  }}
-                >
-                  <ShieldCheck size={11} className="text-blue-400" strokeWidth={2} />
-                  <span className="text-[10px] text-slate-400 font-medium">Protected</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Floating glass cards — hidden on mobile for cleaner look */}
-            {GLASS_CARDS.map((card, i) => {
-              const Icon = card.icon;
-              const posStyle: React.CSSProperties = {
-                position: 'absolute',
-                ...card.position,
-                zIndex: 20,
-                animation: prefersReduced ? undefined : `heroCardFloat 5s ease-in-out ${card.delay} infinite alternate`,
-              };
-              return (
-                <div
-                  key={i}
-                  className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl pointer-events-none"
-                  style={{
-                    ...posStyle,
-                    background: 'rgba(255,255,255,0.06)',
-                    backdropFilter: 'blur(14px)',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    boxShadow: '0 12px 40px rgba(0,0,0,0.25)',
-                    animation: prefersReduced ? undefined : `heroFadeSlideUp 600ms cubic-bezier(0.16,1,0.3,1) ${0.8 + i * 0.15}s both, heroCardFloat 5s ease-in-out ${card.delay} infinite alternate`,
-                  }}
-                >
-                  <div
-                    className="w-7 h-7 rounded-lg flex items-center justify-center"
-                    style={{
-                      background: `${card.color}15`,
-                      border: `1px solid ${card.color}25`,
-                    }}
-                  >
-                    <Icon size={13} style={{ color: card.color }} strokeWidth={1.5} />
-                  </div>
-                  <span className="text-[11px] font-medium text-slate-300 whitespace-nowrap">{card.label}</span>
-                </div>
-              );
-            })}
-          </div>
         </div>
       </div>
-
-      {/* Bottom gradient fade */}
-      <div
-        className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none z-20"
-        style={{
-          background: 'linear-gradient(to top, #0F172A, transparent)',
-        }}
-      />
     </div>
   );
 }
