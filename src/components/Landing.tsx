@@ -70,7 +70,6 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
         }}
       >
         <picture className="block w-full h-full">
-          <source srcSet="/images/scam-hero.webp" type="image/webp" />
           <img
             src="/images/scam-hero.jpg"
             alt=""
@@ -89,11 +88,11 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
             }}
           />
         </picture>
-        {/* Gradient overlay — strong left for text, lighter right to reveal image */}
+        {/* Gradient overlay — lighter overall, strong only behind text zone */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: 'linear-gradient(105deg, rgba(2,6,23,0.92) 0%, rgba(2,6,23,0.85) 30%, rgba(2,6,23,0.55) 55%, rgba(2,6,23,0.25) 80%, rgba(2,6,23,0.1) 100%)',
+            background: 'linear-gradient(105deg, rgba(2,6,23,0.88) 0%, rgba(2,6,23,0.78) 25%, rgba(2,6,23,0.45) 50%, rgba(2,6,23,0.15) 75%, rgba(2,6,23,0.05) 100%)',
           }}
         />
         {/* Bottom vignette */}
@@ -140,44 +139,51 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
             </p>
           </div>
 
-          {/* Headline */}
+          {/* RAKSHA AI brand wordmark */}
           <div
             style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16,1,0.3,1) 200ms both' }}
           >
             <h1
-              className="font-extrabold tracking-tight leading-[1.05] text-white"
+              className="font-black tracking-tight leading-none text-white"
               style={{
-                fontSize: 'clamp(2.2rem, 5.5vw, 4.5rem)',
+                fontSize: 'clamp(3rem, 8vw, 7rem)',
+                letterSpacing: '-0.03em',
               }}
             >
-              Digital arrest scams cost Indian families{' '}
-              <span
-                style={{
-                  background: 'linear-gradient(135deg, #EF4444, #F97316)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                }}
-              >
-                ₹1,031.9 crore
-              </span>{' '}
-              in 2024.
+              RAKSHA AI
             </h1>
           </div>
 
-          {/* Supporting line */}
+          {/* Tagline */}
           <div
-            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 600ms cubic-bezier(0.16,1,0.3,1) 380ms both' }}
+            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 600ms cubic-bezier(0.16,1,0.3,1) 350ms both' }}
           >
-            <p className="text-slate-400 text-sm sm:text-base lg:text-lg leading-relaxed max-w-lg mt-5 sm:mt-7 font-light">
-              RAKSHA AI uses multi-agent AI to detect and prevent digital arrest scams before they cost you money.
+            <p
+              className="font-light tracking-wide mt-4 sm:mt-5"
+              style={{
+                fontSize: 'clamp(1rem, 2vw, 1.35rem)',
+                color: 'rgba(203,213,225,0.8)',
+              }}
+            >
+              One shield. Every threat.
+            </p>
+          </div>
+
+          {/* Stat line — the relocated ₹1,031.9 crore data point */}
+          <div
+            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 600ms cubic-bezier(0.16,1,0.3,1) 450ms both' }}
+          >
+            <p className="text-slate-500 text-xs sm:text-sm mt-3 sm:mt-4 font-light max-w-md leading-relaxed">
+              Indian families lost{' '}
+              <span className="text-slate-400 font-medium">₹1,031.9 crore</span>{' '}
+              to digital arrest scams in 2024. RAKSHA AI detects and prevents them before they cost you money.
             </p>
           </div>
 
           {/* Trust indicators */}
           <div
-            className="flex flex-wrap items-center gap-x-5 gap-y-2.5 mt-6 sm:mt-8"
-            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 600ms cubic-bezier(0.16,1,0.3,1) 480ms both' }}
+            className="flex flex-wrap items-center gap-x-5 gap-y-2.5 mt-7 sm:mt-9"
+            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 600ms cubic-bezier(0.16,1,0.3,1) 550ms both' }}
           >
             {TRUST_INDICATORS.map((f, i) => {
               const Icon = f.icon;
@@ -193,7 +199,7 @@ export default function Landing({ onEnter, onModuleSelect }: { onEnter: () => vo
           {/* CTA */}
           <div
             className="mt-8 sm:mt-10"
-            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16,1,0.3,1) 580ms both' }}
+            style={{ animation: prefersReduced ? undefined : 'heroFadeSlideUp 700ms cubic-bezier(0.16,1,0.3,1) 650ms both' }}
           >
             <button
               onClick={() => navigateTo('scam-scanner')}
