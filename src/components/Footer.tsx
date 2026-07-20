@@ -16,7 +16,7 @@ export default function Footer({ onNavigate }: FooterProps) {
       }}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 sm:gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8">
           {SECTIONS.map((section) => {
             const modules = getModulesBySection(section);
             if (modules.length === 0) return null;
@@ -71,17 +71,6 @@ export default function Footer({ onNavigate }: FooterProps) {
               style={{ color: '#71717a' }}
             >
               Help
-            </a>
-            <a
-              href="#contact-support"
-              onClick={(e) => {
-                e.preventDefault();
-                onNavigate?.('contact-support');
-              }}
-              className="text-[11px] hover:text-zinc-300 transition-colors"
-              style={{ color: '#71717a' }}
-            >
-              Contact
             </a>
             <a
               href="#settings"

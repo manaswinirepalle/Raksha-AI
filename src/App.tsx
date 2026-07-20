@@ -19,13 +19,7 @@ const ReportFraud = lazy(() => import('./modules/ReportFraud'));
 const ThreatInsights = lazy(() => import('./modules/ThreatInsights'));
 const FraudNetwork = lazy(() => import('./modules/FraudNetwork'));
 const CrimeHeatmap = lazy(() => import('./modules/CrimeHeatmap'));
-const ScamTrends = lazy(() => import('./modules/ScamTrends'));
-const SafetyTips = lazy(() => import('./components/LearningMode'));
-const ActivityDashboard = lazy(() => import('./modules/ActivityDashboard'));
-const Reports = lazy(() => import('./modules/Reports'));
-const SecurityOverview = lazy(() => import('./modules/SecurityOverview'));
 const HelpCenter = lazy(() => import('./modules/HelpCenter'));
-const ContactSupport = lazy(() => import('./modules/ContactSupport'));
 const SettingsPage = lazy(() => import('./modules/SettingsPage'));
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -39,13 +33,7 @@ const MODULE_COMPONENTS: Record<string, React.LazyExoticComponent<React.Componen
   'threat-insights': ThreatInsights,
   'fraud-network': FraudNetwork,
   'crime-heatmap': CrimeHeatmap,
-  'scam-trends': ScamTrends,
-  'safety-tips': SafetyTips,
-  'activity-dashboard': ActivityDashboard,
-  'reports': Reports,
-  'security-overview': SecurityOverview,
   'help-center': HelpCenter,
-  'contact-support': ContactSupport,
   'settings': SettingsPage,
 };
 
