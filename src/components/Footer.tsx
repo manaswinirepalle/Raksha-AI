@@ -60,7 +60,33 @@ export default function Footer({ onNavigate }: FooterProps) {
             <span className="text-[11px] text-zinc-600">|</span>
             <span className="text-[11px] text-zinc-500">Digital Public Safety Intelligence</span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <a
+              href="tel:1930"
+              className="text-[11px] hover:text-zinc-300 transition-colors"
+              style={{ color: '#71717a' }}
+            >
+              1930 Helpline
+            </a>
+            <a
+              href="https://cybercrime.gov.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[11px] hover:text-zinc-300 transition-colors"
+              style={{ color: '#71717a' }}
+            >
+              cybercrime.gov.in
+            </a>
+            <a
+              href="https://www.ncrp.gov.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[11px] hover:text-zinc-300 transition-colors"
+              style={{ color: '#71717a' }}
+            >
+              NCRP Portal
+            </a>
+            <span className="hidden sm:inline text-zinc-700">|</span>
             <a
               href="#help-center"
               onClick={(e) => {

@@ -1,0 +1,7 @@
+seo: expand static content, mobile meta, external links
+
+- Static content 241 to 481 words with detailed module descriptions
+- Added apple-touch-icon (180x180 PNG shield icon)
+- Added external links: cybercrime.gov.in, ncrp.gov.in, 1930 helpline
+- All 11 modules have crawlable a href links in prerendered HTML
+- Viewport meta tag verified correct
