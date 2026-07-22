@@ -1,8 +1,16 @@
-seo: meta desc, fix NCRP link, add robots/sitemap, fix footer links
+feat: add social share buttons + rewrite meta description
 
-PART 1 - Meta description trimmed from 172 to 153 chars
-PART 2 - Fixed broken NCRP link: www.ncrp.gov.in (530 error) to cybercrime.gov.in (correct portal URL)
-PART 3 - Created robots.txt (allow all, sitemap reference) and sitemap.xml (12 URLs for all modules)
-PART 4 - Fixed Footer internal links from #help-center to /#help-center for crawlability
-PART 5 - JS minification confirmed (Vite production build, 233KB main bundle, no newlines)
-All 100% areas verified untouched
+PART 1 - Added Twitter/X, LinkedIn, WhatsApp share buttons to Footer
+  - Icon-only, unobtrusive, matches dark theme
+  - Native share URLs (no third-party scripts, no performance impact)
+  - Proper target=_blank, rel=noopener, aria-labels
+  - 'Share RAKSHA AI' label with hover states
+
+PART 2 - Rewrote meta description to professional tone
+  - Old (153 chars): 'Free AI-powered platform detecting digital arrest scams, counterfeiting, and fraud networks in India...
+  - New (155 chars): 'Detects digital arrest scams, counterfeit currency, and fraud networks in India using AI. Real-time transcript analysis with evidence export for reporting.'
+  - Also updated OG description (136 chars) and Twitter description to match
+  - Updated JSON-LD schema description
+  - Page title confirmed clean: 'RAKSHA AI - Digital Public Safety Intelligence' (48 chars)
+
+Build: zero errors, 236KB main bundle (minified)
