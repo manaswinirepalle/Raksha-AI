@@ -1,11 +1,8 @@
-seo: expand content 481 to 856 words, verify meta description
+seo: meta desc, fix NCRP link, add robots/sitemap, fix footer links
 
-- Static HTML word count: 481 to 856 (+375 words)
-- Added detailed ScamDetector tab descriptions (Analysis, AI Insights,
-  Safety, Learn, Knowledge, Dashboard)
-- Added multi-agent pipeline description with all 6 agent names
-- Added safety recommendation system details
-- Added learning mode and evidence export descriptions
-- Expanded About section with agent technology details
-- Meta description: 172 chars (already under 1000 limit)
-- All 100% areas verified untouched (H1, H2, links, meta tags)
+PART 1 - Meta description trimmed from 172 to 153 chars
+PART 2 - Fixed broken NCRP link: www.ncrp.gov.in (530 error) to cybercrime.gov.in (correct portal URL)
+PART 3 - Created robots.txt (allow all, sitemap reference) and sitemap.xml (12 URLs for all modules)
+PART 4 - Fixed Footer internal links from #help-center to /#help-center for crawlability
+PART 5 - JS minification confirmed (Vite production build, 233KB main bundle, no newlines)
+All 100% areas verified untouched

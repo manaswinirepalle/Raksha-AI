@@ -78,7 +78,7 @@ export default function Footer({ onNavigate }: FooterProps) {
               cybercrime.gov.in
             </a>
             <a
-              href="https://www.ncrp.gov.in"
+              href="https://cybercrime.gov.in"
               target="_blank"
               rel="noopener noreferrer"
               className="text-[11px] hover:text-zinc-300 transition-colors"
@@ -88,7 +88,7 @@ export default function Footer({ onNavigate }: FooterProps) {
             </a>
             <span className="hidden sm:inline text-zinc-700">|</span>
             <a
-              href="#help-center"
+              href="/#help-center"
               onClick={(e) => {
                 e.preventDefault();
                 onNavigate?.('help-center');
@@ -99,7 +99,7 @@ export default function Footer({ onNavigate }: FooterProps) {
               Help
             </a>
             <a
-              href="#settings"
+              href="/#settings"
               onClick={(e) => {
                 e.preventDefault();
                 onNavigate?.('settings');
